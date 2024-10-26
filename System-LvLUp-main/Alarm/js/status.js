@@ -20,6 +20,8 @@ document.querySelectorAll(".increment-btn").forEach((button) => {
   });
 });
 
+
+
 function updateFatigueProgress() {
   const fatigueText = document.querySelector(".fatigue-value").textContent; // Get the text (e.g., "20")
   const value = parseInt(fatigueText, 10); // Convert to a number
@@ -351,29 +353,7 @@ document.addEventListener("DOMContentLoaded", (event) => {
   }
 
   // Function to save the game data to localStorage
-  function saveData() {
-    const gameData = {
-      level: parseInt(document.querySelector(".level-number").textContent),
-      hp: parseFloat(document.getElementById("hp-fill").style.width),
-      mp: parseFloat(document.getElementById("mp-fill").style.width),
-      stm: parseFloat(document.getElementById("stm-fill").style.width),
-      exp: parseInt(
-        document.getElementById("XPvalue").textContent.split("/")[0]
-      ), // Extract XP value from "50/100"
-      fatigue: parseInt(document.getElementById("Fatvalue").textContent),
-      name: document.getElementById("job-text").textContent,
-      ping: document.getElementById("ping-text").textContent,
-      guild: document.getElementById("guild-text").textContent,
-      race: document.getElementById("race-text").textContent,
-      title: document.getElementById("title-text").textContent,
-      region: document.getElementById("region-text").textContent,
-      location: document.getElementById("location-text").textContent,
-    };
-    console.log(gameData);
-
-    // Save the current game state to localStorage
-    localStorage.setItem("gameData", JSON.stringify(gameData));
-  }
+ 
 
   // Example: Function to get rank based on the level
   function getRank(level) {
