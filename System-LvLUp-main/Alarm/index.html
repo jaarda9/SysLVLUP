@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Alert Popup</title>
+    <link rel="stylesheet" href="css/alarm.css" />
+  </head>
+  <body>
+    <button
+      id="fullscreen-btn"
+      style="opacity: 0; position: absolute; top: -1000px; left: -1000px"
+    >
+      Go Fullscreen
+    </button>
+    <div class="alert-box">
+      <div class="alert-header">
+        <span>ⓘ Alert ⓘ</span>
+      </div>
+      <div class="alert-message">
+        <p>
+          [
+          <span class="welcome-text"
+            >Welcome,
+            <span class="player-text" id="playerBtn"> player.</span> </span
+          >]
+        </p>
+      </div>
+    </div>
+
+    <script src="js/alarm.js"></script>
+  </body>
+</html>

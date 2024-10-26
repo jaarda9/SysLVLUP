@@ -1,0 +1,342 @@
+    body {
+        background: #0e1a2b;
+        font-family: 'Consolas', 'Courier New', monospace;
+        color: #e0e6f6;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+        margin: 0;
+    }
+
+
+
+    .status-container {
+        background: rgba(20, 30, 50, 0.9);
+        border: 1px solid #e0e6f6;
+        border-radius: 12px;
+        padding: 20px;
+        max-width: 800px;
+        width: 100%;
+        box-shadow: 0px 0px 15px #e0e6f6;
+        animation: dropDown 2s ease forwards; /* Extended duration for smoothness */
+        transition: max-height 2s ease-out; /* Extended transition time */
+        max-height: 1000px; /* Adjust as needed */
+    }
+    
+    @keyframes dropDown {
+        0% {
+            max-height: 0;
+            opacity: 0;
+            overflow: hidden;
+        }
+        100% {
+            max-height: 1000px; /* Adjust as needed */
+            opacity: 1;
+        }
+    }
+
+    .status-title {
+        font-size: 1.8em;
+        margin-bottom: 10px;
+        text-align: center;
+        color: #e0e6f6;
+        text-shadow: 0 0 8px #e0e6f6;
+        border-radius: 3px;
+        padding: 5px;
+        border: 1px solid #e0e6f6;
+        box-shadow: 0 0 10px #e0e6f6;
+        
+    }
+    .detail-input {
+        font-size: 14px;
+        color: #f0f8ff;
+        background-color: #1c1f24;
+        border: 1px solid #444;
+        border-radius: 5px;
+        margin-top: 4px;
+        padding: 2px 5px;
+        width: 80px;
+        text-shadow: none; /* No glow for the input field text */
+    }
+
+    #edit-toggle, #save-changes {
+        background-color: #2b3e50;
+        color: #f0f8ff;
+        border: 1px solid #444;
+        border-radius: 5px;
+        
+        cursor: pointer;
+        margin-top: 10px;
+    }
+
+    .level-section {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 10px;
+        
+        
+    }
+
+    .level-info {
+        text-align: center;
+        color: #e0e6f6;
+        margin-right: 10px;
+        text-shadow: 0 0 5px #e0e6f6;
+        position: relative;
+        margin-right: 30px;
+        bottom: 2px;
+    }
+    a {
+        text-decoration: none; /* Remove underline */
+        color: inherit; /* Inherit the color from the parent element */
+        background-color: transparent; /* Remove any default background color */
+    }
+    
+    a:visited {
+        color: inherit; /* Ensure visited links have the same color */
+    }
+    
+    a:hover, a:focus, a:active {
+        text-decoration: none; /* Keep underline removed on hover, focus, and active states */
+        color: inherit; /* Keep color consistent on hover, focus, and active states */
+        outline: none; /* Remove any focus outline */
+    }
+    .level-number {
+        font-size: 3.6em; /* You can adjust this value to your liking */
+        font-weight: bold;
+        color: #e0e6f6;
+        font-family:system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+    }
+
+    .level-info div:last-child {
+        font-size: 1.2em; /* Keep the "LEVEL" font size as is */
+        color: #e0e6f6;
+    }
+    .STM{
+        margin-right: 6px;
+    }
+    .MP{
+        margin-right: 4px;
+    }
+    .HP{
+        margin-right: 2px;
+    }
+    .details {
+        font-size: 0.85em;
+        display: flex;
+        gap: 0px 70px;
+        flex-wrap: wrap;
+        justify-content: space-between;
+        width: 100%; /* Ensures it takes full container width */
+        max-width: 800px; /* Or any fixed value you want */
+        height: 100%; 
+        max-height: 100px;
+        position: relative;
+        top: 30px;
+    }
+
+    .details p {
+
+    display: flex;
+    gap: 5px;
+    align-items: center;
+    margin-top: 0px;
+    text-shadow: 0 0 5px #e0e6f6;
+
+    }
+
+    .detail-text {
+        font-size: 19px;
+        font-weight: bolder;
+    }
+  .detail-textx {
+        font-size: 19px;
+        font-weight: bolder;
+    }
+    .status-bars {
+        margin-bottom: 100px;
+    }
+
+    .status-bar {
+        display: flex;
+        align-items: center;
+        margin: 5px 0;
+    }
+
+    .bar {
+        background: #1a2a3b;
+        border: 1px solid #e0e6f6;
+        border-radius: 4px;
+        height: 12px;
+        width: 60%;
+        overflow: hidden;
+        margin: 0 10px;
+    }
+
+    .fill {
+        background: #e0e6f6;
+        height: 100%;
+    }
+    
+
+    .emoji {
+        margin-right: 5px;
+        filter: grayscale(0.2) brightness(1.3) hue-rotate(190deg) drop-shadow(0 0 5px #b5d7ff);
+        font-size: 17px;
+    }
+
+ .mid-section{
+    border-radius: 8px;
+    border: 1px solid #e0e6f6;
+    box-shadow: 0 0 10px #e0e6f6;
+    padding: 15px;
+    margin-bottom: 17px;
+    height: 105px;
+ }
+
+    .fatigue-section {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        margin-bottom: 15px;
+        position:relative;
+        bottom: 185px;
+        left: 325px;
+        
+        
+    }
+
+    .fatigue-ring {
+        position: relative;
+        width: 80px;
+        height: 80px;
+    }
+
+    .progress-ring {
+        transform: rotate(-90deg);
+    }
+
+    .progress-ring__circle {
+        transition: stroke-dasharray 0.3s ease;
+        stroke-dasharray: 0 215; /* Initially no progress */
+        stroke: #e0e6f6;
+        stroke-linecap: round;
+    }
+
+    .fatigue-label {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        font-size: 0.8em;
+        text-align: center;
+        text-shadow: 0 0 5px #e0e6f6;
+    }
+
+    .attributes {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: space-between;
+        margin-bottom: 15px;
+        border-radius: 8px;
+        border: 1px solid #e0e6f6;
+        box-shadow: 0 0 10px #e0e6f6;
+        padding: 2.3px;
+        
+        
+    }
+    
+    .attributes div {
+        margin: 5px 0;
+        width: 35%;
+        display: flex;
+        justify-content: space-around;
+        align-items: center;
+        margin-bottom: 10px;
+        font-size: 18px;
+        padding-left: 58px;
+        padding-right: 58px;
+        
+    }
+    .attributes div span{
+        position: relative;
+        right: 50px;
+    }
+   
+
+    .quests {
+        background: rgba(20, 30, 50, 0.8);
+        padding: 10px;
+        border-radius: 8px;
+        border: 1px solid #e0e6f6;
+        box-shadow: 0 0 10px #e0e6f6;
+        
+    }
+
+    .quests h2 {
+        margin: 0 0 10px 0;
+        font-size: 1em;
+        color: #e0e6f6;
+        text-shadow: 0 0 5px #e0e6f6;
+    }
+
+    .quest {
+        display: flex;
+        justify-content: space-between;
+        font-size: 0.9em;
+        margin: 5px 0;
+        
+    }
+
+    .status {
+        background: #1a2a3b;
+        padding: 2px 8px;
+        border-radius: 5px;
+        cursor: pointer;
+        transition: background-color 0.3s ease; /* Smooth transition */
+    }
+    
+    .status:hover {
+        background: #3c5060; /* Lighter color on hover */
+    }
+    
+
+    .status_done {
+        background: #e0e6f6;
+        padding: 2px 8px;
+        border-radius: 5px;
+        color: #0e1a2b;
+        box-shadow: 0 0 5px #e0e6f6;
+    }
+
+    .status_danger {
+        background: #e74c3c;
+        border-radius: 5px;
+        padding: 2px 8px;
+        box-shadow: 0 0 5px #e74c3c;
+    }
+
+   
+    .stat-icon {
+        margin-right: 4px; /* Reduce the margin between the icon and the text */
+        color: #f0f8ff; /* Adjust this color to match your theme */
+        filter: drop-shadow(0 0 4px #f0f8ff);
+        font-size: 20px;
+    }
+
+    .attributes span {
+        color: #f0f8ff;
+        text-shadow: 0px 0px 8px #f0f8ff;
+        margin-right: 5px;
+    }
+
+    .status button {
+        background-color: rgba(255, 255, 255, 0.795); /* Slightly transparent on hover */
+    }
+    
+    #edit-toggle {
+        display: none;
+    }
+
+
