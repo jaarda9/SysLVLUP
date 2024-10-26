@@ -84,34 +84,55 @@ function customRound(num) {
     localStorage.setItem('gameData', JSON.stringify(savedData));
    
 }
-
-
 function xpgainmental(){
+    // Add the xpReward to the current XP
     const savedData = JSON.parse(localStorage.getItem("gameData"));
-     // Add the xpReward to the current XP
-     console.log(savedData.exp ,savedData.level)
-     savedData.exp+=5;
-         
-             savedData.stackedAttributes["INT"] += 2;
-             savedData.stackedAttributes["PER"] += 0.45;
-            
-     while (savedData.exp >= 100) {
-         savedData.exp = savedData.exp - 100; // Reset XP for new level
-         savedData.level = parseInt(savedData.level) + 1; // Increment level
- 
-         for (let key in savedData.stackedAttributes) {
-             if (savedData.Attributes[key] !== undefined) {
-                 savedData.Attributes[key] += customRound(savedData.stackedAttributes[key]*0.25);
-             }
-         }
-         // Reset stackedAttributes  applying them to Attributes
-         for (let key in savedData.stackedAttributes) {
-             savedData.stackedAttributes[key] = 0;
-         }
-     }
-     console.log(savedData.exp ,savedData.level)
-     localStorage.setItem('gameData', JSON.stringify(savedData));
+    console.log(savedData.exp ,savedData.level)
+    savedData.exp+=5;
+        
+            savedData.stackedAttributes["INT"] += 2;
+            savedData.stackedAttributes["PER"] += 0.45;
+           
+    while (savedData.exp >= 100) {
+        savedData.exp = savedData.exp - 100; // Reset XP for new level
+        savedData.level = parseInt(savedData.level) + 1; // Increment level
+
+        for (let key in savedData.stackedAttributes) {
+            if (savedData.Attributes[key] !== undefined) {
+                savedData.Attributes[key] += customRound(savedData.stackedAttributes[key]*0.25);
+            }
+        }
+        // Reset stackedAttributes  applying them to Attributes
+        for (let key in savedData.stackedAttributes) {
+            savedData.stackedAttributes[key] = 0;
+        }
+    }
+
+       
+       
+    let currentMP = parseInt(savedData.mp) - 20;
+    savedData.mp = currentMP;
+    localStorage.setItem('gameData', JSON.stringify(savedData));
+    console.log(currentMP);
+
+    let currentSTM = parseInt(savedData.stm) - 10;
+    savedData.stm = currentSTM;
+    localStorage.setItem('gameData', JSON.stringify(savedData));
+    console.log(currentSTM);
+
+    let currentFAT = parseInt(savedData.fatigue) + 20;
+    savedData.fatigue = currentFAT;
+    localStorage.setItem('gameData', JSON.stringify(savedData));
+    console.log(currentFAT);
+    savedData.mentalQuests = "[3/3]";
+    console.log(savedData.exp ,savedData.level)
+    localStorage.setItem('gameData', JSON.stringify(savedData));
+   
 }
+
+
+
+
 
     
     const urlParams = new URLSearchParams(window.location.search);
@@ -170,23 +191,7 @@ window.onload=()=>{
     }
 
     if (data === 'mental') {
-        const savedData = JSON.parse(localStorage.getItem("gameData"));
-     
-        let currentMP = parseInt(savedData.mp) - 20;
-        savedData.mp = currentMP;
-        localStorage.setItem('gameData', JSON.stringify(savedData));
-        console.log(currentMP);
-
-        let currentSTM = parseInt(savedData.stm) - 10;
-        savedData.stm = currentSTM;
-        localStorage.setItem('gameData', JSON.stringify(savedData));
-        console.log(currentSTM);
-
-        let currentFAT = parseInt(savedData.fatigue) + 20;
-        savedData.fatigue = currentFAT;
-        localStorage.setItem('gameData', JSON.stringify(savedData));
-        console.log(currentFAT);
-        savedData.mentalQuests = "[3/3]";
+        
         xpgainmental()
         console.log(currentFAT);
         
