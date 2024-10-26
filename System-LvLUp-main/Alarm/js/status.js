@@ -289,6 +289,25 @@ document.addEventListener("DOMContentLoaded", (event) => {
   // Save data when an input field changes
   const inputs = document.querySelectorAll(".detail-input");
   inputs.forEach((input) => {
+    function saveData() {
+      const gameData = {
+        level: document.querySelector(".level-number").textContent,
+        hp: parseFloat(document.getElementById("hp-fill").style.width),
+        mp: parseFloat(document.getElementById("mp-fill").style.width),
+        stm: parseFloat(document.getElementById("stm-fill").style.width),
+        exp: parseFloat(document.getElementById("exp-fill").style.width),
+        fatigue: document.getElementById("Fatvalue").textContent,
+        name: document.getElementById("job-text").textContent,
+        ping: document.getElementById("ping-text").textContent,
+        guild: document.getElementById("guild-text").textContent,
+        race: document.getElementById("race-text").textContent,
+        title: document.getElementById("title-text").textContent,
+        region: document.getElementById("region-text").textContent,
+        location: document.getElementById("location-text").textContent,
+      };
+      localStorage.setItem("gameData", JSON.stringify(gameData));
+    }
+  
     input.addEventListener("blur", (event) => {
       const span = event.target.previousElementSibling;
       span.textContent = event.target.value;
