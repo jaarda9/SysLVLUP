@@ -228,6 +228,36 @@ function getRank(level) {
   if (level >= 101) return ranks[5]; // S-Rank
 }
 
+function loadData() {
+  const savedData = JSON.parse(localStorage.getItem("gameData"));
+  if (savedData) {
+    document.querySelector(".level-number").textContent = savedData.level;
+    document.getElementById("hp-fill").style.width = savedData.hp + "%";
+    document.getElementById("mp-fill").style.width = savedData.mp + "%";
+    document.getElementById("stm-fill").style.width = savedData.stm + "%";
+    document.getElementById("exp-fill").style.width = savedData.exp + "%";
+    document.querySelector(".fatigue-value").textContent = savedData.fatigue;
+    document.getElementById("job-text").textContent = savedData.name;
+    document.getElementById("ping-text").textContent = savedData.ping;
+    document.getElementById("guild-text").textContent = savedData.guild;
+    document.getElementById("race-text").textContent = savedData.race;
+    document.getElementById("title-text").textContent = savedData.title;
+    document.getElementById("region-text").textContent = savedData.region;
+    document.getElementById("location-text").textContent = savedData.location;
+    document.getElementById("rank-text").textContent = getRank(
+      savedData.level
+    );
+    document.querySelector(".quests .status:not(.done)").textContent = `Lv.${savedData.level}`; // Load quest level
+
+    document.getElementById("str").textContent = `STR: ${savedData.Attributes.STR}`;
+    document.getElementById("vit").textContent = `VIT: ${savedData.Attributes.VIT}`;
+    document.getElementById("agi").textContent = `AGI: ${savedData.Attributes.AGI}`;
+    document.getElementById("int").textContent = `INT: ${savedData.Attributes.INT}`;
+    document.getElementById("per").textContent = `PER: ${savedData.Attributes.PER}`;
+    document.getElementById("wis").textContent = `WIS: ${savedData.Attributes.WIS}`;
+  }
+}
+
 document.addEventListener("DOMContentLoaded", (event) => {
   const ranks = ["E-Rank", "D-Rank", "C-Rank", "B-Rank", "A-Rank", "S-Rank"];
 
