@@ -177,6 +177,8 @@ function xpgainspiritual(){
     console.log(currentFAT);
 
     savedData.spiritualQuests = "[2/2]";
+    console.log(savedData.exp ,savedData.level)
+    localStorage.setItem('gameData', JSON.stringify(savedData));
    
 }
 
