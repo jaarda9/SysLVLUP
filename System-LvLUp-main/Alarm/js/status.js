@@ -150,6 +150,7 @@ function loadData() {
   const savedData = JSON.parse(localStorage.getItem("gameData"));
   if (savedData) {
     document.querySelector(".level-number").textContent = savedData.level;
+    document.getElementById("HPvalue").textContent = savedData.hp;
     document.getElementById("hp-fill").style.width = savedData.hp + "%";
     document.getElementById("mp-fill").style.width = savedData.mp + "%";
     document.getElementById("stm-fill").style.width = savedData.stm + "%";
