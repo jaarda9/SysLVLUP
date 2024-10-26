@@ -219,6 +219,15 @@ document.addEventListener("DOMContentLoaded", (event) => {
   checkForLevelUp1();
 });
 
+function getRank(level) {
+  if (level >= 1 && level <= 10) return ranks[0]; // E-Rank
+  if (level >= 11 && level <= 30) return ranks[1]; // D-Rank
+  if (level >= 31 && level <= 50) return ranks[2]; // C-Rank
+  if (level >= 51 && level <= 80) return ranks[3]; // B-Rank
+  if (level >= 81 && level <= 100) return ranks[4]; // A-Rank
+  if (level >= 101) return ranks[5]; // S-Rank
+}
+
 document.addEventListener("DOMContentLoaded", (event) => {
   const ranks = ["E-Rank", "D-Rank", "C-Rank", "B-Rank", "A-Rank", "S-Rank"];
 
