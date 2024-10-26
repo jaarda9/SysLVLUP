@@ -140,7 +140,7 @@ function xpgainspiritual(){
 
         // Clear the XP reward after applying it
         
-    
+window.onload=()=>{
     if (data === 'physical') {
         const savedData = JSON.parse(localStorage.getItem("gameData"));
         
@@ -222,6 +222,8 @@ function xpgainspiritual(){
         console.log(currentFAT);
     }
 
+}
+    
     
 
 
