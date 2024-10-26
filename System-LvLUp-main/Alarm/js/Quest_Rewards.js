@@ -1,6 +1,6 @@
 function acceptRewards() {
     
-    window.location.href="/System-LvLUp-main/Alarm/status.html";
+    window.location.href="/status.html";
 }
 const dailyTasks = {
     Monday: { stackedAttributes: { "STR": 2, "VIT": 0, "AGI": 1, "INT": 0, "PER": 0 } },
