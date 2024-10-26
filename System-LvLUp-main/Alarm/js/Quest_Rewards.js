@@ -34,7 +34,7 @@ function customRound(num) {
   
 
 
-function xpgainphysical(){
+  function xpgainphysical(){
     // Add the xpReward to the current XP
     const savedData = JSON.parse(localStorage.getItem("gameData"));
     console.log(savedData.exp ,savedData.level)
@@ -42,9 +42,9 @@ function xpgainphysical(){
     const tasks = getCurrentDayTasks();
     const dayStackedAttributes = tasks.stackedAttributes;
     for (let key in dayStackedAttributes) {
-        
+       
             savedData.stackedAttributes[key] += customRound(dayStackedAttributes[key] * 0.25) ;
-        
+       
     }
     while (savedData.exp >= 100) {
         savedData.exp = savedData.exp - 100; // Reset XP for new level
@@ -60,9 +60,29 @@ function xpgainphysical(){
             savedData.stackedAttributes[key] = 0;
         }
     }
+
+       
+        let currentHP = parseInt(savedData.hp) - 20;
+        savedData.hp = currentHP;
+        console.log(currentHP);
+
+       
+       
+        let currentSTM = parseInt(savedData.stm) - 20;
+        savedData.stm = currentSTM;
+        console.log(currentSTM);
+
+        let currentFAT = parseInt(savedData.fatigue) + 20;
+        savedData.fatigue = currentFAT;
+        console.log(currentFAT);
+
+       
+       
+        savedData.physicalQuests = "[4/4]";
+        console.log(currentFAT);
     console.log(savedData.exp ,savedData.level)
     localStorage.setItem('gameData', JSON.stringify(savedData));
-    
+   
 }
 
 
@@ -142,31 +162,9 @@ function xpgainspiritual(){
         
 window.onload=()=>{
     if (data === 'physical') {
-        const savedData = JSON.parse(localStorage.getItem("gameData"));
-        console.log(savedData);
-        
-        let currentHP = parseInt(savedData.hp) - 20;
-        savedData.hp = currentHP;
-        console.log(currentHP);
-
-        
-        
-        let currentSTM = parseInt(savedData.stm) - 20;
-        savedData.stm = currentSTM;
-        console.log(currentSTM);
-
-        let currentFAT = parseInt(savedData.fatigue) + 20;
-        savedData.fatigue = currentFAT;
-        console.log(currentFAT);
-
-       
-        
-        savedData.physicalQuests = "[4/4]";
-        
        
         xpgainphysical();
-        localStorage.setItem('gameData', JSON.stringify(savedData));
-        console.log(currentFAT);
+       
 
         
     }
