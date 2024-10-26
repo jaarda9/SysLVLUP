@@ -28,7 +28,7 @@ document.addEventListener("DOMContentLoaded", function () {
       physicalQuestsBtn.classList.add("completed"); // Add 'completed' class to change hover effect
     } else {
       physicalQuestsBtn.addEventListener("click", function () {
-        window.location.href = "/System-LvLUp-main/Alarm/Quest_Info_Physical.html";
+        window.location.href = "../Quest_Info_Physical.html";
       });
     }
   } else {
@@ -43,7 +43,7 @@ document.addEventListener("DOMContentLoaded", function () {
       mentalQuestsBtn.classList.add("completed"); // Add 'completed' class to change hover effect
     } else {
       mentalQuestsBtn.addEventListener("click", function () {
-        window.location.href = "/System-LvLUp-main/Alarm/Quest_Info_Mental.html";
+        window.location.href = "../Quest_Info_Mental.html";
       });
     }
   } else {
@@ -58,7 +58,7 @@ document.addEventListener("DOMContentLoaded", function () {
       spiritualQuestsBtn.classList.add("completed"); // Add 'completed' class to change hover effect
     } else {
       spiritualQuestsBtn.addEventListener("click", function () {
-        window.location.href = "/System-LvLUp-main/Alarm/Quest_Info_Spiritual.html";
+        window.location.href = "../Quest_Info_Spiritual.html";
       });
     }
   } else {
