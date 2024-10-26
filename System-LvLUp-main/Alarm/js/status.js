@@ -481,7 +481,7 @@ document.addEventListener("DOMContentLoaded", (event) => {
   };
 });
 
-window.onload = function () {
+/*window.onload = function () {
   function getRank(level) {
     if (level >= 1 && level <= 10) return ranks[0]; // E-Rank
     if (level >= 11 && level <= 30) return ranks[1]; // D-Rank
@@ -534,7 +534,7 @@ window.onload = function () {
   } else {
     console.error("No saved data found in localStorage.");
   }
-};
+};*/
 
 // Example: Function to update fatigue progress on a progress ring
 function updateFatigueProgress() {
