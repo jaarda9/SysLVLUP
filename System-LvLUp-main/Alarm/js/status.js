@@ -257,6 +257,34 @@ function loadData() {
     document.getElementById("wis").textContent = `WIS: ${savedData.Attributes.WIS}`;
   }
 }
+const ranks = ["E-Rank", "D-Rank", "C-Rank", "B-Rank", "A-Rank", "S-Rank"];
+function getRank(level) {
+  if (level >= 1 && level <= 10) return ranks[0]; // E-Rank
+  if (level >= 11 && level <= 30) return ranks[1]; // D-Rank
+  if (level >= 31 && level <= 50) return ranks[2]; // C-Rank
+  if (level >= 51 && level <= 80) return ranks[3]; // B-Rank
+  if (level >= 81 && level <= 100) return ranks[4]; // A-Rank
+  if (level >= 101) return ranks[5]; // S-Rank
+}
+function saveData() {
+  const gameData = {
+    level: document.querySelector(".level-number").textContent,
+    hp: parseFloat(document.getElementById("hp-fill").style.width),
+    mp: parseFloat(document.getElementById("mp-fill").style.width),
+    stm: parseFloat(document.getElementById("stm-fill").style.width),
+    exp: parseFloat(document.getElementById("exp-fill").style.width),
+    fatigue: document.getElementById("Fatvalue").textContent,
+    name: document.getElementById("job-text").textContent,
+    ping: document.getElementById("ping-text").textContent,
+    guild: document.getElementById("guild-text").textContent,
+    race: document.getElementById("race-text").textContent,
+    title: document.getElementById("title-text").textContent,
+    region: document.getElementById("region-text").textContent,
+    location: document.getElementById("location-text").textContent,
+  };
+  localStorage.setItem("gameData", JSON.stringify(gameData));
+}
+
 
 document.addEventListener("DOMContentLoaded", (event) => {
   const ranks = ["E-Rank", "D-Rank", "C-Rank", "B-Rank", "A-Rank", "S-Rank"];
