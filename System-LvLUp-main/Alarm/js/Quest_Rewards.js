@@ -130,7 +130,55 @@ function xpgainmental(){
    
 }
 
+function xpgainspiritual(){
+    // Add the xpReward to the current XP
+    const savedData = JSON.parse(localStorage.getItem("gameData"));
+    console.log(savedData.exp ,savedData.level)
+    savedData.exp+=5;
+        
+            savedData.stackedAttributes["WIS"] += 2;
+          
+           
+    while (savedData.exp >= 100) {
+        savedData.exp = savedData.exp - 100; // Reset XP for new level
+        savedData.level = parseInt(savedData.level) + 1; // Increment level
 
+        for (let key in savedData.stackedAttributes) {
+            if (savedData.Attributes[key] !== undefined) {
+                savedData.Attributes[key] += customRound(savedData.stackedAttributes[key]*0.25);
+            }
+        }
+        // Reset stackedAttributes  applying them to Attributes
+        for (let key in savedData.stackedAttributes) {
+            savedData.stackedAttributes[key] = 0;
+        }
+    }
+
+       
+       
+    let currentHP = parseInt(savedData.hp) + 10;
+    savedData.hp = currentHP;
+    localStorage.setItem('gameData', JSON.stringify(savedData));
+    console.log(currentHP);
+
+    let currentMP = parseInt(savedData.mp) - 10;
+    savedData.mp = currentMP;
+    localStorage.setItem('gameData', JSON.stringify(savedData));
+    console.log(currentMP);
+
+    let currentSTM = parseInt(savedData.stm) - 10;
+    savedData.stm = currentSTM;
+    localStorage.setItem('gameData', JSON.stringify(savedData));
+    console.log(currentSTM);
+
+    let currentFAT = parseInt(savedData.fatigue) + 10;
+    savedData.fatigue = currentFAT;
+    localStorage.setItem('gameData', JSON.stringify(savedData));
+    console.log(currentFAT);
+
+    savedData.spiritualQuests = "[2/2]";
+   
+}
 
 
 
@@ -142,32 +190,7 @@ function xpgainmental(){
 
 
 
-function xpgainspiritual(){
-    const savedData = JSON.parse(localStorage.getItem("gameData"));
-     // Add the xpReward to the current XP
-     console.log(savedData.exp ,savedData.level)
-     savedData.exp+=5;
-         
-             savedData.stackedAttributes["WIS"] += 2;
-           
-            
-     while (savedData.exp >= 100) {
-         savedData.exp = savedData.exp - 100; // Reset XP for new level
-         savedData.level = parseInt(savedData.level) + 1; // Increment level
- 
-         for (let key in savedData.stackedAttributes) {
-             if (savedData.Attributes[key] !== undefined) {
-                 savedData.Attributes[key] += customRound(savedData.stackedAttributes[key]*0.25);
-             }
-         }
-         // Reset stackedAttributes  applying them to Attributes
-         for (let key in savedData.stackedAttributes) {
-             savedData.stackedAttributes[key] = 0;
-         }
-     }
-     console.log(savedData.exp ,savedData.level)
-     localStorage.setItem('gameData', JSON.stringify(savedData));
-}
+
 
     
 
@@ -200,29 +223,9 @@ window.onload=()=>{
     }
 
     if (data === 'spiritual') {
-        const savedData = JSON.parse(localStorage.getItem("gameData"));
         
-        let currentHP = parseInt(savedData.hp) + 10;
-        savedData.hp = currentHP;
-        localStorage.setItem('gameData', JSON.stringify(savedData));
-        console.log(currentHP);
-
-        let currentMP = parseInt(savedData.mp) - 10;
-        savedData.mp = currentMP;
-        localStorage.setItem('gameData', JSON.stringify(savedData));
-        console.log(currentMP);
-
-        let currentSTM = parseInt(savedData.stm) - 10;
-        savedData.stm = currentSTM;
-        localStorage.setItem('gameData', JSON.stringify(savedData));
-        console.log(currentSTM);
-
-        let currentFAT = parseInt(savedData.fatigue) + 10;
-        savedData.fatigue = currentFAT;
-        localStorage.setItem('gameData', JSON.stringify(savedData));
-        console.log(currentFAT);
-
-        savedData.spiritualQuests = "[2/2]";
+        
+       
         xpgainspiritual()
         console.log(currentFAT);
     }
