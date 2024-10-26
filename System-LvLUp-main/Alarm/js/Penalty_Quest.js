@@ -16,9 +16,13 @@ function startCountdown(duration) {
             clearInterval(interval);
             remainingTime = 0;
             countdownElement.textContent = "00:00:00";
+           
 
             // Automatically tick the checkbox and turn it green
             checkbox.checked = true; // Automatically check the checkbox
+            setTimeout(function () {
+                window.location.href = `status.html`;
+              }, 3000);
         }
 
         // Format remaining time to HH:MM:SS

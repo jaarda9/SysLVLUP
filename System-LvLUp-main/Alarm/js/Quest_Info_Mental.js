@@ -53,7 +53,7 @@ function updateCompleteCheckbox() {
 
         setTimeout(function() {
             const data = "mental";
-                window.location.href = `/System-LvLUp-main/Alarm/Quest_Rewards.html?data=${data}`;   
+                window.location.href = `/Quest_Rewards.html?data=${data}`;   
                 }, 1000);
                     }
 }
@@ -100,5 +100,5 @@ function updateMentalStatusCard() {
 }
 
 setTimeout(function() {
-    window.location.href = `/System-LvLUp-main/Alarm/Penalty_Quest.html`;
+    window.location.href = `/Penalty_Quest.html`;
         }, 7200000); 

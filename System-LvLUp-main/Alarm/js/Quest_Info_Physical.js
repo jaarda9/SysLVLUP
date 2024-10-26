@@ -100,7 +100,7 @@ function updateCompleteCheckbox() {
         label.classList.add('animate'); // Add class to trigger animation
         setTimeout(function() {
             const data = "physical";
-            window.location.href = `/System-LvLUp-main/Alarm/Quest_Rewards.html?data=${data}`;
+            window.location.href = `/Quest_Rewards.html?data=${data}`;
                 }, 1000); 
         
     }
@@ -141,5 +141,5 @@ function updateStatusCard() {
 window.onload = renderTasks;
 
 setTimeout(function() {
-    window.location.href = `/System-LvLUp-main/Alarm/Penalty_Quest.html`;
+    window.location.href = `/Penalty_Quest.html`;
         }, 7200000); 
