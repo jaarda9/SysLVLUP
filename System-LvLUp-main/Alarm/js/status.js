@@ -369,6 +369,7 @@ document.addEventListener("DOMContentLoaded", (event) => {
       region: document.getElementById("region-text").textContent,
       location: document.getElementById("location-text").textContent,
     };
+    console.log(gameData);
 
     // Save the current game state to localStorage
     localStorage.setItem("gameData", JSON.stringify(gameData));
