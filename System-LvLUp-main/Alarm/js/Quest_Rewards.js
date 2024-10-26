@@ -143,6 +143,7 @@ function xpgainspiritual(){
 window.onload=()=>{
     if (data === 'physical') {
         const savedData = JSON.parse(localStorage.getItem("gameData"));
+        console.log(savedData);
         
         let currentHP = parseInt(savedData.hp) - 20;
         savedData.hp = currentHP;
