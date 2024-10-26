@@ -290,6 +290,7 @@ document.addEventListener("DOMContentLoaded", (event) => {
     input.addEventListener("blur", (event) => {
       const span = event.target.previousElementSibling;
       span.textContent = event.target.value;
+      console.log(event.target.value);
       saveData();
     });
   });
