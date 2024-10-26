@@ -417,6 +417,7 @@ document.addEventListener("DOMContentLoaded", (event) => {
       document.getElementById("per").textContent = `PER: ${savedData.Attributes.PER}`;
       document.getElementById("wis").textContent = `WIS: ${savedData.Attributes.WIS}`;
       saveData = {...saveData,mentalQuests: "[0/3]",physicalQuests: "[0/4]",spiritualQuests: "[0/2]",};
+      document.getElementById("ping-text").textContent = savedData.ping ;
       // Optionally, update the fatigue progress
       updateFatigueProgress();
     } else {
