@@ -482,6 +482,14 @@ document.addEventListener("DOMContentLoaded", (event) => {
 });
 
 window.onload = function () {
+  function getRank(level) {
+    if (level >= 1 && level <= 10) return ranks[0]; // E-Rank
+    if (level >= 11 && level <= 30) return ranks[1]; // D-Rank
+    if (level >= 31 && level <= 50) return ranks[2]; // C-Rank
+    if (level >= 51 && level <= 80) return ranks[3]; // B-Rank
+    if (level >= 81 && level <= 100) return ranks[4]; // A-Rank
+    if (level >= 101) return ranks[5]; // S-Rank
+  }
   const urlParams = new URLSearchParams(window.location.search);
   const data = urlParams.get("data");
   console.log(data); // Log incoming data, if any.
