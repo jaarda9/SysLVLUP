@@ -159,7 +159,7 @@ function loadData() {
     document.getElementById("stm-fill").style.width = savedData.stm + "%";
     document.getElementById("STMvalue").textContent = savedData.stm + "/100";
     document.getElementById("exp-fill").style.width = savedData.exp + "%";
-    document.getElementById("XPvalue").textContent = savedData.hp + "/100";
+    document.getElementById("XPvalue").textContent = savedData.exp + "/100";
     document.querySelector(".fatigue-value").textContent = savedData.fatigue;
     document.getElementById("job-text").textContent = savedData.name;
     document.getElementById("ping-text").textContent = savedData.ping;
