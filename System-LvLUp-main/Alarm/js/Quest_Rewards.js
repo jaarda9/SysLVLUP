@@ -163,7 +163,8 @@ window.onload=()=>{
         savedData.physicalQuests = "[4/4]";
         
        
-        xpgainphysical()
+        xpgainphysical();
+        localStorage.setItem('gameData', JSON.stringify(savedData));
         console.log(currentFAT);
 
         
