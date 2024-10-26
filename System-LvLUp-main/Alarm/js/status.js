@@ -506,7 +506,7 @@ function updateFatigueProgress() {
   circle.style.strokeDashoffset = offset;
 }
 
-/*document.getElementById("reset-button").addEventListener("click", function () {
+document.getElementById("reset-button").addEventListener("click", function () {
   // Reset the game data in local storage
   const defaultGameData = {
     level: 1,
@@ -546,7 +546,7 @@ function updateFatigueProgress() {
 
   // Reload the page to reflect the changes
   location.reload();
-});*/
+});
 
 // Function to reset stats
 function resetDailyStats() {
