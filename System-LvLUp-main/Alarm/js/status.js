@@ -475,11 +475,12 @@ document.addEventListener("DOMContentLoaded", (event) => {
   }
 
   // Initialize the page by loading data and checking for level up
-  window.onload = function () {
-    loadData(); // Load data from localStorage into the UI
-    checkForLevelUp(); // Check if leveling up is necessary based on XP
-  };
+  
 });
+window.onload = function () {
+  loadData(); // Load data from localStorage into the UI
+  checkForLevelUp(); // Check if leveling up is necessary based on XP
+};
 
 /*window.onload = function () {
   function getRank(level) {
