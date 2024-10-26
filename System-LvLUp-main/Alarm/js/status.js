@@ -422,6 +422,7 @@ document.addEventListener("DOMContentLoaded", (event) => {
       // Optionally, update the fatigue progress
       updateFatigueProgress();
     } else {
+      console.log("reset")
       const defaultGameData = {
         level: 1,
         hp: 100,
