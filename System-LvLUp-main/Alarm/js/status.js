@@ -20,6 +20,8 @@ document.querySelectorAll(".increment-btn").forEach((button) => {
   });
 });
 
+
+
 // Update Fatigue Progress
 function updateFatigueProgress() {
   const fatigueText = document.querySelector(".fatigue-value").textContent;
@@ -150,11 +152,14 @@ function loadData() {
   const savedData = JSON.parse(localStorage.getItem("gameData"));
   if (savedData) {
     document.querySelector(".level-number").textContent = savedData.level;
-    document.getElementById("HPvalue").textContent = savedData.hp;
+    document.getElementById("HPvalue").textContent = savedData.hp + "/100";
     document.getElementById("hp-fill").style.width = savedData.hp + "%";
+    document.getElementById("MPvalue").textContent = savedData.mp + "/100";
     document.getElementById("mp-fill").style.width = savedData.mp + "%";
     document.getElementById("stm-fill").style.width = savedData.stm + "%";
+    document.getElementById("STMvalue").textContent = savedData.stm + "/100";
     document.getElementById("exp-fill").style.width = savedData.exp + "%";
+    document.getElementById("XPvalue").textContent = savedData.hp + "/100";
     document.querySelector(".fatigue-value").textContent = savedData.fatigue;
     document.getElementById("job-text").textContent = savedData.name;
     document.getElementById("ping-text").textContent = savedData.ping;
@@ -279,6 +284,7 @@ function resetDailyStats() {
 window.onload = function() {
   console.log("loaded");
   loadData();
+  updateFatigueProgress();
   checkForLevelUp();
   checkForNewDay();
 };
