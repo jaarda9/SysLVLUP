@@ -420,6 +420,44 @@ document.addEventListener("DOMContentLoaded", (event) => {
       // Optionally, update the fatigue progress
       updateFatigueProgress();
     } else {
+      const defaultGameData = {
+        level: 1,
+        hp: 100,
+        mp: 100,
+        stm: 100,
+        exp: 0,
+        fatigue: 0,
+        name: "Fedy",
+        ping: "60",
+        guild: "Reaper",
+        race: "Hunter",
+        title: "None",
+        region: "TN",
+        location: "Hospital",
+        physicalQuests: "[0/4]",
+        mentalQuests: "[0/3]",
+        spiritualQuests: "[0/2]",
+        Attributes: {
+          STR: 10,
+          VIT: 10,
+          AGI: 10,
+          INT: 10,
+          PER: 10,
+          WIS: 10,
+        },
+        stackedAttributes: {
+          STR: 0,
+          VIT: 0,
+          AGI: 0,
+          INT: 0,
+          PER: 0,
+          WIS: 0,
+        },
+      };
+      localStorage.setItem("gameData", JSON.stringify(defaultGameData));
+    
+      // Reload the page to reflect the changes
+      location.reload();
       console.error("No saved data found in localStorage.");
     }
   }
@@ -506,7 +544,7 @@ function updateFatigueProgress() {
   circle.style.strokeDashoffset = offset;
 }
 
-/*document.getElementById("reset-button").addEventListener("click", function () {
+document.getElementById("reset-button").addEventListener("click", function () {
   // Reset the game data in local storage
   const defaultGameData = {
     level: 1,
@@ -546,7 +584,7 @@ function updateFatigueProgress() {
 
   // Reload the page to reflect the changes
   location.reload();
-});*/
+});
 
 // Function to reset stats
 function resetDailyStats() {
