@@ -36,6 +36,7 @@ function customRound(num) {
 
 function xpgainphysical(){
     // Add the xpReward to the current XP
+    const savedData = JSON.parse(localStorage.getItem("gameData"));
     console.log(savedData.exp ,savedData.level)
     savedData.exp+=5;
     const tasks = getCurrentDayTasks();
@@ -66,6 +67,7 @@ function xpgainphysical(){
 
 
 function xpgainmental(){
+    const savedData = JSON.parse(localStorage.getItem("gameData"));
      // Add the xpReward to the current XP
      console.log(savedData.exp ,savedData.level)
      savedData.exp+=5;
@@ -100,6 +102,7 @@ function xpgainmental(){
 
 
 function xpgainspiritual(){
+    const savedData = JSON.parse(localStorage.getItem("gameData"));
      // Add the xpReward to the current XP
      console.log(savedData.exp ,savedData.level)
      savedData.exp+=5;
@@ -139,6 +142,7 @@ function xpgainspiritual(){
         
     
     if (data === 'physical') {
+        const savedData = JSON.parse(localStorage.getItem("gameData"));
         
         let currentHP = parseInt(savedData.hp) - 20;
         savedData.hp = currentHP;
@@ -166,6 +170,7 @@ function xpgainspiritual(){
     }
 
     if (data === 'mental') {
+        const savedData = JSON.parse(localStorage.getItem("gameData"));
      
         let currentMP = parseInt(savedData.mp) - 20;
         savedData.mp = currentMP;
@@ -190,6 +195,7 @@ function xpgainspiritual(){
     }
 
     if (data === 'spiritual') {
+        const savedData = JSON.parse(localStorage.getItem("gameData"));
         
         let currentHP = parseInt(savedData.hp) + 10;
         savedData.hp = currentHP;
@@ -217,6 +223,6 @@ function xpgainspiritual(){
     }
 
     
-//} 
+
 
 
