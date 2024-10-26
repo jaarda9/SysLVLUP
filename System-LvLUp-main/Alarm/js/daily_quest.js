@@ -28,7 +28,7 @@ document.addEventListener("DOMContentLoaded", function () {
       physicalQuestsBtn.classList.add("completed"); // Add 'completed' class to change hover effect
     } else {
       physicalQuestsBtn.addEventListener("click", function () {
-        window.location.href = "../Quest_Info_Physical.html";
+        window.location.href = "Quest_Info_Physical.html";
       });
     }
   } else {
