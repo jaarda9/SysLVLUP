@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Dental Study Quests</title>
+    <link rel="stylesheet" href="css/dental-study.css" />
+</head>
+<body>
+    <div class="navigation">
+        <a href="status.html" class="back-link">Back to Status</a>
+    </div>
+    <div class="quest-box" id="quest-box">
+        <div class="quest-header">
+            <span>ⓘ Dental Study Quests</span>
+        </div>
+        <div class="quest-details">
+            <p>[Daily Quest: Dental Study Training has arrived.]</p>
+        </div>
+        <div class="goal-section">
+            <h2>GOAL</h2>
+            <div class="goal-item">
+                <span class="task-name">Comprehensive Dental Study Session</span>
+                <button class="start-button" onclick="openPomodoro('Comprehensive Dental Study Session ', 'anatomy-checkbox')"><i class="fa-solid fa-play"></i></button>
+                <input type="checkbox" id="anatomy-checkbox" class="task-checkbox" disabled />
+               
+            </div>
+            <div class="goal-item">
+                <span class="task-name">Dental Study and Review</span>
+                <button class="start-button" onclick="openPomodoro('Dental Study and Review', 'hygiene-checkbox')"><i class="fa-solid fa-play"></i></button>
+                <input type="checkbox" id="hygiene-checkbox" class="task-checkbox" disabled />
+              
+            </div>
+            <div class="goal-item">
+                <span class="task-name">Prepare for Dental Exam</span>
+                <button class="start-button" onclick="openPomodoro('Prepare for Dental Exam', 'exam-checkbox')"><i class="fa-solid fa-play"></i></button>
+                <input type="checkbox" id="exam-checkbox" class="task-checkbox" disabled />
+               
+            </div>
+        </div>
+        <div class="warning-section">
+            <p>
+                WARNING: Failure to complete the daily dental study quest will result in an
+                appropriate <span class="penalty">penalty</span>
+            </p>
+        </div>
+
+        <div class="complete-section" id="complete-section">
+            <input type="checkbox" id="complete" disabled />
+            <label for="complete"></label>
+        </div>
+    </div>
+
+    <!-- Pomodoro Timer Modal -->
+    <div id="pomodoro-modal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closePomodoro()">&times;</span>
+            <h2 id="task-title">Pomodoro Timer</h2>           
+            <i class="fa-regular fa-clock"  style="font-size: 24px;"></i> <i class="fa-solid fa-pencil" style="font-size: 24px;"></i> <i class="fa-solid fa-book-open" style="font-size: 24px;"></i>
+            <div id="timer-display">45:00</div>
+            <button id="start-button" onclick="startTimer()">Start</button>
+            <button id="reset-button" onclick="resetTimer()">Reset</button>
+        </div>
+    </div>
+
+    <script src="js/dental-study.js"></script>
+</body>
+</html>
