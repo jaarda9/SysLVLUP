@@ -1,68 +1,30 @@
-
-
 let timer;
 let isRunning = false;
-let timeLeft = 3000; // 50 minutes in seconds
-let currentCheckboxId = '';
+let timeLeft = 3000; // 45 minutes in seconds
 
-function openPomodoro(task, checkboxId) {
-    document.getElementById('task-title').textContent = task;
+function openPomodoro(taskName, checkboxId) {
+    document.getElementById('task-title').innerText = taskName;
     document.getElementById('pomodoro-modal').style.display = 'block';
-    resetTimer(); // Reset timer when opening
-    currentCheckboxId = checkboxId; // Store the checkbox ID
+    document.getElementById(checkboxId).disabled = false;
 }
-
-function shakeElement() {
-    const element = document.getElementById("complete");
-    let position = 0;
-    const interval = setInterval(() => {
-      position = (position + 1) % 4;
-      const offset = position % 2 === 0 ? -10 : 10;
-      element.style.transform = `translateX(${offset}px)`;
-
-      if (position === 0) {
-        clearInterval(interval);
-        element.style.transform = "translateX(0px)";
-      }
-    }, 100);
-  }
 
 function closePomodoro() {
     document.getElementById('pomodoro-modal').style.display = 'none';
-    resetTimer(); // Reset timer when closing
+    resetTimer();
 }
-let x = 0;
 
 function startTimer() {
     if (!isRunning) {
         isRunning = true;
         timer = setInterval(() => {
-            if (timeLeft > 0) {
-                timeLeft--;
-                updateTimerDisplay();
-            } else {
+            if (timeLeft <= 0) {
                 clearInterval(timer);
                 isRunning = false;
-                document.getElementById(currentCheckboxId).checked = true; // Check the checkbox
-                x=x+1;
-                alert("Time's up!");
-                if  (x === 3)
-                    {
-                        setTimeout(function () {
-                            console.log(x)
-                            const comp = document.getElementById("complete");
-                            const section = document.getElementById("complete-section");
-                            shakeElement();
-                            comp.checked = true;
-                            section.classList.add("animatedd");
-                            comp.classList.add("animatedd"); // Add class to trigger animation;
-                          }, 1000);
-                 
-                     
-                 
-                   } ;
-                closePomodoro(); // Close the modal when time is up
-                
+                alert('Time is up!');
+                document.getElementById('complete').disabled = false;
+            } else {
+                timeLeft--;
+                updateTimerDisplay();
             }
         }, 1000);
     }
@@ -71,16 +33,32 @@ function startTimer() {
 function resetTimer() {
     clearInterval(timer);
     isRunning = false;
-    timeLeft = 3000; // Reset to 50 minutes
+    timeLeft =  3000; // Reset to 45 minutes
     updateTimerDisplay();
 }
 
 function updateTimerDisplay() {
     const minutes = Math.floor(timeLeft / 60);
     const seconds = timeLeft % 60;
-    document.getElementById('timer-display').textContent = 
-        `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+    document.getElementById('timer-display').innerText = `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
 }
 
+function addNewSession() {
+    const goalSection = document.getElementById('goal-section');
+    const newSessionInput = document.getElementById('new-session-input');
+    const newSessionName = newSessionInput.value.trim();
 
-
+    if (newSessionName) {
+        const newGoalItem = document.createElement('div');
+        newGoalItem.className = 'goal-item';
+        newGoalItem.innerHTML = `
+            <span class="task-name">${newSessionName}</span>
+            <button class="start-button" onclick="openPomodoro('${newSessionName}', '${newSessionName.replace(/\s+/g, '-').toLowerCase()}-checkbox')"><i class="fa-solid fa-play"></i></button>
+            <input type="checkbox" id="${newSessionName.replace(/\s+/g, '-').toLowerCase()}-checkbox" class="task-checkbox" disabled />
+        `;
+        goalSection.appendChild(newGoalItem);
+        newSessionInput.value = ''; // Clear the input field after adding
+    } else {
+       
+    }
+}
