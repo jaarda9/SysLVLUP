@@ -308,3 +308,43 @@ button:focus {
 .start-button:hover {
     background-color: #89d1a1; /* Darker green */
 }
+
+.add-session {
+    display: flex;
+    align-items: center; /* Center items vertically */
+    margin-top: 20px; /* Space above the input section */
+    gap: 5px; /* Space between input and button */
+}
+
+.add-session input[type="text"] {
+    padding: 5px; /* Reduced padding inside the input */
+    border: 1px solid #e0e6f6; /* Light border color */
+    border-radius: 5px; /* Rounded corners */
+    background-color: #1a2a3b; /* Dark background for input */
+    color: #fff; /* White text color */
+    font-size: 14px; /* Reduced font size */
+    width: 150px; /* Fixed width for the input */
+    transition: border-color 0.3s ease; /* Smooth border color transition */
+}
+
+.add-session input[type="text"]:focus {
+    outline: none; /* Remove default outline */
+    border-color: #56ccf2; /* Change border color on focus */
+}
+
+.add-session button {
+    padding: 3px 5px; /* Adjusted padding */
+    border: none; /* Remove default border */
+    
+    border-radius: 5px; /* Rounded corners */
+    background-color: #1a2a3b; /* Button background color */
+    color: #ffffff; /* Change text color to white */
+    font-size: 17px; /* Increased font size for better visibility */
+    cursor: pointer; /* Pointer cursor on hover */
+    transition: background-color 0.3s ease; /* Smooth background color transition */
+    box-shadow: 0 0 5px rgba(255, 255, 255, 0.5); /* Subtle glow effect */
+}
+
+.add-session button:hover {
+    background-color: #3c5060; /* Change background color on hover */
+}
