@@ -342,7 +342,7 @@
 
     .dental-emoji {
         font-size: 1.05em; /* Adjust size to match other icons */
-        text-shadow: 0px 0px 1.5px #f0f8ff;
+        text-shadow: 0px 0px 5px #f0f8ff;
         vertical-align: middle; /* Align it with text */
         padding-left: 15px;
         padding-right: 13px;
