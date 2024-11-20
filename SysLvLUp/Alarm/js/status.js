@@ -125,7 +125,7 @@ function levelUp() {
 function checkForLevelUp() {
   const savedData = JSON.parse(localStorage.getItem("gameData"));
   if (savedData?.exp >= 100) {
-     while (savedData.exp >= 100) {
+    
       savedData.exp -= 100;
       savedData.level += 1;
       for (let key in savedData.stackedAttributes) {
@@ -137,7 +137,7 @@ function checkForLevelUp() {
       for (let key in savedData.stackedAttributes) {
           savedData.stackedAttributes[key] = 0;
       }
-    }
+    
     document.querySelector(".level-number").textContent = savedData.level;
     document.getElementById("exp-fill").style.width = `${(savedData.exp / 100) * 100}%`;
     document.getElementById("XPvalue").textContent = `${savedData.exp}/100`;
