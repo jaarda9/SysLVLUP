@@ -125,7 +125,7 @@ function levelUp() {
 function checkForLevelUp() {
   const savedData = JSON.parse(localStorage.getItem("gameData"));
   if (savedData?.exp >= 100) {
-    while (savedData.exp >= 100) {
+    
       savedData.exp -= 100;
       savedData.level += 1;
       for (let key in savedData.stackedAttributes) {
