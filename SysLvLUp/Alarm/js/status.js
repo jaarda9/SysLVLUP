@@ -152,6 +152,7 @@ function checkForLevelUp() {
     document.getElementById("XPvalue").textContent = `${savedData.exp}/100`;
     document.getElementById("rank-text").textContent = getRank(savedData.level);
     localStorage.setItem("gameData", JSON.stringify(savedData));
+    loadData();
   }
 }
 
