@@ -68,6 +68,13 @@ function startTimer() {
                     {
                         setTimeout(function () {
                             console.log(x)
+                            const savedData = JSON.parse(localStorage.getItem("gameData"));
+                            console.log("exp before ",savedData.stackedAttributes["INT"])
+                            savedData.exp+=5;
+                            savedData.stackedAttributes["INT"] += 1;
+                            console.log("exp after ",savedData.stackedAttributes["INT"])
+                            localStorage.setItem("gameData", JSON.stringify(savedData)); // Save the updated data
+
                             const comp = document.getElementById("complete");
                             const section = document.getElementById("complete-section");
                             shakeElement();
