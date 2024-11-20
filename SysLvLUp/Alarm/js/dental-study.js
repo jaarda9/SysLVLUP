@@ -1,17 +1,17 @@
+
+
 let timer;
 let isRunning = false;
-let timeLeft = 1 ; // 45 minutes in seconds
+let timeLeft = 5 ; // 50 minutes in seconds
+let currentCheckboxId = '';
 
-function openPomodoro(taskName, checkboxId) {
-    document.getElementById('task-title').innerText = taskName;
+function openPomodoro(task, checkboxId) {
+    document.getElementById('task-title').textContent = task;
     document.getElementById('pomodoro-modal').style.display = 'block';
-    document.getElementById(checkboxId).disabled = false;
+    resetTimer(); // Reset timer when opening
+    currentCheckboxId = checkboxId; // Store the checkbox ID
 }
 
-function closePomodoro() {
-    document.getElementById('pomodoro-modal').style.display = 'none';
-    resetTimer();
-}
 function showNotification() {
     const notification = document.getElementById("notification");
     
@@ -44,6 +44,10 @@ function shakeElement() {
     }, 100);
   }
 
+function closePomodoro() {
+    document.getElementById('pomodoro-modal').style.display = 'none';
+    resetTimer(); // Reset timer when closing
+}
 let x = 0;
 
 function startTimer() {
@@ -82,35 +86,22 @@ function startTimer() {
     }
 }
 
-function startTimer() {
-    if (!isRunning) {
-        isRunning = true;
-        timer = setInterval(() => {
-            if (timeLeft <= 0) {
-                clearInterval(timer);
-                isRunning = false;
-                alert('Time is up!');
-                document.getElementById('complete').disabled = false;
-            } else {
-                timeLeft--;
-                updateTimerDisplay();
-            }
-        }, 1000);
-    }
-}
-
 function resetTimer() {
     clearInterval(timer);
     isRunning = false;
-    timeLeft =  1 ; // Reset to 45 minutes
+    timeLeft = 5 ; // Reset to 50 minutes
     updateTimerDisplay();
 }
 
 function updateTimerDisplay() {
     const minutes = Math.floor(timeLeft / 60);
     const seconds = timeLeft % 60;
-    document.getElementById('timer-display').innerText = `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+    document.getElementById('timer-display').textContent = 
+        `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
 }
+
+
+
 
 function addNewSession() {
     const goalSection = document.getElementById('goal-section');
