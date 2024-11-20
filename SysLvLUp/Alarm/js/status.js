@@ -238,7 +238,7 @@ function resetData() {
     hp: 100,
     mp: 100,
     stm: 100,
-    exp: 90,
+    exp: 0,
     fatigue: 0,
     name: "Fedy",
     ping: "60",
