@@ -1,6 +1,6 @@
 let timer;
 let isRunning = false;
-let timeLeft = 3000; // 45 minutes in seconds
+let timeLeft = 1 ; // 45 minutes in seconds
 
 function openPomodoro(taskName, checkboxId) {
     document.getElementById('task-title').innerText = taskName;
@@ -102,7 +102,7 @@ function startTimer() {
 function resetTimer() {
     clearInterval(timer);
     isRunning = false;
-    timeLeft =  3000; // Reset to 45 minutes
+    timeLeft =  1 ; // Reset to 45 minutes
     updateTimerDisplay();
 }
 
