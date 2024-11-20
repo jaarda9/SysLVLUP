@@ -1,5 +1,5 @@
     body {
-        background: #0e1a2b;
+        background: #0A1B2E;
         font-family: 'Consolas', 'Courier New', monospace;
         color: #e0e6f6;
         display: flex;
@@ -12,7 +12,7 @@
 
 
     .status-container {
-        background: rgba(20, 30, 50, 0.9);
+        background:  #0A1B2E;
         border: 1px solid #e0e6f6;
         border-radius: 12px;
         padding: 20px;
@@ -266,7 +266,7 @@
    
 
     .quests {
-        background: rgba(20, 30, 50, 0.8);
+        background:  #0A1B2E;
         padding: 10px;
         border-radius: 8px;
         border: 1px solid #e0e6f6;
@@ -290,7 +290,7 @@
     }
 
     .status {
-        background: #1a2a3b;
+        background:  #0d223a;
         padding: 2px 8px;
         border-radius: 5px;
         cursor: pointer;
@@ -307,7 +307,7 @@
         background: #e0e6f6;
         padding: 2px 8px;
         border-radius: 5px;
-        color: #0e1a2b;
+        color:  #0A1B2E;
         box-shadow: 0 0 5px #e0e6f6;
     }
 
@@ -342,7 +342,7 @@
 
     .dental-emoji {
         font-size: 1.05em; /* Adjust size to match other icons */
-        text-shadow: 0px 0px 5px #f0f8ff;
+        text-shadow: 0px 0px 6px #f0f8ff;
         vertical-align: middle; /* Align it with text */
         padding-left: 15px;
         padding-right: 13px;
