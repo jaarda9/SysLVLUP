@@ -139,17 +139,3 @@ function addNewSession() {
        
     }
 }
-
- while (savedData.exp >= 100) {
-                                    savedData.exp = savedData.exp - 100; // Reset XP for new level
-                                    savedData.level = parseInt(savedData.level) + 1; // Increment level
-                                for (let key in savedData.stackedAttributes) {
-                                    if (savedData.Attributes[key] !== undefined) {
-                                        savedData.Attributes[key] += customRound(savedData.stackedAttributes[key]*0.25);
-                                        }
-                                    }
-                                // Reset stackedAttributes  applying them to Attributes
-                                    for (let key in savedData.stackedAttributes) {
-                                        savedData.stackedAttributes[key] = 0;
-                                                }
-                                        }
