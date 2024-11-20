@@ -20,7 +20,16 @@ document.querySelectorAll(".increment-btn").forEach((button) => {
   });
 });
 
-
+function customRound(num) {
+    return (num - Math.floor(num)) > 0.4 ? Math.ceil(num) : Math.floor(num);
+  }
+  
+  let num1 = 2.4;
+  console.log(customRound(num1));  // Output: 3
+  
+  let num2 = 2.3;
+  console.log(customRound(num2));  // Output: 2
+  
 
 // Update Fatigue Progress
 function updateFatigueProgress() {
@@ -130,7 +139,7 @@ function checkForLevelUp() {
       savedData.level += 1;
       for (let key in savedData.stackedAttributes) {
             if (savedData.Attributes[key] !== undefined) {
-                savedData.Attributes[key] += savedData.stackedAttributes[key];
+                savedData.Attributes[key] += customRound(savedData.stackedAttributes[key]*0.25);
             }
         }
         // Reset stackedAttributes  applying them to Attributes
