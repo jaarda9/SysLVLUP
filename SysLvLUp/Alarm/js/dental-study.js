@@ -28,6 +28,16 @@ function showNotification() {
     }, 3000);
 }
 
+function customRound(num) {
+    return (num - Math.floor(num)) > 0.4 ? Math.ceil(num) : Math.floor(num);
+  }
+  
+  let num1 = 2.4;
+  console.log(customRound(num1));  // Output: 3
+  
+  let num2 = 2.3;
+  console.log(customRound(num2));  // Output: 2
+  
 
 function shakeElement() {
     const element = document.getElementById("complete");
@@ -74,7 +84,19 @@ function startTimer() {
                             savedData.stackedAttributes["INT"] += 1;
                             console.log("exp after ",savedData.stackedAttributes["INT"])
                             localStorage.setItem("gameData", JSON.stringify(savedData)); // Save the updated data
-                             
+                             if (savedData.exp >= 100) {
+                                    savedData.exp = savedData.exp - 100; // Reset XP for new level
+                                    savedData.level = parseInt(savedData.level) + 1; // Increment level
+                                for (let key in savedData.stackedAttributes) {
+                                    if (savedData.Attributes[key] !== undefined) {
+                                        savedData.Attributes[key] += customRound(savedData.stackedAttributes[key]*0.25);
+                                        }
+                                    }
+                                // Reset stackedAttributes  applying them to Attributes
+                                    for (let key in savedData.stackedAttributes) {
+                                        savedData.stackedAttributes[key] = 0;
+                                                }
+                                        }
                             const comp = document.getElementById("complete");
                             const section = document.getElementById("complete-section");
                             shakeElement();
