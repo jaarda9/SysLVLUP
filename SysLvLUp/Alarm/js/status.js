@@ -128,6 +128,15 @@ function checkForLevelUp() {
     while (savedData.exp >= 100) {
       savedData.exp -= 100;
       savedData.level += 1;
+      for (let key in savedData.stackedAttributes) {
+            if (savedData.Attributes[key] !== undefined) {
+                savedData.Attributes[key] += savedData.stackedAttributes[key];
+            }
+        }
+        // Reset stackedAttributes  applying them to Attributes
+        for (let key in savedData.stackedAttributes) {
+            savedData.stackedAttributes[key] = 0;
+        }
     }
     document.querySelector(".level-number").textContent = savedData.level;
     document.getElementById("exp-fill").style.width = `${(savedData.exp / 100) * 100}%`;
