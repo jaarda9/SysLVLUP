@@ -32,6 +32,12 @@ function loadData() {
   }
 }
 
+window.onload = function() {
+  
+  loadData();
+ 
+};
+
 
 const playerBtn = document.getElementById("playerBtn");
 playerBtn.addEventListener("click", function () {
