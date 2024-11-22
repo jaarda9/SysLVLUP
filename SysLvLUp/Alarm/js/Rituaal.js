@@ -55,7 +55,7 @@ function updateCompleteCheckbox() {
 
         setTimeout(function() {
            
-                window.location.href = `/Alarm/status.html`;   
+                window.location.href = `/status.html`;   
                 }, 1000);
                     }
 }
