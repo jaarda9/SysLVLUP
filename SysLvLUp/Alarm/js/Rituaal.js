@@ -88,4 +88,4 @@ window.onload = renderMentalTasks;
 
 setTimeout(function() {
     window.location.href = `/Penalty_Quest.html`;
-        }, 7200000); 
+        }, 86400000); 
