@@ -1,7 +1,7 @@
 const playerBtn = document.getElementById("playerBtn");
 playerBtn.addEventListener("click", function () {
   const savedData =JSON.parse(localStorage.getItem("gameData"));
-  console.log("name",savedData.name)
+  
   if (savedData.name==="Your Name") 
     { window.location.href = "Initiation.html";}
   else{
