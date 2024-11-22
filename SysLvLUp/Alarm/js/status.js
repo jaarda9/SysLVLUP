@@ -240,7 +240,7 @@ function resetData() {
     stm: 100,
     exp: 0,
     fatigue: 0,
-    name: "Fedy",
+    name: "Your Name",
     ping: "60",
     guild: "Reaper",
     race: "Hunter",
