@@ -11,6 +11,7 @@ playerBtn.addEventListener("click", function () {
 });
 
 document.addEventListener("DOMContentLoaded", function () {
+   const savedData =JSON.parse(localStorage.getItem("gameData"));
   // Check if fullscreen mode is supported
   if (document.documentElement.requestFullscreen) {
     document.documentElement.requestFullscreen().catch((err) => {
