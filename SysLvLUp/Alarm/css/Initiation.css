@@ -135,7 +135,8 @@ h2 {
     transition: background-color 0.3s, color 0.3s; /* Smooth transition */
     font-size: 1em; /* Standard size */
     margin: 0 10px; /* Space between buttons */
-    animation: fadeIn 3s ease forwards; /* Apply fade-in animation */
+    animation: dropDown 2s ease forwards; /* Extended duration for smoothness */
+    transition: max-height 2s ease-out; /* Extended transition time */
     animation-delay: 14.5s; /* Delay before the animation starts */
     opacity: 0; /* Ensure it starts invisible */
 }
