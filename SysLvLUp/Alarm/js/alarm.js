@@ -1,3 +1,4 @@
+ const savedData =JSON.parse(localStorage.getItem("gameData"));
 const playerBtn = document.getElementById("playerBtn");
 playerBtn.addEventListener("click", function () {
   const savedData =JSON.parse(localStorage.getItem("gameData"));
