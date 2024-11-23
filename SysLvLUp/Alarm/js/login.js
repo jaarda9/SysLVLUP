@@ -35,7 +35,7 @@ document.addEventListener("DOMContentLoaded", function() {
                 messageElement.classList.remove("hidden");
                 // Redirect to another page or perform another action
                 setTimeout(function () {
-                    window.location.href = `index.html`;
+                    window.location.href = `alarm.html`;
                   }, 2000); // Uncomment to redirect
             } else {
                 messageElement.textContent = "Incorrect Key. Please try again.";
