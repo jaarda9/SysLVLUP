@@ -1,0 +1,87 @@
+body {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    background-color: #0A1B2E; /* Dark blue background */
+    font-family: 'Monospace';
+    
+}
+
+.login-container {
+    background-color: rgba(10, 27, 46, 0.85); /* Semi-transparent dark blue */
+    padding: 20px;
+    box-shadow: 0 0 10px rgb(255, 255, 255); /* Glowing effect for frame */
+    border-radius: 10px;
+    text-align: center;
+    color: #fff; /* White text color */
+    animation: dropDown 3s ease forwards; /* Extended duration for smoothness */
+    transition: max-height 3s ease-out; /* Extended transition time */
+}
+
+input[type="password"] {
+    width: 80%;
+    padding: 10px;
+    margin: 10px 0;
+    border: 2px solid rgba(255, 255, 255, 0.5); /* White semi-transparent border */
+    border-radius: 5px;
+    background-color: rgba(255, 255, 255, 0.1); /* Slightly transparent background */
+    color: #fff; /* White text color */
+    animation: dropDown 2s ease forwards; /* Extended duration for smoothness */
+    transition: max-height 2s ease-out; /* Extended transition time */
+    opacity: 0; /* Ensure it starts invisible */
+    animation-delay: 3.5s; /* Delay before the animation starts */
+}
+
+input[type="password"]::placeholder {
+    color: rgba(255, 255, 255, 0.7); /* Light placeholder text */
+    animation: dropDown 2s ease forwards; /* Extended duration for smoothness */
+    transition: max-height 2s ease-out; /* Extended transition time */
+    opacity: 1; /* Ensure it starts invisible */
+    animation-delay: 3.5s; /* Delay before the animation starts */
+}
+
+.hidden {
+    display: none;
+}
+
+.message {
+    color: red;
+}
+
+@keyframes dropDown {
+    0% {
+        max-height: 0;
+        opacity: 0;
+        overflow: hidden;
+    }
+    100% {
+        max-height: 1000px; /* Adjust as needed */
+        opacity: 1;
+    }
+  }
+
+  @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&display=swap');
+
+  #ascend-text {
+    font-size: 2rem; /* Adjust size as needed */
+    color: #fff; /* White text color */
+    text-align: center; /* Center the text */
+    margin-bottom: 20px; /* Space below the text */
+    text-shadow: 0 0 8px rgba(255, 255, 255, 0.8); /* Glowing effect for alert header */
+    font-family: 'Cinzel', serif;
+    letter-spacing: 1px; /* Adds some space between letters */
+}
+
+
+@keyframes fadeIn {
+    0% {
+        opacity: 0; /* Start fully transparent */
+        transform: translateY(-20px); /* Start slightly above */
+    }
+    100% {
+        opacity: 1; /* End fully opaque */
+        transform: translateY(0); /* End in original position */
+    }
+}
+
