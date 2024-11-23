@@ -30,7 +30,7 @@ input[type="password"] {
     animation: dropDown 2s ease forwards; /* Extended duration for smoothness */
     transition: max-height 2s ease-out; /* Extended transition time */
     opacity: 0; /* Ensure it starts invisible */
-    animation-delay: 3.5s; /* Delay before the animation starts */
+    animation-delay: 3s; /* Delay before the animation starts */
 }
 
 input[type="password"]::placeholder {
@@ -38,7 +38,7 @@ input[type="password"]::placeholder {
     animation: dropDown 2s ease forwards; /* Extended duration for smoothness */
     transition: max-height 2s ease-out; /* Extended transition time */
     opacity: 1; /* Ensure it starts invisible */
-    animation-delay: 3.5s; /* Delay before the animation starts */
+    animation-delay: 3s; /* Delay before the animation starts */
 }
 
 .hidden {
