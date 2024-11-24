@@ -22,26 +22,26 @@ document.addEventListener("DOMContentLoaded", function() {
     
     // Existing password event listener
     document.getElementById("password").addEventListener("keypress", function (event) {
-        if (event.key === "Enter") {
-            const passwordInput = document.getElementById("password").value;
-            const messageElement = document.getElementById("message");
-            
-            // Define your password
-            const correctPassword = "Arise"; // Updated password
+    if (event.key === "Enter") {
+        const passwordInput = document.getElementById("password").value;
+        const messageElement = document.getElementById("message");
+        
+        // Define your passwords
+        const correctPasswords = ["Arise", "daef39a4a48bfac64fa5910f3c6fd440"]; // Add new password here
 
-            if (passwordInput === correctPassword) {
-                messageElement.textContent = "Login successful!";
-                messageElement.style.color = "green";
-                messageElement.classList.remove("hidden");
-                // Redirect to another page or perform another action
-                setTimeout(function () {
-                    window.location.href = `alarm.html`;
-                  }, 2000); // Uncomment to redirect
-            } else {
-                messageElement.textContent = "Incorrect Key. Please try again.";
-                messageElement.style.color = "red";
-                messageElement.classList.remove("hidden");
-            }
+        if (correctPasswords.includes(passwordInput)) {
+            messageElement.textContent = "Login successful!";
+            messageElement.style.color = "green";
+            messageElement.classList.remove("hidden");
+            // Redirect to another page or perform another action
+            setTimeout(function () {
+                window.location.href = `alarm.html`; // Redirect after successful login
+            }, 2000);
+        } else {
+            messageElement.textContent = "Incorrect Key. Please try again.";
+            messageElement.style.color = "red";
+            messageElement.classList.remove("hidden");
         }
-    });
+    }
+});
 });
