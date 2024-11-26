@@ -145,3 +145,41 @@ h2 {
     background-color: rgba(255, 255, 255, 0.116);
     color: #ffffff; /* Dark text on hover */
 }
+
+.notification {
+    position: fixed; /* Fixed position */
+    top: 50%; /* Center vertically */
+    left: 50%; /* Center horizontally */
+    transform: translate(-50%, -50%) scale(0); /* Start off-screen and scaled down */
+    background-color: #28a745; /* Green background */
+    color: white; /* White text */
+    padding: 20px 30px; /* Increased padding for a larger button */
+    border-radius: 10px; /* Rounded corners */
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3); /* Shadow effect */
+    transition: opacity 0.5s ease, transform 0.5s ease; /* Smooth transition */
+    opacity: 0; /* Start hidden */
+    z-index: 1000; /* Ensure it appears above other elements */
+    font-size: 1.5rem; /* Larger text size */
+    text-shadow: 0 0 10px rgba(255, 255, 255, 0.8); /* Text shadow */
+}
+
+.notification.show {
+    opacity: 1; /* Fully visible */
+    transform: translate(-50%, -50%) scale(1); /* Move into place and scale up */
+}
+
+/* Animation Keyframes */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-20px); /* Start slightly above */
+    }
+    to {
+        opacity: 1; /* End fully opaque */
+        transform: translateY(0); /* End in original position */
+    }
+}
+
+.hidden {
+    display: none; /* or visibility: hidden; */
+}
