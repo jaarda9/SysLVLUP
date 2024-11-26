@@ -88,7 +88,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 setTimeout(() => {
                     notification.classList.remove("show"); // Hide after 2 seconds
                     notification.classList.add("hidden"); // Add hidden class back
-                }, 2000); // 2 seconds delay before hiding
+                }, 2500); // 2 seconds delay before hiding
                 
                 // Redirect after a short delay
                 setTimeout(() => {
