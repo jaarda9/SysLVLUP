@@ -381,3 +381,65 @@ function exportData() {
 document.getElementById("export-button").addEventListener("click", exportData);
 
 
+window.onload = function() {
+  loadData(); // Load existing data
+  updateFatigueProgress(); // Update fatigue progress
+  checkForLevelUp(); // Check for level up
+
+  // Check the player's name and show the popup if necessary
+  const playerName = document.getElementById("job-text").textContent;
+  if (playerName === "Your Name") {
+      document.getElementById("name-popup").classList.remove("hidden"); // Show the popup
+      
+  }
+  else{
+    closePopup();
+  }
+
+
+
+  // Submit name functionality
+ // Submit name functionality
+document.getElementById("submit-name").onclick = function() {
+  const nameInput = document.getElementById("name-input").value.trim();
+  if (nameInput) {
+      document.getElementById("job-text").textContent = nameInput; // Update name in status
+      saveData(); // Save updated name to local storage
+      closePopup();
+      // Trigger closing animation for the popup
+      const popup = document.getElementById("name-popup");
+      popup.classList.add("hidden"); // Start the closing animation
+      
+      // After the animation, hide the popup and trigger status container animation
+      setTimeout(() => {
+          popup.style.display = 'none'; // Hide the popup completely
+          
+          // Trigger animation on the status container
+          const statusContainer = document.querySelector('.status-container');
+          if (statusContainer) {
+              statusContainer.classList.add('animate'); // Add animation class
+          }
+      }, 600); // Match the timeout with the CSS transition duration
+  } else {
+      // Alert if the input is empty
+  }
+};
+// Function to close the popup
+function closePopup() {
+  const popup = document.getElementById("name-popup");
+  popup.classList.add("hidden"); // Hide the popup
+  
+  // Wait for the animation to finish before hiding the popup
+  setTimeout(() => {
+      popup.style.display = 'none'; // Hide the popup completely
+
+      // Show the status container and trigger the dropdown animation
+      const statusContainer = document.querySelector('.status-container');
+      if (statusContainer) {
+          statusContainer.classList.remove('hidden'); // Make sure the status container is visible
+          statusContainer.style.animation = 'dropDown 2s ease forwards'; // Apply dropdown animation
+      }
+  }, 600); // Match the timeout with the CSS transition duration
+}
+};
+
