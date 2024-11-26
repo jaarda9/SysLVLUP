@@ -292,9 +292,12 @@ function resetDailyStats() {
     savedData.mentalQuests = "[0/3]";
     savedData.physicalQuests = "[0/4]";
     savedData.spiritualQuests = "[0/2]";
+    document.getElementById("HPvalue").textContent = savedData.hp + "/100";
     document.getElementById("hp-fill").style.width = savedData.hp + "%";
-    document.getElementById("stm-fill").style.width = savedData.stm + "%";
+    document.getElementById("MPvalue").textContent = savedData.mp + "/100";
     document.getElementById("mp-fill").style.width = savedData.mp + "%";
+    document.getElementById("stm-fill").style.width = savedData.stm + "%";
+    document.getElementById("STMvalue").textContent = savedData.stm + "/100";
     document.querySelector(".fatigue-value").textContent = savedData.fatigue;
     localStorage.setItem("gameData", JSON.stringify(savedData));
   }
@@ -308,5 +311,73 @@ window.onload = function() {
   checkForNewDay();
 };
 
-// document.getElementById("reset-button").addEventListener("click", resetData);
+const gameData = {
+    level: 1,
+    hp: 100,
+    mp: 100,
+    stm: 100,
+    exp: 0,
+    fatigue: 0,
+    name: "Your Name",
+    ping: "60",
+    guild: "Reaper",
+    race: "Hunter",
+    title: "None",
+    region: "TN",
+    location: "Hospital",
+    physicalQuests: "[0/4]",
+    mentalQuests: "[0/3]",
+    spiritualQuests: "[0/2]",
+    Attributes: {
+      STR: 10,
+      VIT: 10,
+      AGI: 10,
+      INT: 10,
+      PER: 10,
+      WIS: 10,
+    },
+    stackedAttributes: {
+      STR: 0,
+      VIT: 0,
+      AGI: 0,
+      INT: 0,
+      PER: 0,
+      WIS: 0,
+    },
+
+}
+console.log(gameData);
+
+function exportData() {
+  const data = localStorage.getItem("gameData");
+  if (!data) {
+      alert("No data to export.");
+      return;
+  }
+
+  // Function to format the date
+  function formatDate(date) {
+      const options = { year: 'numeric', month: '2-digit', day: '2-digit' };
+      const formattedDate = date.toLocaleDateString('en-US', options).replace(/\//g, '-'); // Format as MM-DD-YYYY
+      const formattedTime = date.toTimeString().split(' ')[0].replace(/:/g, '-'); // Format as HH-MM-SS
+      return `${formattedDate}_${formattedTime}`; // Combine date and time
+  }
+
+  const currentDate = new Date();
+  const dateString = formatDate(currentDate); // Get the formatted date string
+
+  const blob = new Blob([data], { type: "application/json" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = `gameData_${dateString}.json`; // Use the formatted date in the filename
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url); // Clean up
+};
+
+
+document.getElementById("export-button").addEventListener("click", exportData);
+
 
