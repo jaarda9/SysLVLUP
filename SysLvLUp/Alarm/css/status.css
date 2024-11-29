@@ -524,17 +524,6 @@ button {
     transform: translate(-50%, -50%) scale(1); /* Move into place and scale up */
 }
 
-/* Animation Keyframes */
-@keyframes fadeIn {
-    from {
-        opacity: 0;
-        transform: translateY(-20px); /* Start slightly above */
-    }
-    to {
-        opacity: 1; /* End fully opaque */
-        transform: translateY(0); /* End in original position */
-    }
-}
 
 .hidden {
     display: none; /* or visibility: hidden; */
