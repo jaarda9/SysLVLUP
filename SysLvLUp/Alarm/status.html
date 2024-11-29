@@ -215,12 +215,18 @@
 </span>
         </div>
         <div class="quest">
-          <span>[EXPORT] Data</span>
-          <button id="export-button" class="status">⬇</button>
+          <span>[MANAGE] Data</span>
+          <div class="button-container">
+          <button id="export-button" >⬇</button>
+          <button id="import-button" >⬆</button>
+          <input type="file" id="import-input" accept=".json" style="display: none;">
+      </div>
       </div>
       </div>
     </div>
-
+    <div id="notification" class="notification hidden">
+      <p>Data imported successfully!</p>
+  </div>
 <!-- Name Input Popup -->
 <div id="name-popup" class="popup hidden">
   <div class="popup-content">
