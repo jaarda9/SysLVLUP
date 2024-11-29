@@ -348,6 +348,40 @@ const gameData = {
 }
 console.log(gameData);
 
+function importData(event) {
+  const file = event.target.files[0]; // Get the selected file
+  if (!file) {
+      alert("No file selected.");
+      return;
+  }
+
+  const reader = new FileReader(); // Create a FileReader instance
+  reader.onload = function(e) {
+      try {
+          const importedData = JSON.parse(e.target.result); // Parse the file content
+          localStorage.setItem("gameData", JSON.stringify(importedData)); // Store in localStorage
+          
+          // Show success notification
+          const notification = document.getElementById("notification");
+          notification.classList.remove("hidden"); // Remove hidden class
+          notification.classList.add("show"); // Add show class
+          
+          setTimeout(() => {
+              notification.classList.remove("show"); // Hide after 2 seconds
+              notification.classList.add("hidden"); // Add hidden class back
+          }, 2500); // 2 seconds delay before hiding
+          
+          // Redirect after a short delay
+          setTimeout(() => {
+              window.location.href = "status.html"; // Redirect to status.html
+          }, 2500); // Same delay for redirecting
+      } catch (error) {
+          alert("Failed to import data. Please make sure the file is valid."); // Error handling
+      }
+  };
+  reader.readAsText(file); // Read the file as text
+}
+
 function exportData() {
   const data = localStorage.getItem("gameData");
   if (!data) {
@@ -379,6 +413,9 @@ function exportData() {
 
 
 document.getElementById("export-button").addEventListener("click", exportData);
+document.getElementById("import-button").addEventListener("click", function() {
+  document.getElementById("import-input").click(); // Trigger the file input click
+});
 
 
 window.onload = function() {
@@ -442,4 +479,14 @@ function closePopup() {
   }, 600); // Match the timeout with the CSS transition duration
 }
 };
+
+document.addEventListener('DOMContentLoaded', function() {
+  // Function to handle file import
+ 
+  // Event listener for the import input
+  document.getElementById("import-input").addEventListener("change", importData);
+
+  // Event listener for the import button
+  
+});
 
