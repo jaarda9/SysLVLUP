@@ -1,3 +1,7 @@
+console.log("JavaScript file loaded."); // Add this line at the top of your JS file
+window.onload = function() {
+  console.log("Page loaded.");
+};
 // Constants
 const ranks = ["E-Rank", "D-Rank", "C-Rank", "B-Rank", "A-Rank", "S-Rank"];
 
@@ -273,11 +277,19 @@ function resetData() {
 
 // Check for New Day Function
 function checkForNewDay() {
-  const currentDate = new Date().toLocaleDateString();
-  const lastResetDate = localStorage.getItem("lastResetDate");
+  const currentDate = new Date().toLocaleDateString(); // Get today's date
+  const lastResetDate = localStorage.getItem("lastResetDate"); // Get the last reset date from localStorage
+
+  console.log("Current Date:", currentDate);
+  console.log("Last Reset Date:", lastResetDate);
+
+  // If no date is saved or the day has changed, reset the stats
   if (!lastResetDate || lastResetDate !== currentDate) {
-    resetDailyStats();
-    localStorage.setItem("lastResetDate", currentDate);
+    console.log("Resetting daily stats...");
+    resetDailyStats(); // Reset daily stats
+    localStorage.setItem("lastResetDate", currentDate); // Update the last reset date
+  } else {
+    console.log("No reset needed.");
   }
 }
 
@@ -285,6 +297,8 @@ function checkForNewDay() {
 function resetDailyStats() {
   const savedData = JSON.parse(localStorage.getItem("gameData"));
   if (savedData) {
+    console.log("Resetting stats for:", savedData.name);
+    // Reset relevant stats
     savedData.hp = 100;
     savedData.stm = 100;
     savedData.mp = 100;
@@ -292,6 +306,8 @@ function resetDailyStats() {
     savedData.mentalQuests = "[0/3]";
     savedData.physicalQuests = "[0/4]";
     savedData.spiritualQuests = "[0/2]";
+
+    // Update the UI elements accordingly
     document.getElementById("HPvalue").textContent = savedData.hp + "/100";
     document.getElementById("hp-fill").style.width = savedData.hp + "%";
     document.getElementById("MPvalue").textContent = savedData.mp + "/100";
@@ -299,17 +315,23 @@ function resetDailyStats() {
     document.getElementById("stm-fill").style.width = savedData.stm + "%";
     document.getElementById("STMvalue").textContent = savedData.stm + "/100";
     document.querySelector(".fatigue-value").textContent = savedData.fatigue;
+
+    // Save the updated data back to localStorage
     localStorage.setItem("gameData", JSON.stringify(savedData));
+    console.log("Daily stats reset successfully.");
+  } else {
+    console.error("No saved data found for resetting stats.");
   }
 }
 
-window.onload = function() {
-  console.log("loaded");
-  loadData();
-  updateFatigueProgress();
-  checkForLevelUp();
-  checkForNewDay();
-};
+document.addEventListener("DOMContentLoaded", function() {
+  console.log("Page loaded.");
+  loadData(); // Load existing data
+  updateFatigueProgress(); // Update fatigue progress
+  checkForLevelUp(); // Check for level up
+  checkForNewDay(); // Check if it's a new day to reset stats
+});
+
 
 const gameData = {
     level: 1,
