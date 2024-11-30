@@ -1,5 +1,6 @@
 console.log("JavaScript file loaded."); // Add this line at the top of your JS file
 window.onload = function() {
+  measurePing('http://127.0.0.1:5500/SysLvLUp/Alarm/status.html'); // Replace with your server URL
   console.log("Page loaded.");
 };
 // Constants
@@ -169,6 +170,30 @@ function getRank(level) {
   if (level >= 81 && level <= 100) return ranks[4]; // A-Rank
   if (level >= 101) return ranks[5]; // S-Rank
 }
+document.addEventListener("DOMContentLoaded", function() {
+  const savedData = JSON.parse(localStorage.getItem("gameData"));
+  function measurePing(url) {
+      const startTime = Date.now();
+      fetch(url)
+          .then(response => {
+              const endTime = Date.now();
+              const ping = endTime - startTime; // Calculate ping
+              console.log(`Ping: ${ping} ms`);
+              
+              // Update your UI with the ping value
+              document.getElementById("ping-text").textContent = ping + " ms";
+              
+              // Update the ping input field and make it readonly
+              const pingInput = document.getElementById("ping-input");
+              pingInput.value = ping; // Set the value of the input field
+              pingInput.readOnly = true; // Make the input field readonly
+          })
+          
+  }
+
+  // Call the measurePing function with a URL to ping
+  measurePing('http://127.0.0.1:5500/SysLvLUp/Alarm/status.html'); // Replace with your server URL
+});
 
 // Load Data Function
 function loadData() {
@@ -185,7 +210,6 @@ function loadData() {
     document.getElementById("XPvalue").textContent = savedData.exp + "/100";
     document.querySelector(".fatigue-value").textContent = savedData.fatigue;
     document.getElementById("job-text").textContent = savedData.name;
-    document.getElementById("ping-text").textContent = savedData.ping;
     document.getElementById("guild-text").textContent = savedData.guild;
     document.getElementById("race-text").textContent = savedData.race;
     document.getElementById("title-text").textContent = savedData.title;
