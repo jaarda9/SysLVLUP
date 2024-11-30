@@ -1,8 +1,10 @@
 
 
-let timer;
+let x = 0;
+let timer; // Timer variable
 let isRunning = false;
-let timeLeft = 3000 ; // 50 minutes in seconds
+let totalDuration = 3000; // Total duration in seconds (50 minutes)
+let startTime; // Variable to store the start time
 let currentCheckboxId = '';
 
 function openPomodoro(task, checkboxId) {
@@ -58,66 +60,72 @@ function closePomodoro() {
     document.getElementById('pomodoro-modal').style.display = 'none';
     resetTimer(); // Reset timer when closing
 }
-let x = 0;
+
 
 function startTimer() {
     if (!isRunning) {
         isRunning = true;
-        timer = setInterval(() => {
-            if (timeLeft > 0) {
-                timeLeft--;
-                updateTimerDisplay();
-            } else {
-                clearInterval(timer);
-                isRunning = false;
-                document.getElementById(currentCheckboxId).checked = true; // Check the checkbox
-                x=x+1;
-                showNotification(); // Show the notification when time is up
-                const savedData = JSON.parse(localStorage.getItem("gameData"));
-                savedData.exp += 1; // Award 1 XP
-                savedData.stackedAttributes["INT"] += 0.5;
-                localStorage.setItem("gameData", JSON.stringify(savedData)); // Save the updated data
-                console.log('heyyuu');
-                if  (x === 3)
-                    {
-                        setTimeout(function () {
-                            console.log(x)
-                            const savedData = JSON.parse(localStorage.getItem("gameData"));
-                           
-                            localStorage.setItem("gameData", JSON.stringify(savedData)); // Save the updated data
-                            
-                            const comp = document.getElementById("complete");
-                            const section = document.getElementById("complete-section");
-                            shakeElement();
-                            comp.checked = true;
-                            section.classList.add("animatedd");
-                            comp.classList.add("animatedd"); // Add class to trigger animation;
-                          }, 1000);
-                 
-                     
-                 
-                   } ;
-                closePomodoro(); // Close the modal when time is up
-                
-            }
-        }, 1000);
+        startTime = Date.now(); // Record the start time
+        timer = setInterval(updateTimerDisplay, 1000); // Update display every second
     }
 }
+function updateTimerDisplay() {
+    const currentTime = Date.now(); // Get the current time
+    const elapsedTime = Math.floor((currentTime - startTime) / 1000); // Calculate elapsed time in seconds
+    const timeLeft = totalDuration - elapsedTime; // Calculate remaining time
+
+    if (timeLeft <= 0) {
+        clearInterval(timer);
+        isRunning = false;
+        document.getElementById(currentCheckboxId).checked = true; // Check the checkbox
+        x = x + 1;
+        showNotification(); // Show the notification when time is up
+
+        // Update game data
+        const savedData = JSON.parse(localStorage.getItem("gameData"));
+        savedData.exp += 1; // Award 1 XP
+        savedData.stackedAttributes["INT"] += 0.5;
+        localStorage.setItem("gameData", JSON.stringify(savedData)); // Save the updated data
+        console.log('heyyuu');
+
+        // Check if x equals 3
+        if (x === 3) {
+            setTimeout(function () {
+                console.log(x);
+                const savedData = JSON.parse(localStorage.getItem("gameData"));
+                localStorage.setItem("gameData", JSON.stringify(savedData)); // Save the updated data
+
+                const comp = document.getElementById("complete");
+                const section = document.getElementById("complete-section");
+                shakeElement();
+                comp.checked = true;
+                section.classList.add("animatedd");
+                comp.classList.add("animatedd"); // Add class to trigger animation
+            }, 1000);
+        }
+
+        closePomodoro(); // Close the modal when time is up
+    } else {
+        const minutes = Math.floor(timeLeft / 60);
+        const seconds = timeLeft % 60;
+        document.getElementById('timer-display').textContent = 
+            `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+    }
+}
+
+// Call this function on page visibility change to update the timer
+document.addEventListener("visibilitychange", function() {
+    if (document.visibilityState === 'visible' && isRunning) {
+        // Update the timer display when the tab is visible again
+        updateTimerDisplay();
+    }
+});
 
 function resetTimer() {
     clearInterval(timer);
     isRunning = false;
-    timeLeft = 3000 ; // Reset to 50 minutes
-    updateTimerDisplay();
+    document.getElementById('timer-display').textContent = '50:00'; // Reset to initial display
 }
-
-function updateTimerDisplay() {
-    const minutes = Math.floor(timeLeft / 60);
-    const seconds = timeLeft % 60;
-    document.getElementById('timer-display').textContent = 
-        `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
-}
-
 
 
 
