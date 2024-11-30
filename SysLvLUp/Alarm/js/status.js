@@ -1,6 +1,6 @@
 console.log("JavaScript file loaded."); // Add this line at the top of your JS file
 window.onload = function() {
-  measurePing('http://127.0.0.1:5500/SysLvLUp/Alarm/status.html'); // Replace with your server URL
+  measurePing('https://sys-lvlup.vercel.app/status.html'); // Replace with your server URL
   console.log("Page loaded.");
 };
 // Constants
@@ -192,7 +192,7 @@ document.addEventListener("DOMContentLoaded", function() {
   }
 
   // Call the measurePing function with a URL to ping
-  measurePing('http://127.0.0.1:5500/SysLvLUp/Alarm/status.html'); // Replace with your server URL
+  measurePing('https://sys-lvlup.vercel.app/status.html'); // Replace with your server URL
 });
 
 // Load Data Function
