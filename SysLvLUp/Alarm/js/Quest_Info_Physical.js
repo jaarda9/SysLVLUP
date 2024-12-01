@@ -37,7 +37,7 @@ const dailyTasks = {
         { name: "V Ups", target: "80 reps", xp: 1.25, stats: { VIT: 0.4, STR: 0.3 }, completed: false }
     ],
     Sunday: [
-        { name: "Rest Day", target: "Enjoy your rest!", xp: 0, stats: {}, completed: true }
+        { name: "Rest Day", target: "1/1", xp: 0, stats: {}, completed: true }
     ]
 };
 
