@@ -310,6 +310,8 @@ function checkForNewDay() {
   // If no date is saved or the day has changed, reset the stats
   if (!lastResetDate || lastResetDate !== currentDate) {
     console.log("Resetting daily stats...");
+    currentSTS = 0; // Reset daily quests
+    localStorage.setItem("STS", currentSTS); // Update STS in localStorage
     resetDailyStats(); // Reset daily stats
     localStorage.setItem("lastResetDate", currentDate); // Update the last reset date
   } else {
