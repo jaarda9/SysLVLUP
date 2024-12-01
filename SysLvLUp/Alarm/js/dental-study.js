@@ -3,9 +3,10 @@
 let x = 0;
 let timer; // Timer variable
 let isRunning = false;
-let totalDuration = 3000; // Total duration in seconds (50 minutes)
+let totalDuration = 1; // Total duration in seconds (50 minutes)
 let startTime; // Variable to store the start time
 let currentCheckboxId = '';
+let currentSTS = parseInt(localStorage.getItem("STS")) || 0; // Default to 0 if STS is not set
 
 function openPomodoro(task, checkboxId) {
     document.getElementById('task-title').textContent = task;
@@ -29,6 +30,32 @@ function showNotification() {
         notification.classList.add("hidden"); // Add hidden class back
     }, 3000);
 }
+
+
+function checkForNewDay() {
+    const currentDate = new Date().toLocaleDateString(); // Get today's date
+    const lastResetDate = localStorage.getItem("lastResetDate"); // Get the last reset date from localStorage
+  
+    console.log("Current Date:", currentDate);
+    console.log("Last Reset Date:", lastResetDate);
+  
+    // If no date is saved or the day has changed, reset the stats
+    if (!lastResetDate || lastResetDate !== currentDate) {
+        console.log("Resetting daily stats...");
+        currentSTS = 0; // Reset daily quests
+        localStorage.setItem("STS", currentSTS); // Update STS in localStorage
+        localStorage.setItem("lastResetDate", currentDate); // Update the last reset date
+    } else {
+        console.log("No reset needed.");
+    }
+}
+
+// Call this function when the page loads
+document.addEventListener("DOMContentLoaded", function() {
+    // Retrieve currentSTS from localStorage
+    currentSTS = parseInt(localStorage.getItem("STS")) || 0; // Default to 0 if STS is not set
+    checkForNewDay(); // Check for new day and reset stats if necessary
+});
 
 function customRound(num) {
     return (num - Math.floor(num)) > 0.4 ? Math.ceil(num) : Math.floor(num);
@@ -69,6 +96,8 @@ function startTimer() {
         timer = setInterval(updateTimerDisplay, 1000); // Update display every second
     }
 }
+
+
 function updateTimerDisplay() {
     const currentTime = Date.now(); // Get the current time
     const elapsedTime = Math.floor((currentTime - startTime) / 1000); // Calculate elapsed time in seconds
@@ -78,10 +107,12 @@ function updateTimerDisplay() {
         clearInterval(timer);
         isRunning = false;
         document.getElementById(currentCheckboxId).checked = true; // Check the checkbox
-        x = x + 1;
+        currentSTS += 1;
+        
         showNotification(); // Show the notification when time is up
 
         // Update game data
+        
         const savedData = JSON.parse(localStorage.getItem("gameData"));
         savedData.exp += 2; // Award 1 XP
         savedData.stackedAttributes["INT"] += 0.5;
@@ -91,12 +122,12 @@ function updateTimerDisplay() {
         savedData.stm = currentSTM;
         let currentFAT = parseInt(savedData.fatigue) + 3;
         savedData.fatigue = currentFAT;
-
+        localStorage.setItem("STS", currentSTS);
         localStorage.setItem("gameData", JSON.stringify(savedData)); // Save the updated data
         console.log('heyyuu');
 
         // Check if x equals 3
-        if (x === 3) {
+        if (currentSTS >= 3) {
             setTimeout(function () {
                 console.log(x);
                 const savedData = JSON.parse(localStorage.getItem("gameData"));
@@ -171,3 +202,43 @@ while (savedData.exp >= 100) {
         savedData.stackedAttributes[key] = 0;
     }
 }
+
+document.addEventListener("DOMContentLoaded", function() {
+    if (currentSTS >= 3) {
+        setTimeout(function () {
+            console.log(x);
+            const savedData = JSON.parse(localStorage.getItem("gameData"));
+            localStorage.setItem("gameData", JSON.stringify(savedData)); // Save the updated data
+    
+            const comp = document.getElementById("complete");
+            const section = document.getElementById("complete-section");
+            shakeElement();
+            comp.checked = true;
+            section.classList.add("animatedd");
+            comp.classList.add("animatedd"); // Add class to trigger animation
+        }, 400);
+    }
+  });
+
+  document.addEventListener("DOMContentLoaded", function() {
+    if (currentSTS >= 3) {
+        setTimeout(function () {
+            console.log(x);
+            const savedData = JSON.parse(localStorage.getItem("gameData"));
+            localStorage.setItem("gameData", JSON.stringify(savedData)); // Save the updated data
+
+            // Select all checkboxes you want to check
+            const checkboxes = document.querySelectorAll('.task-checkbox'); // Adjust the selector based on your HTML structure
+            checkboxes.forEach(checkbox => {
+                checkbox.checked = true; // Check each checkbox
+            });
+
+         
+        }, 100);
+    }
+});
+
+
+document.addEventListener("DOMContentLoaded", function() {
+    checkForNewDay();
+});
