@@ -1,10 +1,10 @@
 // Define the mental tasks that are the same every day
 const mentalTasks = [
     { name: "Finish a Book", target: "",  completed: false },
-    { name: "Finish a Lecture", target: "",  completed: false },
+    { name: "Finish 3 Lectures", target: "",  completed: false },
     { name: "Memorize One Page", target: "",  completed: false },
     { name: "Finish a Workout", target: "",  completed: false },
-    { name: "Remain silent for the whole day", target: "",  completed: false }
+    { name: "Take a break from all digital devices for a day.", target: "",  completed: false }
 ];
 
 
