@@ -83,8 +83,15 @@ function updateTimerDisplay() {
 
         // Update game data
         const savedData = JSON.parse(localStorage.getItem("gameData"));
-        savedData.exp += 1; // Award 1 XP
+        savedData.exp += 2; // Award 1 XP
         savedData.stackedAttributes["INT"] += 0.5;
+        let currentMP = parseInt(savedData.mp) - 2;
+        savedData.mp = currentMP;
+        let currentSTM = parseInt(savedData.stm) - 3;
+        savedData.stm = currentSTM;
+        let currentFAT = parseInt(savedData.fatigue) + 3;
+        savedData.fatigue = currentFAT;
+
         localStorage.setItem("gameData", JSON.stringify(savedData)); // Save the updated data
         console.log('heyyuu');
 
