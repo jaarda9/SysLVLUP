@@ -407,7 +407,16 @@ function importData(event) {
   reader.onload = function(e) {
       try {
           const importedData = JSON.parse(e.target.result); // Parse the file content
-          localStorage.setItem("gameData", JSON.stringify(importedData)); // Store in localStorage
+          
+          // Clear existing local storage (optional)
+          localStorage.clear();
+          
+          // Store each key-value pair back into local storage
+          for (const key in importedData) {
+              if (importedData.hasOwnProperty(key)) {
+                  localStorage.setItem(key, importedData[key]);
+              }
+          }
           
           // Show success notification
           const notification = document.getElementById("notification");
@@ -431,10 +440,13 @@ function importData(event) {
 }
 
 function exportData() {
-  const data = localStorage.getItem("gameData");
-  if (!data) {
-      alert("No data to export.");
-      return;
+  const allData = {}; // Create an object to hold all local storage data
+
+  // Iterate through all local storage items
+  for (let i = 0; i < localStorage.length; i++) {
+      const key = localStorage.key(i);
+      const value = localStorage.getItem(key);
+      allData[key] = value; // Store in the object
   }
 
   // Function to format the date
@@ -448,17 +460,20 @@ function exportData() {
   const currentDate = new Date();
   const dateString = formatDate(currentDate); // Get the formatted date string
 
-  const blob = new Blob([data], { type: "application/json" });
+  // Convert the allData object to a JSON string
+  const jsonData = JSON.stringify(allData, null, 2); // Pretty print with 2 spaces
+
+  // Create a Blob from the JSON string
+  const blob = new Blob([jsonData], { type: "application/json" });
   const url = URL.createObjectURL(blob);
   const a = document.createElement("a");
   a.href = url;
-  a.download = `gameData_${dateString}.json`; // Use the formatted date in the filename
+  a.download = `gamedata_${dateString}.json`; // Use the formatted date in the filename
   document.body.appendChild(a);
   a.click();
   document.body.removeChild(a);
   URL.revokeObjectURL(url); // Clean up
-};
-
+}
 
 document.getElementById("export-button").addEventListener("click", exportData);
 document.getElementById("import-button").addEventListener("click", function() {
