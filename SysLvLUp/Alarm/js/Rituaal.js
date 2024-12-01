@@ -4,7 +4,7 @@ const mentalTasks = [
     { name: "Finish 3 Lectures", target: "",  completed: false },
     { name: "Memorize One Page", target: "",  completed: false },
     { name: "Finish a Workout", target: "",  completed: false },
-    { name: "Take a break from all digital devices for a day.", target: "",  completed: false }
+    { name: "Go Digital-Free for 24h", target: "",  completed: false }
 ];
 
 
