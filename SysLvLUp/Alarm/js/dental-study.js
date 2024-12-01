@@ -3,7 +3,7 @@
 let x = 0;
 let timer; // Timer variable
 let isRunning = false;
-let totalDuration = 1; // Total duration in seconds (50 minutes)
+let totalDuration = 3000; // Total duration in seconds (50 minutes)
 let startTime; // Variable to store the start time
 let currentCheckboxId = '';
 let currentSTS = parseInt(localStorage.getItem("STS")) || 0; // Default to 0 if STS is not set
