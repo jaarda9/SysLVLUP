@@ -237,6 +237,39 @@ document.addEventListener("DOMContentLoaded", function() {
         }, 100);
     }
 });
+document.addEventListener("DOMContentLoaded", function() {
+    if (currentSTS === 1) {
+        setTimeout(function () {
+            console.log(x);
+            const savedData = JSON.parse(localStorage.getItem("gameData"));
+            localStorage.setItem("gameData", JSON.stringify(savedData)); // Save the updated data
+
+            // Select all checkboxes you want to check
+            const anatomyCheckbox = document.getElementById("anatomy-checkbox"); // Select the specific checkbox
+            anatomyCheckbox.checked = true; // Check the anatomy checkbox
+
+         
+        }, 100);
+    }
+});
+
+document.addEventListener("DOMContentLoaded", function() {
+    if (currentSTS === 2) {
+        setTimeout(function () {
+            console.log(x);
+            const savedData = JSON.parse(localStorage.getItem("gameData"));
+            localStorage.setItem("gameData", JSON.stringify(savedData)); // Save the updated data
+
+            // Select all checkboxes you want to check
+            const anatomyCheckbox = document.getElementById("anatomy-checkbox"); // Select the specific checkbox
+            const hygieneCheckbox = document.getElementById("hygiene-checkbox"); // Select the specific checkbox
+            anatomyCheckbox.checked = true; // Check the anatomy checkbox
+            hygieneCheckbox.checked = true; // Check the hygiene checkbox
+
+         
+        }, 100);
+    }
+});
 
 
 document.addEventListener("DOMContentLoaded", function() {
