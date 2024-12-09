@@ -19,7 +19,7 @@ body {
     text-align: center;
     color: #ffffff; /* Cyan text color */
     position: relative;
-    box-shadow: 0 0 10px rgb(255, 255, 255); /* Outer glowing border */
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.7); /* Stronger shadow for depth */
     border-radius: 5px;
     animation: dropDown 2s ease forwards; /* Extended duration for smoothness */
     transition: max-height 2s ease-out; /* Extended transition time */
