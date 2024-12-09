@@ -31,7 +31,7 @@ body {
     background-color: #0A1B2E;
     padding: 30px;
     border: 0px solid #e0e6f6;
-    box-shadow: 0 0 10px rgb(255, 255, 255); /* Glowing effect for frame */
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.7); /* Stronger shadow for depth */
     border-radius: 10px;
     animation: dropDown 2s ease forwards; /* Extended duration for smoothness */
     transition: max-height 2s ease-out; /* Extended transition time */
