@@ -22,7 +22,7 @@
  /* Status Container */
 .status-container {
     background: #0A1B2E;
-    border: 1px solid #e0e6f6;
+    border: 3px solid #e0e6f6;
     border-radius: 12px;
     padding: 20px;
     max-width: 800px;
