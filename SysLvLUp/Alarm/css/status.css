@@ -22,7 +22,7 @@
  /* Status Container */
 .status-container {
     background: #0A1B2E;
-    border: 3px solid #e0e6f6;
+    border: 1px solid #e0e6f6;
     border-radius: 12px;
     padding: 20px;
     max-width: 800px;
@@ -54,7 +54,7 @@
         text-align: center;
         color: #e0e6f6;
         text-shadow: 0 0 8px #e0e6f6;
-        border-radius: 3px;
+        border-radius: 6px;
         padding: 5px;
         border: 1px solid #e0e6f6;
         box-shadow: 0 0 10px #e0e6f6;
