@@ -18,7 +18,7 @@ body {
     width: 500px;
     position: relative;
     color: #fff;
-    box-shadow: 0 0 10px rgb(255, 255, 255); /* Glowing effect for frame */
+     box-shadow: 0 0 20px rgba(0, 0, 0, 0.7); /* Stronger shadow for depth */
     border-radius: 10px;
     font-size: 1.2rem;
     animation: dropDown 4s ease forwards; /* Extended duration for smoothness */
