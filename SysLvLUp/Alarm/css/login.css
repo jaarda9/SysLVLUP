@@ -13,6 +13,7 @@ body {
     padding: 20px;
     box-shadow: 0 0 20px rgba(0, 0, 0, 0.7); /* Stronger shadow for depth */
     border-radius: 10px;
+    border: 1px solid #e0e6f6;
     text-align: center;
     color: #fff; /* White text color */
     animation: dropDown 3s ease forwards; /* Extended duration for smoothness */
