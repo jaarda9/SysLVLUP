@@ -177,20 +177,20 @@
     }
 
     .bar {
-        background: #1a2a3b;
-        border: 1px solid #e0e6f6;
-        border-radius: 4px;
-        height: 12px;
-        width: 60%;
-        overflow: hidden;
-        margin: 0 10px;
-    }
+    background: linear-gradient(90deg, #1a2a3b, #3c5060); /* Gradient background */
+    border-radius: 4px; /* Rounded corners */
+    height: 12px;
+    width: 60%;
+    overflow: hidden;
+    margin: 0 10px;
+    box-shadow: 0 0 5px rgba(0, 0, 0, 0.5); /* Shadow for depth */
+}
 
-    .fill {
-        background: #e0e6f6;
-        height: 100%;
-    }
-    
+.fill {
+    background: #e0e6f6; /* Light fill color */
+    height: 100%;
+    transition: width 0.5s ease; /* Smooth transition for fill */
+}
 
     .emoji {
         margin-right: 5px;
