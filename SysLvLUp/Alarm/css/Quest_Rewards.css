@@ -84,13 +84,13 @@ body {
 
 .buttons button {
     background-color: #0A1B2E; /* Dark blue button background */
-    border: 2px solid rgba(255, 255, 255, 0.8); /* White border */
+    border: 1px solid rgba(255, 255, 255, 0.8); /* White border */
     color: #ffffff; /* Cyan text color */
     text-shadow: 0 0 6px rgba(255, 255, 255, 0.6);
     padding: 10px 30px;
     cursor: pointer;
     border-radius: 5px;
-    box-shadow: 0 0 8px rgba(0, 255, 255, 0.8); /* Cyan glow effect */
+    box-shadow: 0 0 6px rgba(0, 255, 255, 0.8); /* Cyan glow effect */
     font-size: 1rem;
     transition: background-color 0.1s ease; 
 }
