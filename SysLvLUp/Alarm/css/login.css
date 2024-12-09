@@ -11,7 +11,7 @@ body {
 .login-container {
     background-color: rgba(10, 27, 46, 0.85); /* Semi-transparent dark blue */
     padding: 20px;
-    box-shadow: 0 0 10px rgb(255, 255, 255); /* Glowing effect for frame */
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.7); /* Stronger shadow for depth */
     border-radius: 10px;
     text-align: center;
     color: #fff; /* White text color */
