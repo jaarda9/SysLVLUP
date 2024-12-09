@@ -9,7 +9,15 @@
         margin: 0;
     }
 
+@media (max-width: 600px) {
+    .status-container {
+        padding: 15px; /* Adjust padding for smaller screens */
+    }
 
+    button {
+        width: 100%; /* Full width buttons on small screens */
+    }
+}
 
  /* Status Container */
 .status-container {
