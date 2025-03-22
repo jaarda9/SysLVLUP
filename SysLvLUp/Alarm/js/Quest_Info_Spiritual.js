@@ -1,7 +1,7 @@
 // Define the spiritual tasks that are the same every day
 const spiritualTasks = [
     { name: "Holy Scripture Memorization", target: "½ Page", xp: 2.5, stats: { WIS: 1 }, completed: false },
-    { name: "Holy Scripture Revision", target: "⅛ Jûz", xp: 2.5, stats: { WIS: 1 }, completed: false }
+    { name: "Holy Scripture Revision", target: "??", xp: 2.5, stats: { WIS: 1 }, completed: false }
 ];
 
 
