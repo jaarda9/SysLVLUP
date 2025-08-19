@@ -30,9 +30,9 @@ body {
     text-align: center;
     background-color: #0A1B2E;
     padding: 30px;
-    border: 0px solid #e0e6f6;
+    border: 2px solid rgba(255, 255, 255, 0.5); /* White semi-transparent borders */
     box-shadow: 0 0 20px rgba(0, 0, 0, 0.7); /* Stronger shadow for depth */
-    border-radius: 10px;
+    border-radius: 5px;
     animation: dropDown 2s ease forwards; /* Extended duration for smoothness */
     transition: max-height 2s ease-out; /* Extended transition time */
     max-height: 1000px; /* Adjust as needed */
