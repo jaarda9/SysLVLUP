@@ -1,8 +1,4 @@
-document.addEventListener("DOMContentLoaded", function() {
-    const sync = new LocalStorageSync('your-user-id');
-await sync.syncToDatabase(); // Uploads all localStorage data
-}
-                          /**
+   /**
  * Sync all localStorage data to MongoDB database
  */
 class LocalStorageSync {
