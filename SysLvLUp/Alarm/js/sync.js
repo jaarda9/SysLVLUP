@@ -1,4 +1,8 @@
-/**
+document.addEventListener("DOMContentLoaded", function() {
+    const sync = new LocalStorageSync('your-user-id');
+await sync.syncToDatabase(); // Uploads all localStorage data
+}
+                          /**
  * Sync all localStorage data to MongoDB database
  */
 class LocalStorageSync {
@@ -127,3 +131,4 @@ class LocalStorageSync {
 // const sync = new LocalStorageSync('user123', '/api/sync');
 // sync.syncToDatabase();
 // sync.setupAutoSync({ interval: 30000 }); // Auto-sync every 30 seconds
+
