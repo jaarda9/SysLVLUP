@@ -14,5 +14,13 @@
     </div>
 
     <script src="js/login.js"></script>
+    // Add this to any of your HTML files (like index.html)
+<script src="js/sync.js"></script>
+<script>
+// This will sync all localStorage data to your MongoDB
+const sync = new LocalStorageSync('your-user-id');
+sync.syncToDatabase();
+</script>
 </body>
 </html>
+
