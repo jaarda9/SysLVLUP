@@ -16,10 +16,7 @@ document.addEventListener("DOMContentLoaded", function() {
         }
         typeChar();
     }
-document.addEventListener("DOMContentLoaded", function() {
-    const sync = new LocalStorageSync('your-user-id');
-await sync.syncToDatabase(); // Uploads all localStorage data
-}
+
 
     // Start typing the "Ascend" text
     typeText(ascendText, ascendTextElement, typingSpeed);
@@ -49,5 +46,6 @@ await sync.syncToDatabase(); // Uploads all localStorage data
     }
 });
 });
+
 
 
