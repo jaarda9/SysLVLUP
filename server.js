@@ -1,3 +1,6 @@
+const cors = require('cors');
+app.use(cors()); // Enable CORS for all origins
+app.use(express.json({ limit: '10mb' })); // Increase payload limit
 const path = require('path');
 const express = require('express');
 const { MongoClient } = require('mongodb');
