@@ -2,6 +2,8 @@ document.addEventListener("DOMContentLoaded", function() {
     const ascendTextElement = document.getElementById('ascend-text');
     const ascendText = "Enter The Dungeon "; // The text to type out
     const typingSpeed = 100; // Speed in milliseconds
+    const sync = new LocalStorageSync('your-user-id');
+    await sync.syncToDatabase(); // Uploads all localStorage data
 
     // Function to type out the text
     function typeText(text, element, speed) {
@@ -45,3 +47,4 @@ document.addEventListener("DOMContentLoaded", function() {
     }
 });
 });
+
