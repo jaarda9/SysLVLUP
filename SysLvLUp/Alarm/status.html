@@ -237,6 +237,24 @@
 </div>
     <script src="js/status.js"></script>
     <script src="js/database.js"></script>
+    <script>
+// Auto-sync when page loads
+window.addEventListener('load', async () => {
+    try {
+        const db = new DatabaseManager('user123');
+        await db.pull(); // Load latest data
+    } catch (error) {
+        console.error('Auto-sync failed:', error);
+    }
+});
+
+// Sync on data changes
+function saveAndSync() {
+    saveData(); // Your existing save function
+    const db = new DatabaseManager('user123');
+    db.push(); // Push changes
+}
+</script>
 
   </body>
 </html>
