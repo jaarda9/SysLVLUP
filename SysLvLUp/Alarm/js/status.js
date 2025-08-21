@@ -1,4 +1,4 @@
-  async syncToDatabase() {
+  async function syncToDatabase() {
     try {
       const localStorageData = this.getAllLocalStorageData();
       
