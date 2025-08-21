@@ -133,6 +133,7 @@ function resetDailyStats() {
 
     // Save the updated data
     localStorage.setItem("gameData", JSON.stringify(savedData));
+    syncToDatabase();
   }
 }
 
@@ -147,6 +148,7 @@ function checkForNewDay() {
 
     // Update the last reset date in localStorage
     localStorage.setItem("lastResetDate", currentDate);
+    syncToDatabase()
   }
 }
 
