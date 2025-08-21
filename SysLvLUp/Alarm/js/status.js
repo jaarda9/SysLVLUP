@@ -157,6 +157,7 @@ function checkForLevelUp() {
     document.getElementById("XPvalue").textContent = `${savedData.exp}/100`;
     document.getElementById("rank-text").textContent = getRank(savedData.level);
     localStorage.setItem("gameData", JSON.stringify(savedData));
+    syncToDatabase()
     loadData();
   }
 }
@@ -256,6 +257,7 @@ function saveData() {
 
   // Save the merged data back to localStorage
   localStorage.setItem("gameData", JSON.stringify(newData));
+  syncToDatabase();
 }
 
 
@@ -296,6 +298,7 @@ function resetData() {
     },
   };
   localStorage.setItem("gameData", JSON.stringify(defaultGameData));
+  syncToDatabase()
   location.reload();
 }
 
@@ -314,6 +317,7 @@ function checkForNewDay() {
     localStorage.setItem("STS", currentSTS); // Update STS in localStorage
     resetDailyStats(); // Reset daily stats
     localStorage.setItem("lastResetDate", currentDate); // Update the last reset date
+    syncToDatabase();
   } else {
     console.log("No reset needed.");
   }
@@ -415,6 +419,7 @@ function importData(event) {
           for (const key in importedData) {
               if (importedData.hasOwnProperty(key)) {
                   localStorage.setItem(key, importedData[key]);
+                syncToDatabase()
               }
           }
           
