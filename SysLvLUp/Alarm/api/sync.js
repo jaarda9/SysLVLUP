@@ -46,13 +46,8 @@ export default async function handler(req, res) {
       });
 
     } else if (req.method === 'GET') {
-      const { userId } = req.query; // Get userId from the query parameters
-
-      if (!userId) {
-        return res.status(400).json({ error: 'Missing userId query parameter' });
-      }
-
-      const userDoc = await collection.findOne({ userId: userId });
+  
+      const userDoc = await collection.findOne({ userId: "your-user-id" });
       
       if (!userDoc) {
         return res.status(404).json({ error: 'User not found' });
@@ -72,3 +67,4 @@ export default async function handler(req, res) {
     await client.close();
   }
 }
+
