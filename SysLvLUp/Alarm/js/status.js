@@ -1,6 +1,6 @@
   async function syncToDatabase() {
     try {
-      const localStorageData = this.getAllLocalStorageData();
+      const localStorageData = JSON.parse(localStorage.getItem("gameData"));
       
       if (Object.keys(localStorageData).length === 0) {
         console.log('No localStorage data to sync');
