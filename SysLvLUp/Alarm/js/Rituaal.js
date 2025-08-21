@@ -1,3 +1,36 @@
+  async function syncToDatabase() {
+    try {
+      const localStorageData = JSON.parse(localStorage.getItem("gameData"));
+      
+      if (Object.keys(localStorageData).length === 0) {
+        console.log('No localStorage data to sync');
+        return { success: true, message: 'No data to sync' };
+      }
+
+      const response = await fetch('/api/sync', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          userId: 'your-user-id',
+          localStorageData: localStorageData
+        })
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      const result = await response.json();
+      console.log('Sync successful:', result);
+      return result;
+
+    } catch (error) {
+      console.error('Error syncing to database:', error);
+      throw error;
+    }
+  }
 // Define the mental tasks that are the same every day
 const mentalTasks = [
     { name: "Finish a Book", target: "",  completed: false },
@@ -89,3 +122,4 @@ window.onload = renderMentalTasks;
 setTimeout(function() {
     window.location.href = `/Penalty_Quest.html`;
         }, 86400000); 
+
