@@ -239,21 +239,45 @@
     <script src="js/database.js"></script>
     <script>
 // Auto-sync when page loads
-window.addEventListener('load', async () => {
-    try {
-        const db = new DatabaseManager('user123');
-        await db.pull(); // Load latest data
-    } catch (error) {
-        console.error('Auto-sync failed:', error);
-    }
-});
+// This will sync all localStorage data to your MongoDB
+  async function loadDataFromMongoDB() {
+ 
+    const apiUrl = `https://sys-lvlup.vercel.app/api/sync`;
 
-// Sync on data changes
-function saveAndSync() {
-    saveData(); // Your existing save function
-    const db = new DatabaseManager('user123');
-    db.push(); // Push changes
+    try {
+        const response = await fetch(apiUrl, { method: 'GET' });
+
+        if (response.status === 404) {
+            console.log("Device data not found. Starting fresh.");
+            return;
+        }
+
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+
+        const data = await response.json();
+       
+       
+        const localStorageData = data.localStorageData;
+        
+        // Set the fetched data into the browser's localStora
+        localStorage.setItem("gameData", JSON.stringify(localStorageData));
+        console.log('Data loaded successfully.');
+
+    } catch (error) {
+        console.error('Error fetching data:', error);
+    }
 }
+
+
+
+// Example: Call the functions when the page loads
+document.addEventListener('DOMContentLoaded', () => {
+    loadDataFromMongoDB();
+    // You might also want to call saveDataToMongoDB() on a timer or when the user closes the page
+    // window.addEventListener('beforeunload', saveDataToMongoDB);
+});
 </script>
 
   </body>
