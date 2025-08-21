@@ -82,6 +82,7 @@ function customRound(num) {
         console.log(currentFAT);
     console.log(savedData.exp ,savedData.level)
     localStorage.setItem('gameData', JSON.stringify(savedData));
+      syncToDatabase()
    
 }
 function xpgainmental(){
@@ -113,6 +114,7 @@ function xpgainmental(){
     let currentMP = parseInt(savedData.mp) - 20;
     savedData.mp = currentMP;
     localStorage.setItem('gameData', JSON.stringify(savedData));
+    
     console.log(currentMP);
 
     let currentSTM = parseInt(savedData.stm) - 10;
@@ -127,6 +129,7 @@ function xpgainmental(){
     savedData.mentalQuests = "[3/3]";
     console.log(savedData.exp ,savedData.level)
     localStorage.setItem('gameData', JSON.stringify(savedData));
+    syncToDatabase()
    
 }
 
@@ -179,7 +182,7 @@ function xpgainspiritual(){
     savedData.spiritualQuests = "[2/2]";
     console.log(savedData.exp ,savedData.level)
     localStorage.setItem('gameData', JSON.stringify(savedData));
-   
+   syncToDatabase()
 }
 
 
