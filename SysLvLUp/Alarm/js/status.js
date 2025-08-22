@@ -55,11 +55,7 @@ async function syncToDatabase() {
       throw error;
     }
   }
-console.log("JavaScript file loaded."); // Add this line at the top of your JS file
-window.onload = function() {
-  measurePing('https://sys-lvlup.vercel.app/status.html'); // Replace with your server URL
-  console.log("Page loaded.");
-};
+
 // Constants
 const ranks = ["E-Rank", "D-Rank", "C-Rank", "B-Rank", "A-Rank", "S-Rank"];
 
