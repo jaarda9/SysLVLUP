@@ -698,7 +698,7 @@ const generateNewQuest = async () => {
   const race = document.getElementById('race-text').textContent;
   const guild = document.getElementById('guild-text').textContent;
 
-  const prompt = `Generate a quest for a RPG character that require real life tasks for self-improvement conditionned to the Player. The character is a ${rank} rank ${race} from the ${guild} guild. Their stats are: STR:${str}, AGI:${agi}, INT:${int}, VIT:${vit}, PER:${per}, WIS:${wis}. The quest should be appropriate for a level ${level} character. Provide a creative quest title and a short, single-sentence description. Format the output as JSON.`;
+  const prompt = `Generate a quest for a RPG character that require real life tasks for self-improvement conditionned to the Player. The character is a ${rank} rank ${race} from the ${guild} guild. Their stats are: STR:${str}, AGI:${agi}, INT:${int}, VIT:${vit}, PER:${per}, WIS:${wis}. The quest should be appropriate for a level ${level} character. Provide a creative quest title and a short, single-sentence description.The Quest Should be either mental (like reading or anything like that) or physical (Running or something like that). Format the output as JSON.`;
 
   let chatHistory = [];
   chatHistory.push({ role: "user", parts: [{ text: prompt }] });
