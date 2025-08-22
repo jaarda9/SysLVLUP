@@ -828,9 +828,25 @@ document.addEventListener('DOMContentLoaded', () => {
   // Call the function to load data from MongoDB on page load
   loadDataFromMongoDB();
   
-  // Event listeners for new Gemini features
-  document.getElementById('generate-quest-btn').addEventListener('click', generateNewQuest);
-  document.getElementById('tts-btn').addEventListener('click', playQuestAudio);
+  // Load existing game data
+  loadData();
+  updateFatigueProgress();
+  checkForLevelUp();
+  checkForNewDay();
+
+  // Event listeners for new Gemini features - ensure elements exist first
+  const generateQuestBtn = document.getElementById('generate-quest-btn');
+  const ttsBtn = document.getElementById('tts-btn');
+  
+  if (generateQuestBtn) {
+    generateQuestBtn.addEventListener('click', generateNewQuest);
+  } else {
+    console.error('Generate quest button not found');
+  }
+  
+  if (ttsBtn) {
+    ttsBtn.addEventListener('click', playQuestAudio);
+  }
 
   // Optional: Sync data to MongoDB before the user leaves the page
   window.addEventListener('beforeunload', syncToDatabase);
