@@ -193,7 +193,7 @@ function xpgainspiritual(){
 
        
        
-    let currentHP = parseInt(savedData.hp) + 10;
+    let currentHP = Math.min(100, parseInt(savedData.hp) + 10);
     savedData.hp = currentHP;
     localStorage.setItem('gameData', JSON.stringify(savedData));
     console.log(currentHP);
