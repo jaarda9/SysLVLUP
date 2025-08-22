@@ -1,4 +1,28 @@
-  async function syncToDatabase() {
+document.addEventListener("DOMContentLoaded", function() {
+  const savedData = JSON.parse(localStorage.getItem("gameData"));
+  function measurePing(url) {
+      const startTime = Date.now();
+      fetch(url)
+          .then(response => {
+              const endTime = Date.now();
+              const ping = endTime - startTime; // Calculate ping
+              console.log(`Ping: ${ping} ms`);
+              
+              // Update your UI with the ping value
+              document.getElementById("ping-text").textContent = ping + " ms";
+              
+              // Update the ping input field and make it readonly
+              const pingInput = document.getElementById("ping-input");
+              pingInput.value = ping; // Set the value of the input field
+              pingInput.readOnly = true; // Make the input field readonly
+          })
+          
+  }
+
+  // Call the measurePing function with a URL to ping
+  measurePing('https://sys-lvlup.vercel.app/status.html'); // Replace with your server URL
+});
+async function syncToDatabase() {
     try {
       const localStorageData = JSON.parse(localStorage.getItem("gameData"));
       
