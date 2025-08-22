@@ -96,7 +96,7 @@ function customRound(num) {
     }
 
        
-        let currentHP = parseInt(savedData.hp) - 20;
+        let currentHP = Math.max(0, parseInt(savedData.hp) - 20);
         savedData.hp = currentHP;
         console.log(currentHP);
 
