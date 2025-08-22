@@ -407,15 +407,6 @@ function resetDailyStats() {
   }
 }
 
-document.addEventListener("DOMContentLoaded", function() {
-  console.log("Page loaded.");
-  loadData(); // Load existing data
-  updateFatigueProgress(); // Update fatigue progress
-  checkForLevelUp(); // Check for level up
-  checkForNewDay(); // Check if it's a new day to reset stats
-});
-
-
 const gameData = {
     level: 1,
     hp: 100,
