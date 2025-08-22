@@ -597,15 +597,6 @@ function closePopup() {
 }
 };
 
-document.addEventListener('DOMContentLoaded', function() {
-  // Function to handle file import
- 
-  // Event listener for the import input
-  document.getElementById("import-input").addEventListener("change", importData);
-
-  // Event listener for the import button
-  
-});
 
 // Helper functions for Gemini TTS
 const base64ToArrayBuffer = (base64) => {
