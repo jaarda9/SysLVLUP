@@ -553,7 +553,7 @@ document.getElementById("submit-name").onclick = function() {
           popup.style.display = 'none'; // Hide the popup completely
           
           // Trigger animation on the status container
-          const statusContainer = document.querySelector('.status-container');
+          const statusContainer = document.querySelector('.status-containeerr');
           if (statusContainer) {
               statusContainer.classList.add('animate'); // Add animation class
           }
@@ -572,7 +572,7 @@ function closePopup() {
       popup.style.display = 'none'; // Hide the popup completely
 
       // Show the status container and trigger the dropdown animation
-      const statusContainer = document.querySelector('.status-container');
+      const statusContainer = document.querySelector('.status-containeerr');
       if (statusContainer) {
           statusContainer.classList.remove('hidden'); // Make sure the status container is visible
           statusContainer.style.animation = 'dropDown 2s ease forwards'; // Apply dropdown animation
