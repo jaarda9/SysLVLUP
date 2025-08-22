@@ -553,7 +553,7 @@ document.getElementById("submit-name").onclick = function() {
           popup.style.display = 'none'; // Hide the popup completely
           
           // Trigger animation on the status container
-          const statusContainer = document.querySelector('.status-containeerr');
+          const statusContainer = document.querySelector('.status-container');
           if (statusContainer) {
               statusContainer.classList.add('animate'); // Add animation class
           }
@@ -572,7 +572,7 @@ function closePopup() {
       popup.style.display = 'none'; // Hide the popup completely
 
       // Show the status container and trigger the dropdown animation
-      const statusContainer = document.querySelector('.status-containeerr');
+      const statusContainer = document.querySelector('.status-container');
       if (statusContainer) {
           statusContainer.classList.remove('hidden'); // Make sure the status container is visible
           statusContainer.style.animation = 'dropDown 2s ease forwards'; // Apply dropdown animation
@@ -591,7 +591,7 @@ document.addEventListener('DOMContentLoaded', function() {
   
 });
 
-// Helper functions for Gemini TTS audio conversion
+// Helper functions for Gemini TTS
 const base64ToArrayBuffer = (base64) => {
   const binaryString = window.atob(base64);
   const len = binaryString.length;
@@ -671,7 +671,18 @@ const generateNewQuest = async () => {
   generateButton.disabled = true;
   ttsButton.disabled = true;
 
-  const prompt = `Generate a creative fantasy quest. Provide a creative quest title and a short, single-sentence description. Format the output as JSON.`;
+  const level = document.getElementById('lvlValue').textContent;
+  const str = document.getElementById('str').textContent.replace('STR: ', '');
+  const agi = document.getElementById('agi').textContent.replace('AGI: ', '');
+  const int = document.getElementById('int').textContent.replace('INT: ', '');
+  const vit = document.getElementById('vit').textContent.replace('VIT: ', '');
+  const per = document.getElementById('per').textContent.replace('PER: ', '');
+  const wis = document.getElementById('wis').textContent.replace('WIS: ', '');
+  const rank = document.getElementById('rank-text').textContent;
+  const race = document.getElementById('race-text').textContent;
+  const guild = document.getElementById('guild-text').textContent;
+
+  const prompt = `Generate a quest for a fantasy RPG character. The character is a ${rank} rank ${race} from the ${guild} guild. Their stats are: STR:${str}, AGI:${agi}, INT:${int}, VIT:${vit}, PER:${per}, WIS:${wis}. The quest should be appropriate for a level ${level} character. Provide a creative quest title and a short, single-sentence description. Format the output as JSON.`;
 
   let chatHistory = [];
   chatHistory.push({ role: "user", parts: [{ text: prompt }] });
@@ -710,6 +721,7 @@ const generateNewQuest = async () => {
     newQuestTitle.textContent = questData.quest_title;
     newQuestDescription.textContent = questData.quest_description;
     
+    // Store the quest text to be used by the TTS function
     document.getElementById('generated-quest').dataset.questText = questData.quest_description;
 
     generatedQuestContainer.style.display = 'block';
@@ -793,6 +805,13 @@ const playQuestAudio = async () => {
 
 // Main event listener for DOM content loaded
 document.addEventListener('DOMContentLoaded', () => {
+  // Call the function to load data from MongoDB on page load
+  loadDataFromMongoDB();
+  
+  // Event listeners for new Gemini features
   document.getElementById('generate-quest-btn').addEventListener('click', generateNewQuest);
   document.getElementById('tts-btn').addEventListener('click', playQuestAudio);
+
+  // Optional: Sync data to MongoDB before the user leaves the page
+  window.addEventListener('beforeunload', syncToDatabase);
 });
