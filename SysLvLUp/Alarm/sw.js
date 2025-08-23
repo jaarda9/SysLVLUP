@@ -39,6 +39,23 @@ self.addEventListener('install', event => {
   );
 });
 
+// Add self.clients.claim() to activate immediately
+self.addEventListener('activate', event => {
+  event.waitUntil(self.clients.claim());
+  const cacheWhitelist = [CACHE_NAME];
+  event.waitUntil(
+    caches.keys().then(cacheNames => {
+      return Promise.all(
+        cacheNames.map(cacheName => {
+          if (cacheWhitelist.indexOf(cacheName) === -1) {
+            return caches.delete(cacheName);
+          }
+        })
+      );
+    })
+  );
+});
+
 self.addEventListener('fetch', event => {
   event.respondWith(
     caches.match(event.request)
