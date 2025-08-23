@@ -28,13 +28,13 @@
 
 2. **Add the MongoDB URI**
    - **Name**: `MONGODB_URI`
-   - **Value**: Your MongoDB Atlas connection string
+   - **Value**: Your MongoDB Atlas connection string (the one you just shared)
    - **Environment**: Select all environments (Production, Preview, Development)
    - Click "Add"
 
-   Example connection string:
+   **IMPORTANT**: Your connection string should look like:
    ```
-   mongodb+srv://username:password@cluster.mongodb.net/gamedata?retryWrites=true&w=majority
+   mongodb+srv://vercel-admin-user-68aa3c3e1b63e343cd3b64ee:BzXJpSgRrdnwrWgS@cluster01.9k95qys.mongodb.net/myFirstDatabase?retryWrites=true&w=majority
    ```
 
 ## Step 3: Deploy to Vercel
@@ -58,6 +58,23 @@
 5. **Check the console** for sync messages
 6. **Check MongoDB Atlas** to verify data is being saved
 
+## Testing Checklist
+
+- [ ] Environment variable `MONGODB_URI` is set in Vercel
+- [ ] App deploys successfully without errors
+- [ ] API endpoints respond correctly (`/api/sync`, `/api/user`, `/api/test`)
+- [ ] Data syncs when you perform actions in the app
+- [ ] Data persists when you refresh the page
+- [ ] Data syncs across different devices/browsers
+
+## Security Notes
+
+- ✅ **NEVER commit your MongoDB connection string to version control**
+- ✅ **Use environment variables for all sensitive data**
+- ✅ **Consider implementing user authentication for production use**
+- ✅ **Regularly rotate your database passwords**
+- ✅ **Delete any messages containing connection strings from chat history**
+
 ## Troubleshooting
 
 ### Issue: "MONGODB_URI is not defined" Error
@@ -78,24 +95,8 @@
 2. Verify MongoDB Atlas connection string is correct
 3. Check that your MongoDB Atlas cluster is accessible from Vercel
 
-## Testing Checklist
-
-- [ ] Environment variable `MONGODB_URI` is set in Vercel
-- [ ] App deploys successfully without errors
-- [ ] API endpoints respond correctly (`/api/sync`, `/api/user`)
-- [ ] Data syncs when you perform actions in the app
-- [ ] Data persists when you refresh the page
-- [ ] Data syncs across different devices/browsers
-
 ## Monitoring
 
 - **Vercel Logs**: Check function logs in Vercel dashboard
 - **MongoDB Atlas**: Monitor your database for new documents
 - **Browser Console**: Check for sync messages and errors
-
-## Security Notes
-
-- Never commit your MongoDB connection string to version control
-- Use environment variables for all sensitive data
-- Consider implementing user authentication for production use
-- Regularly rotate your database passwords

@@ -1,6 +1,16 @@
 {
+  "name": "syslvlup",
+  "version": "1.0.0",
+  "scripts": {
+    "dev": "node server.js",
+    "start": "node server.js",
+    "build": "echo 'No build step required'"
+  },
   "dependencies": {
     "express": "^5.1.0",
     "mongodb": "^6.18.0"
+  },
+  "engines": {
+    "node": ">=18.0.0"
   }
 }
