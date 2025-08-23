@@ -41,7 +41,7 @@ This guide explains how to test and troubleshoot data synchronization in your PW
 3. Ensure API endpoints are properly configured for CORS
 
 ### Issue: New User ID Generated Each Time
-**Possible Causes:**
+**Possibled Causes:**
 1. localStorage is not persisting between sessions
 2. The user ID generation logic is flawed
 
