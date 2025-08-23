@@ -2,10 +2,18 @@
  * Sync all localStorage data to MongoDB database
  */
 class LocalStorageSync {
-  constructor(userId = null, apiEndpoint = '/api/sync') {
+  constructor(userId = null, apiEndpoint = null) {
     // If no userId provided, try to get from localStorage or generate new one
     this.userId = userId || this.getUserId();
-    this.apiEndpoint = apiEndpoint;
+    
+    // Determine API endpoint based on environment
+    if (apiEndpoint) {
+      this.apiEndpoint = apiEndpoint;
+    } else {
+      // Check if we're in production (Vercel) or development
+      const isProduction = window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1';
+      this.apiEndpoint = isProduction ? '/api/sync' : 'http://localhost:3000/api/sync';
+    }
   }
   
   /**
@@ -49,6 +57,10 @@ class LocalStorageSync {
         return { success: true, message: 'No data to sync' };
       }
 
+      console.log('Syncing data to:', this.apiEndpoint);
+      console.log('User ID:', this.userId);
+      console.log('Data to sync:', localStorageData);
+
       const response = await fetch(this.apiEndpoint, {
         method: 'POST',
         headers: {
@@ -61,7 +73,8 @@ class LocalStorageSync {
       });
 
       if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
+        const errorText = await response.text();
+        throw new Error(`HTTP error! status: ${response.status}, message: ${errorText}`);
       }
 
       const result = await response.json();
@@ -75,15 +88,68 @@ class LocalStorageSync {
   }
 
   /**
+   * Load data from database to localStorage
+   */
+  async loadFromDatabase() {
+    try {
+      const isProduction = window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1';
+      const userApiEndpoint = isProduction ? '/api/user' : 'http://localhost:3000/api/user';
+      
+      const response = await fetch(`${userApiEndpoint}?userId=${this.userId}`);
+      
+      if (!response.ok) {
+        if (response.status === 404) {
+          console.log('No existing data found for user, starting fresh');
+          return { success: true, message: 'No existing data' };
+        }
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      const result = await response.json();
+      
+      if (result.localStorage && Object.keys(result.localStorage).length > 0) {
+        // Load data into localStorage
+        Object.keys(result.localStorage).forEach(key => {
+          const value = result.localStorage[key];
+          if (typeof value === 'object') {
+            localStorage.setItem(key, JSON.stringify(value));
+          } else {
+            localStorage.setItem(key, value);
+          }
+        });
+        console.log('Data loaded from database successfully');
+      }
+      
+      return result;
+
+    } catch (error) {
+      console.error('Error loading from database:', error);
+      throw error;
+    }
+  }
+
+  /**
    * Auto-sync on page unload or at intervals
    */
   setupAutoSync(options = {}) {
-    const { onUnload = true, interval = null } = options;
+    const { onUnload = true, interval = null, onLoad = true } = options;
+
+    if (onLoad) {
+      // Load data when page loads
+      this.loadFromDatabase().catch(console.error);
+    }
 
     if (onUnload) {
       // Sync when user leaves the page
       window.addEventListener('beforeunload', (e) => {
         this.syncToDatabase().catch(console.error);
+      });
+      
+      // Also sync on page visibility change (for mobile devices)
+      document.addEventListener('visibilitychange', () => {
+        if (document.visibilityState === 'hidden') {
+          this.syncToDatabase().catch(console.error);
+        }
       });
     }
 
@@ -137,7 +203,7 @@ class LocalStorageSync {
 }
 
 // Usage example:
-// const sync = new LocalStorageSync('user123', '/api/sync');
-// sync.syncToDatabase();
+// const sync = new LocalStorageSync();
 // sync.setupAutoSync({ interval: 30000 }); // Auto-sync every 30 seconds
+// sync.syncToDatabase();
 

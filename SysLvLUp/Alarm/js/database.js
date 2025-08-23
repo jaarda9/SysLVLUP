@@ -211,3 +211,60 @@ window.DatabaseCommands = {
 // await db.push();        // Push all localStorage to database
 // await db.pull();        // Pull all data from database to localStorage
 // await db.sync();        // Push then pull (full sync)
+
+// Initialize data synchronization
+let sync;
+
+// Initialize sync when DOM is loaded
+document.addEventListener('DOMContentLoaded', function() {
+    // Initialize the sync object
+    sync = new LocalStorageSync();
+    
+    // Set up auto-sync with options
+    sync.setupAutoSync({
+        onLoad: true,      // Load data when page loads
+        onUnload: true,    // Sync when leaving page
+        interval: 30000    // Auto-sync every 30 seconds
+    });
+    
+    console.log('Data sync initialized for user:', sync.userId);
+});
+
+// Manual sync function that can be called from other scripts
+async function manualSync() {
+    if (sync) {
+        try {
+            await sync.syncToDatabase();
+            console.log('Manual sync completed successfully');
+            return true;
+        } catch (error) {
+            console.error('Manual sync failed:', error);
+            return false;
+        }
+    } else {
+        console.error('Sync not initialized yet');
+        return false;
+    }
+}
+
+// Function to load data from database
+async function loadDataFromDatabase() {
+    if (sync) {
+        try {
+            await sync.loadFromDatabase();
+            console.log('Data loaded from database successfully');
+            return true;
+        } catch (error) {
+            console.error('Failed to load data from database:', error);
+            return false;
+        }
+    } else {
+        console.error('Sync not initialized yet');
+        return false;
+    }
+}
+
+// Export for use in other modules
+if (typeof module !== 'undefined' && module.exports) {
+    module.exports = { sync, manualSync, loadDataFromDatabase };
+}
