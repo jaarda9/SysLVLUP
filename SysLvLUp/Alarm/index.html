@@ -40,44 +40,98 @@
 <script src="js/sync.js"></script>
     <script src="js/database.js"></script>
     <script>
-// This will sync all localStorage data to your MongoDB
-  async function loadDataFromMongoDB() {
- 
-    const apiUrl = `https://sys-lvlup.vercel.app/api/sync`;
-
-    try {
-        const response = await fetch(apiUrl, { method: 'GET' });
-
+    // This will sync all localStorage data to your MongoDB
+    async function loadDataFromMongoDB() {
+      // Generate a unique user ID based on device/app instance
+      // In a real app, you might want to use a more sophisticated approach
+      let userId = localStorage.getItem('userId');
+      if (!userId) {
+        userId = 'user_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+        localStorage.setItem('userId', userId);
+      }
+    
+      try {
+        // Fetch user data from MongoDB
+        const response = await fetch(`/api/user/${userId}`);
+    
         if (response.status === 404) {
-            console.log("Device data not found. Starting fresh.");
-            return;
+          console.log("User data not found. Starting fresh.");
+          return;
         }
-
+    
         if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
+          throw new Error(`HTTP error! status: ${response.status}`);
         }
-
-        const data = await response.json();
-       
-       
-        const localStorageData = data.localStorageData;
+    
+        const userData = await response.json();
+        const localStorageData = userData.localStorage || {};
         
-        // Set the fetched data into the browser's localStora
-        localStorage.setItem("gameData", JSON.stringify(localStorageData));
+        // Restore all data to localStorage
+        Object.keys(localStorageData).forEach(key => {
+          const value = localStorageData[key];
+          if (typeof value === 'object') {
+            localStorage.setItem(key, JSON.stringify(value));
+          } else {
+            localStorage.setItem(key, value);
+          }
+        });
+        
         console.log('Data loaded successfully.');
-
-    } catch (error) {
+      } catch (error) {
         console.error('Error fetching data:', error);
+      }
     }
-}
+    
+    // Save data to MongoDB when page is unloaded
+    async function saveDataToMongoDB() {
+      // Get user ID
+      let userId = localStorage.getItem('userId');
+      if (!userId) {
+        userId = 'user_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+        localStorage.setItem('userId', userId);
+      }
+    
+      try {
+        // Get all localStorage data
+        const localStorageData = {};
+        for (let i = 0; i < localStorage.length; i++) {
+          const key = localStorage.key(i);
+          try {
+            localStorageData[key] = JSON.parse(localStorage.getItem(key));
+          } catch (e) {
+            localStorageData[key] = localStorage.getItem(key);
+          }
+        }
+    
+        // Save to MongoDB
+        const response = await fetch('/api/sync', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            userId: userId,
+            localStorageData: localStorageData
+          })
+        });
+    
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+    
+        console.log('Data saved successfully.');
+      } catch (error) {
+        console.error('Error saving data:', error);
+      }
+    }
 
 
 
 // Example: Call the functions when the page loads
 document.addEventListener('DOMContentLoaded', () => {
     loadDataFromMongoDB();
-    // You might also want to call saveDataToMongoDB() on a timer or when the user closes the page
-    // window.addEventListener('beforeunload', saveDataToMongoDB);
+    // Save data when the user closes the page
+    window.addEventListener('beforeunload', saveDataToMongoDB);
 });
 </script>
 

@@ -4,9 +4,22 @@
  */
 
 class DatabaseManager {
-  constructor(userId, apiBaseUrl = '') {
-    this.userId = userId;
+  constructor(userId = null, apiBaseUrl = '') {
+    // If no userId provided, try to get from localStorage or generate new one
+    this.userId = userId || this.getUserId();
     this.apiBaseUrl = apiBaseUrl || window.location.origin;
+  }
+  
+  /**
+   * Get or generate user ID
+   */
+  getUserId() {
+    let userId = localStorage.getItem('userId');
+    if (!userId) {
+      userId = 'user_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+      localStorage.setItem('userId', userId);
+    }
+    return userId;
   }
 
   /**

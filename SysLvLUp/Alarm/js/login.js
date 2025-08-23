@@ -1,6 +1,22 @@
   async function syncToDatabase() {
     try {
-      const localStorageData = JSON.parse(localStorage.getItem("gameData"));
+      // Get user ID
+      let userId = localStorage.getItem('userId');
+      if (!userId) {
+        userId = 'user_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+        localStorage.setItem('userId', userId);
+      }
+      
+      // Get all localStorage data
+      const localStorageData = {};
+      for (let i = 0; i < localStorage.length; i++) {
+        const key = localStorage.key(i);
+        try {
+          localStorageData[key] = JSON.parse(localStorage.getItem(key));
+        } catch (e) {
+          localStorageData[key] = localStorage.getItem(key);
+        }
+      }
       
       if (Object.keys(localStorageData).length === 0) {
         console.log('No localStorage data to sync');
@@ -13,7 +29,7 @@
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          userId: 'your-user-id',
+          userId: userId,
           localStorageData: localStorageData
         })
       });
