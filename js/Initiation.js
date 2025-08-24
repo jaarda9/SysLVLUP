@@ -19,35 +19,30 @@ The trials ahead will challenge your:
 
  Choose wisely, young one...`;
 
-// Wait for user manager to be ready
-function waitForUserManager() {
-  if (window.userManager) {
-    console.log('User manager ready, starting initiation...');
-    startTypingAnimation();
-    setupEventListeners();
-  } else {
-    console.log('Waiting for user manager...');
-    setTimeout(waitForUserManager, 100);
-  }
-}
+// Initialize the initiation page immediately
+document.addEventListener('DOMContentLoaded', () => {
+  console.log('Initiation page loaded, starting immediately...');
+  startTypingAnimation();
+  setupEventListeners();
+});
 
 // Start the typing animation for the intro text
 function startTypingAnimation() {
-  const introText = document.querySelector('.intro-text');
-  if (!introText) {
+  const introTextElement = document.querySelector('.intro-text');
+  if (!introTextElement) {
     console.error('Intro text element not found');
     return;
   }
 
-  const fullText = introText.textContent;
-  introText.textContent = '';
-  introText.style.visibility = 'visible';
+  const fullText = introTextElement.textContent;
+  introTextElement.textContent = '';
+  introTextElement.style.visibility = 'visible';
 
   let currentIndex = 0;
   
   function typeNextChar() {
     if (currentIndex < fullText.length) {
-      introText.textContent += fullText[currentIndex];
+      introTextElement.textContent += fullText[currentIndex];
       currentIndex++;
       setTimeout(typeNextChar, 50); // Adjust speed here
     } else {
@@ -170,9 +165,3 @@ style.textContent = `
   }
 `;
 document.head.appendChild(style);
-
-// Initialize when DOM is loaded
-document.addEventListener('DOMContentLoaded', () => {
-  console.log('Initiation page loaded, waiting for user manager...');
-  waitForUserManager();
-});

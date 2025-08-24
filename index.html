@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ascend</title>
+    <title>SysLvLUp - Welcome</title>
     <link rel="stylesheet" href="css/login.css">
     
     <!-- Web App Manifest -->
@@ -33,58 +33,44 @@
     <link rel="apple-touch-icon" sizes="167x167" href="icons/icon-152x152.png">
     <link rel="icon" type="image/png" href="icons/icon-192x192.png" sizes="192x192">
     <link rel="icon" type="image/png" href="icons/icon-512x512.png" sizes="512x512">
-    
-    <!-- Service Worker Registration -->
-    <script>
-        if ('serviceWorker' in navigator) {
-            window.addEventListener('load', function() {
-                navigator.serviceWorker.register('sw.js')
-                    .then(function(registration) {
-                        console.log('ServiceWorker registration successful with scope: ', registration.scope);
-                    })
-                    .catch(function(err) {
-                        console.log('ServiceWorker registration failed: ', err);
-                    });
-            });
-        }
-        
-        // PWA Installation Debug
-        window.addEventListener('beforeinstallprompt', (e) => {
-            console.log('PWA install prompt triggered!');
-            console.log('Install prompt event:', e);
-        });
-        
-        window.addEventListener('appinstalled', (evt) => {
-            console.log('PWA was installed!');
-        });
-    </script>
 </head>
 <body>
     <div class="login-container">
-        <div id="ascend-text"></div> <!-- New div for the typing animation -->
-        <input type="password" id="password" placeholder="Enter Session Key 🔑">
-        <p id="message" class="hidden"></p>
+        <div id="ascend-text">Welcome to SysLvLUp</div>
+        <div id="loading-text">Loading...</div>
     </div>
 
-    <!-- Load scripts in correct order -->
-    <script src="js/url-sync-helper.js"></script>
-    <script src="js/user-manager.js"></script>
-    <script src="js/login.js"></script>
     <script>
-    // Initialize user manager - data loading is handled automatically
+    // Simple redirect logic - check if player has a name and redirect accordingly
     document.addEventListener('DOMContentLoaded', function() {
-        if (window.userManager) {
-            console.log('User manager initialized with userId:', window.userManager.getUserId());
+        console.log('Index page loaded, checking player status...');
+        
+        // Check if player has a name set
+        const playerName = localStorage.getItem('playerName');
+        
+        if (playerName && playerName.trim() !== '') {
+            console.log('Player has name, redirecting to status page');
+            // Player exists, go to status page
+            window.location.href = 'status.html';
         } else {
-            console.warn('User manager not available');
+            console.log('No player name found, redirecting to alarm page');
+            // New player, go to alarm page (which will redirect to initiation)
+            window.location.href = 'alarm.html';
         }
     });
     
-    // Listen for data updates from user manager
-    window.addEventListener('userDataUpdated', function(event) {
-        console.log('User data updated:', event.detail);
-        // UI components can listen to this event to update their display
-    });
+    // Service Worker Registration
+    if ('serviceWorker' in navigator) {
+        window.addEventListener('load', function() {
+            navigator.serviceWorker.register('sw.js')
+                .then(function(registration) {
+                    console.log('ServiceWorker registration successful with scope: ', registration.scope);
+                })
+                .catch(function(err) {
+                    console.log('ServiceWorker registration failed: ', err);
+                });
+        });
+    }
     </script>
 </body>
 </html>

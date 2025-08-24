@@ -102,7 +102,7 @@
     <script>
       if ('serviceWorker' in navigator) {
         window.addEventListener('load', () => {
-          navigator.serviceWorker.register('/sw.js')
+          navigator.serviceWorker.register('sw.js')
             .then(registration => {
               console.log('SW registered: ', registration);
             })
@@ -111,26 +111,6 @@
             });
         });
       }
-    </script>
-
-    <!-- User Manager Initialization -->
-    <script src="js/user-manager.js"></script>
-    <script>
-      document.addEventListener('DOMContentLoaded', function() {
-        // Ensure user manager is loaded
-        if (window.userManager) {
-          console.log('User manager initialized with userId:', window.userManager.getUserId());
-          
-          // Load user data immediately
-          window.userManager.loadUserData().then(result => {
-            console.log('Initial data load result:', result);
-          }).catch(error => {
-            console.error('Error loading initial data:', error);
-          });
-        } else {
-          console.warn('User manager not available');
-        }
-      });
     </script>
 </body>
 </html>

@@ -7,7 +7,7 @@
     <link rel="stylesheet" href="css/Rituaal.css">
     
     <!-- Web App Manifest -->
-    <link rel="manifest" href="/manifest.json">
+    <link rel="manifest" href="manifest.json">
     
     <!-- Theme Color -->
     <meta name="theme-color" content="#4a90e2">
@@ -19,16 +19,15 @@
     <meta name="apple-mobile-web-app-title" content="SysLVLUP">
     
     <!-- Microsoft -->
-    <meta name="msapplication-TileImage" content="/icons/icon-144x144.png">
+    <meta name="msapplication-TileImage" content="icons/icon-144x144.png">
     <meta name="msapplication-TileColor" content="#4a90e2">
     <meta name="msapplication-tap-highlight" content="no">
     
     <!-- Icons -->
-    <link rel="apple-touch-icon" href="/icons/icon-192x192.png">
-    <link rel="apple-touch-icon" sizes="152x152" href="/icons/icon-152x152.png">
-    <link rel="apple-touch-icon" sizes="180x180" href="/icons/icon-192x192.png">
-    <link rel="apple-touch-icon" sizes="167x167" href="/icons/icon-152x152.png">
-    <link rel="icon" type="image/png" href="/icons/icon-192x192.png" sizes="192x192">
+    <link rel="apple-touch-icon" href="icons/icon-192x192.png">
+    <link rel="apple-touch-icon" sizes="152x152" href="icons/icon-152x152.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="icons/icon-192x192.png">
+    <link rel="icon" type="image/png" href="icons/icon-192x192.png" sizes="192x192">
 </head>
 <body>
     <div class="quest-box">
@@ -53,13 +52,14 @@
         </div>
     </div>
 
+    <!-- Only load the ritual script -->
     <script src="js/Rituaal.js"></script>
     
     <!-- Service Worker Registration -->
     <script>
       if ('serviceWorker' in navigator) {
         window.addEventListener('load', () => {
-          navigator.serviceWorker.register('/sw.js')
+          navigator.serviceWorker.register('sw.js')
             .then(registration => {
               console.log('SW registered: ', registration);
             })
@@ -68,26 +68,6 @@
             });
         });
       }
-    </script>
-
-    <!-- User Manager Initialization -->
-    <script src="js/user-manager.js"></script>
-    <script>
-      document.addEventListener('DOMContentLoaded', function() {
-        // Ensure user manager is loaded
-        if (window.userManager) {
-          console.log('User manager initialized with userId:', window.userManager.getUserId());
-          
-          // Load user data immediately
-          window.userManager.loadUserData().then(result => {
-            console.log('Initial data load result:', result);
-          }).catch(error => {
-            console.error('Error loading initial data:', error);
-          });
-        } else {
-          console.warn('User manager not available');
-        }
-      });
     </script>
 </body>
 </html>
