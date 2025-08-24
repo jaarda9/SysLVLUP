@@ -32,13 +32,33 @@ class AuthManager {
    */
   async register(email, password) {
     try {
-      const response = await fetch('/api/register', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ email, password })
-      });
+      const isProduction = window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1';
+      const apiEndpoint = isProduction ? '/api/user' : 'http://localhost:3000/api/register';
+
+      let response;
+      if (isProduction) {
+        // Vercel deployment - use action-based API
+        response = await fetch(apiEndpoint, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ 
+            action: 'register',
+            email, 
+            password 
+          })
+        });
+      } else {
+        // Local development - use direct endpoint
+        response = await fetch(apiEndpoint, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ email, password })
+        });
+      }
 
       if (!response.ok) {
         const error = await response.json();
@@ -71,13 +91,33 @@ class AuthManager {
    */
   async login(email, password) {
     try {
-      const response = await fetch('/api/login', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ email, password })
-      });
+      const isProduction = window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1';
+      const apiEndpoint = isProduction ? '/api/user' : 'http://localhost:3000/api/login';
+
+      let response;
+      if (isProduction) {
+        // Vercel deployment - use action-based API
+        response = await fetch(apiEndpoint, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ 
+            action: 'login',
+            email, 
+            password 
+          })
+        });
+      } else {
+        // Local development - use direct endpoint
+        response = await fetch(apiEndpoint, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ email, password })
+        });
+      }
 
       if (!response.ok) {
         const error = await response.json();
@@ -130,16 +170,36 @@ class AuthManager {
     }
 
     try {
-      const response = await fetch('/api/verify-token', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ 
-          email: this.email, 
-          token: this.token 
-        })
-      });
+      const isProduction = window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1';
+      const apiEndpoint = isProduction ? '/api/user' : 'http://localhost:3000/api/verify-token';
+
+      let response;
+      if (isProduction) {
+        // Vercel deployment - use action-based API
+        response = await fetch(apiEndpoint, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ 
+            action: 'verify-token',
+            email: this.email, 
+            token: this.token 
+          })
+        });
+      } else {
+        // Local development - use direct endpoint
+        response = await fetch(apiEndpoint, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ 
+            email: this.email, 
+            token: this.token 
+          })
+        });
+      }
 
       return response.ok;
 
@@ -242,17 +302,36 @@ class AuthManager {
       this.userId = linkData.userId;
       this.email = linkData.email;
       
-      // Get a new token for this device
-      const response = await fetch('/api/device-link', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ 
-          userId: linkData.userId,
-          email: linkData.email 
-        })
-      });
+      const isProduction = window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1';
+      const apiEndpoint = isProduction ? '/api/user' : 'http://localhost:3000/api/device-link';
+
+      let response;
+      if (isProduction) {
+        // Vercel deployment - use action-based API
+        response = await fetch(apiEndpoint, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ 
+            action: 'device-link',
+            userId: linkData.userId,
+            email: linkData.email 
+          })
+        });
+      } else {
+        // Local development - use direct endpoint
+        response = await fetch(apiEndpoint, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ 
+            userId: linkData.userId,
+            email: linkData.email 
+          })
+        });
+      }
 
       if (!response.ok) {
         throw new Error('Device linking failed');

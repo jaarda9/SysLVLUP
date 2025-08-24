@@ -1,9 +1,35 @@
 {
   "version": 2,
+  "builds": [
+    {
+      "src": "server.js",
+      "use": "@vercel/node"
+    },
+    {
+      "src": "SysLvLUp/Alarm/**/*",
+      "use": "@vercel/static"
+    }
+  ],
   "routes": [
     {
       "src": "/api/(.*)",
       "dest": "/api/$1"
+    },
+    {
+      "src": "/(.*)",
+      "dest": "/SysLvLUp/Alarm/$1"
+    },
+    {
+      "src": "/",
+      "dest": "/SysLvLUp/Alarm/index.html"
     }
-  ]
+  ],
+  "functions": {
+    "api/user.js": {
+      "maxDuration": 30
+    },
+    "api/sync.js": {
+      "maxDuration": 30
+    }
+  }
 }

@@ -112,5 +112,25 @@
         });
       }
     </script>
+
+    <!-- User Manager Initialization -->
+    <script src="js/user-manager.js"></script>
+    <script>
+      document.addEventListener('DOMContentLoaded', function() {
+        // Ensure user manager is loaded
+        if (window.userManager) {
+          console.log('User manager initialized with userId:', window.userManager.getUserId());
+          
+          // Load user data immediately
+          window.userManager.loadUserData().then(result => {
+            console.log('Initial data load result:', result);
+          }).catch(error => {
+            console.error('Error loading initial data:', error);
+          });
+        } else {
+          console.warn('User manager not available');
+        }
+      });
+    </script>
 </body>
 </html>

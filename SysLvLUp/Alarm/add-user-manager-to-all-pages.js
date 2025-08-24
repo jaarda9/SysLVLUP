@@ -1,3 +1,6 @@
+const fs = require('fs');
+const path = require('path');
+
 /**
  * Script to add user manager initialization to all HTML pages
  * This ensures consistent userId generation and data loading across all pages
@@ -42,6 +45,78 @@ const userManagerScript = `
     </script>
 `;
 
-console.log('User manager initialization script template created.');
-console.log('Add this script to all HTML files before the closing </body> tag:');
-console.log(userManagerScript);
+// Function to add user manager to a single HTML file
+function addUserManagerToFile(filePath) {
+    try {
+        if (!fs.existsSync(filePath)) {
+            console.log(`File not found: ${filePath}`);
+            return false;
+        }
+
+        let content = fs.readFileSync(filePath, 'utf8');
+        
+        // Check if user manager is already present
+        if (content.includes('user-manager.js')) {
+            console.log(`User manager already present in: ${filePath}`);
+            return true;
+        }
+
+        // Find the position to insert scripts (before closing body tag)
+        const bodyCloseIndex = content.lastIndexOf('</body>');
+        
+        if (bodyCloseIndex === -1) {
+            console.log(`No </body> tag found in: ${filePath}`);
+            return false;
+        }
+
+        // Insert the user manager script before </body>
+        const beforeBodyClose = content.substring(0, bodyCloseIndex);
+        const afterBodyClose = content.substring(bodyCloseIndex);
+        
+        const newContent = beforeBodyClose + userManagerScript + afterBodyClose;
+
+        fs.writeFileSync(filePath, newContent, 'utf8');
+        console.log(`Updated: ${filePath}`);
+        return true;
+
+    } catch (error) {
+        console.error(`Error updating ${filePath}:`, error.message);
+        return false;
+    }
+}
+
+// Function to process all HTML files
+function processAllHtmlFiles() {
+    console.log('Adding user manager to all HTML pages...\n');
+    
+    let successCount = 0;
+    let totalCount = 0;
+
+    htmlFiles.forEach(file => {
+        totalCount++;
+        const filePath = path.join(__dirname, file);
+        if (addUserManagerToFile(filePath)) {
+            successCount++;
+        }
+    });
+
+    console.log(`\nProcessing completed!`);
+    console.log(`Successfully updated: ${successCount}/${totalCount} files`);
+    
+    if (successCount === totalCount) {
+        console.log('✅ All HTML files have been updated with user manager initialization.');
+    } else {
+        console.log('⚠️  Some files could not be updated. Check the logs above.');
+    }
+}
+
+// Run the script
+if (require.main === module) {
+    processAllHtmlFiles();
+}
+
+module.exports = {
+    addUserManagerToFile,
+    processAllHtmlFiles,
+    userManagerScript
+};
