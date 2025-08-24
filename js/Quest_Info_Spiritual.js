@@ -392,16 +392,70 @@ async function handleLevelUp(gameData) {
 }
 
 // Function to complete a quest and gain XP
-function completeSpiritualQuest(taskName) {
+async function completeSpiritualQuest(taskName) {
     const task = spiritualTasks.find(t => t.name === taskName);
 
     if (task && !task.completed) {
-        task.completed = true;
-        console.log(`Quest completed: ${taskName}`);
-        
-        // Update the task display
-        renderSpiritualTasks();
-        updateCompleteCheckbox();
+        try {
+            // Mark task as completed locally
+            task.completed = true;
+            console.log(`Quest completed: ${taskName}`);
+            
+            // Get current game data
+            const gameData = currentUserData.gameData;
+            
+            // Parse current quest progress
+            const currentProgress = gameData.spiritualQuests || "[0/2]";
+            const match = currentProgress.match(/\[(\d+)\/(\d+)\]/);
+            const currentCompleted = match ? parseInt(match[1]) : 0;
+            const totalQuests = match ? parseInt(match[2]) : 2;
+            
+            // Update quest progress
+            const newCompleted = Math.min(currentCompleted + 1, totalQuests);
+            gameData.spiritualQuests = `[${newCompleted}/${totalQuests}]`;
+            
+            // Add EXP for completing the quest
+            gameData.exp = (gameData.exp || 0) + 25;
+            console.log(`EXP gained: +25 (Total: ${gameData.exp})`);
+            
+            // Add stacked attributes for spiritual training
+            if (!gameData.stackedAttributes) {
+                gameData.stackedAttributes = { STR: 0, VIT: 0, AGI: 0, INT: 0, PER: 0, WIS: 0 };
+            }
+            gameData.stackedAttributes.WIS += 3;  // Wisdom from spiritual training
+            gameData.stackedAttributes.INT += 1;  // Intelligence from spiritual training
+            
+            console.log('Stacked attributes updated:', gameData.stackedAttributes);
+            
+            // Check for level up
+            if (gameData.exp >= 100) {
+                await handleLevelUp(gameData);
+            }
+            
+            // Update user data
+            userManager.setData('gameData', gameData);
+            
+            // Save to database
+            const result = await userManager.saveUserData();
+            if (result.success) {
+                console.log('Quest completion saved successfully');
+                showNotification(`✅ Quest completed! +25 EXP, +3 WIS, +1 INT`, 'success');
+            } else {
+                console.error('Error saving quest completion:', result.error);
+                showNotification('❌ Error saving quest completion', 'error');
+            }
+            
+            // Update the task display
+            renderSpiritualTasks();
+            updateCompleteCheckbox();
+            
+            // Update UI to reflect new stats
+            loadData(gameData);
+            
+        } catch (error) {
+            console.error('Error completing quest:', error);
+            showNotification('❌ Error completing quest', 'error');
+        }
     }
 }
 
@@ -413,6 +467,58 @@ function updateSpiritualStatusCard() {
         console.log(`Current XP: ${exp}`);
         console.log(`Stats: WIS - ${wis}`);
     }
+}
+
+// Show notification function
+function showNotification(message, type = 'info') {
+    const notification = document.createElement('div');
+    notification.className = `notification ${type}`;
+    notification.innerHTML = `
+        <div style="
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: ${type === 'success' ? 'linear-gradient(135deg, #4CAF50, #45a049)' : 
+                         type === 'error' ? 'linear-gradient(135deg, #f44336, #da190b)' : 
+                         'linear-gradient(135deg, #2196F3, #0b7dda)'};
+            color: white;
+            padding: 15px 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+            z-index: 10000;
+            font-weight: bold;
+            text-align: center;
+            animation: slideIn 0.3s ease-out;
+            max-width: 300px;
+        ">
+            ${message}
+        </div>
+    `;
+    
+    // Add CSS animation
+    const style = document.createElement('style');
+    style.textContent = `
+        @keyframes slideIn {
+            from {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+    `;
+    document.head.appendChild(style);
+    
+    document.body.appendChild(notification);
+    
+    // Remove notification after 3 seconds
+    setTimeout(() => {
+        if (notification.parentNode) {
+            notification.parentNode.removeChild(notification);
+        }
+    }, 3000);
 }
 
 // Auto-redirect to penalty page after 2 hours (7200000 ms)
