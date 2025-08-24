@@ -1,58 +1,117 @@
+// Mental Quest System - Updated for new UserManager
+let userManager = null;
+let currentUserData = null;
+
 document.addEventListener("DOMContentLoaded", function() {
-  // Wait for user manager to load data
-  if (window.userManager) {
-    const userData = window.userManager.getData();
-    const localStorageData = userData.gameData || {};
-    loadData(localStorageData);
-  } else {
-    console.warn('User manager not available, using fallback');
-    loadData({});
+  console.log('Mental Quest page loaded');
+  
+  // Check if we have a player name
+  const playerName = localStorage.getItem('playerName');
+  if (!playerName) {
+    console.log('No player found, redirecting to alarm page');
+    setTimeout(() => {
+      window.location.href = 'alarm.html';
+    }, 1000);
+    return;
   }
+  
+  // Initialize user manager and load data
+  initializeQuestPage();
 });
 
-// Use user manager for syncing
-async function syncToDatabase() {
-    if (window.userManager) {
-        try {
-            await window.userManager.saveUserData();
-            console.log('Sync successful via user manager');
-            return { success: true, message: 'Data synced successfully' };
-        } catch (error) {
-            console.error('Error syncing to database:', error);
-            throw error;
-        }
+// Initialize the quest page
+async function initializeQuestPage() {
+  try {
+    // Create user manager instance
+    userManager = new UserManager();
+    
+    // Set the user ID and load data
+    await userManager.setUserId(localStorage.getItem('playerName'));
+    
+    // Get current data
+    currentUserData = userManager.getData();
+    
+    if (currentUserData && currentUserData.gameData) {
+      console.log('User data loaded:', currentUserData.gameData);
+      loadData(currentUserData.gameData);
     } else {
-        console.warn('User manager not available for syncing');
-        return { success: false, message: 'User manager not available' };
+      console.log('No existing data, using defaults');
+      loadData({});
     }
+    
+    // Render the mental tasks
+    renderMentalTasks();
+    
+  } catch (error) {
+    console.error('Error initializing quest page:', error);
+    // Fallback to default data
+    loadData({});
+    renderMentalTasks();
+  }
 }
 
 // Load Data Function
 function loadData(savedData) {
   if (savedData) {
     // Load saved data into UI
-    document.querySelector(".level-number").textContent = savedData.level || 1;
-    document.getElementById("hp-fill").style.width = (savedData.hp || 100) + "%";
-    document.getElementById("mp-fill").style.width = (savedData.mp || 100) + "%";
-    document.getElementById("stm-fill").style.width = (savedData.stm || 100) + "%";
-    document.getElementById("exp-fill").style.width = (savedData.exp || 0) + "%";
-    document.getElementById("Fatvalue").textContent = savedData.fatigue || 0;
-    document.getElementById("job-text").textContent = savedData.name || "Your Name";
-    document.getElementById("ping-text").textContent = savedData.ping || "60 ms";
-    document.getElementById("guild-text").textContent = savedData.guild || "Reaper";
-    document.getElementById("race-text").textContent = savedData.race || "Hunter";
-    document.getElementById("title-text").textContent = savedData.title || "None";
-    document.getElementById("region-text").textContent = savedData.region || "TN";
-    document.getElementById("location-text").textContent = savedData.location || "Hospital";
+    const levelNumber = document.querySelector(".level-number");
+    if (levelNumber) levelNumber.textContent = savedData.level || 1;
+    
+    const hpFill = document.getElementById("hp-fill");
+    if (hpFill) hpFill.style.width = (savedData.hp || 100) + "%";
+    
+    const mpFill = document.getElementById("mp-fill");
+    if (mpFill) mpFill.style.width = (savedData.mp || 100) + "%";
+    
+    const stmFill = document.getElementById("stm-fill");
+    if (stmFill) stmFill.style.width = (savedData.stm || 100) + "%";
+    
+    const expFill = document.getElementById("exp-fill");
+    if (expFill) expFill.style.width = (savedData.exp || 0) + "%";
+    
+    const fatValue = document.getElementById("Fatvalue");
+    if (fatValue) fatValue.textContent = savedData.fatigue || 0;
+    
+    const jobText = document.getElementById("job-text");
+    if (jobText) jobText.textContent = savedData.name || "Your Name";
+    
+    const pingText = document.getElementById("ping-text");
+    if (pingText) pingText.textContent = savedData.ping || "60 ms";
+    
+    const guildText = document.getElementById("guild-text");
+    if (guildText) guildText.textContent = savedData.guild || "Reaper";
+    
+    const raceText = document.getElementById("race-text");
+    if (raceText) raceText.textContent = savedData.race || "Hunter";
+    
+    const titleText = document.getElementById("title-text");
+    if (titleText) titleText.textContent = savedData.title || "None";
+    
+    const regionText = document.getElementById("region-text");
+    if (regionText) regionText.textContent = savedData.region || "TN";
+    
+    const locationText = document.getElementById("location-text");
+    if (locationText) locationText.textContent = savedData.location || "Hospital";
     
     // Load attributes if they exist
     if (savedData.Attributes) {
-      document.getElementById("str").textContent = `STR: ${savedData.Attributes.STR}`;
-      document.getElementById("vit").textContent = `VIT: ${savedData.Attributes.VIT}`;
-      document.getElementById("agi").textContent = `AGI: ${savedData.Attributes.AGI}`;
-      document.getElementById("int").textContent = `INT: ${savedData.Attributes.INT}`;
-      document.getElementById("per").textContent = `PER: ${savedData.Attributes.PER}`;
-      document.getElementById("wis").textContent = `WIS: ${savedData.Attributes.WIS}`;
+      const strElement = document.getElementById("str");
+      if (strElement) strElement.textContent = `STR: ${savedData.Attributes.STR}`;
+      
+      const vitElement = document.getElementById("vit");
+      if (vitElement) vitElement.textContent = `VIT: ${savedData.Attributes.VIT}`;
+      
+      const agiElement = document.getElementById("agi");
+      if (agiElement) agiElement.textContent = `AGI: ${savedData.Attributes.AGI}`;
+      
+      const intElement = document.getElementById("int");
+      if (intElement) intElement.textContent = `INT: ${savedData.Attributes.INT}`;
+      
+      const perElement = document.getElementById("per");
+      if (perElement) perElement.textContent = `PER: ${savedData.Attributes.PER}`;
+      
+      const wisElement = document.getElementById("wis");
+      if (wisElement) wisElement.textContent = `WIS: ${savedData.Attributes.WIS}`;
     }
   } else {
     resetData();
@@ -96,58 +155,76 @@ function resetData() {
     },
   };
   
-  if (window.userManager) {
-    window.userManager.setData('gameData', defaultGameData);
-    syncToDatabase();
+  if (userManager) {
+    userManager.setData('gameData', defaultGameData);
   }
   
-  location.reload();
+  loadData(defaultGameData);
 }
 
 // Save Data Function
-function saveData() {
-  // Get existing data from user manager
-  const userData = window.userManager ? window.userManager.getData() : {};
-  const existingData = userData.gameData || {};
+async function saveData() {
+  if (!userManager) {
+    console.warn('User manager not available');
+    return;
+  }
+  
+  try {
+    // Get current form data
+    const newData = {
+      level: parseInt(document.querySelector(".level-number")?.textContent) || 1,
+      hp: parseInt(document.getElementById("hp-fill")?.style.width) || 100,
+      mp: parseInt(document.getElementById("mp-fill")?.style.width) || 100,
+      stm: parseInt(document.getElementById("stm-fill")?.style.width) || 100,
+      exp: parseInt(document.getElementById("exp-fill")?.style.width) || 0,
+      fatigue: parseInt(document.querySelector(".fatigue-value")?.textContent) || 0,
+      name: document.getElementById("job-text")?.textContent || "Your Name",
+      ping: document.getElementById("ping-text")?.textContent || "60 ms",
+      guild: document.getElementById("guild-text")?.textContent || "Reaper",
+      race: document.getElementById("race-text")?.textContent || "Hunter",
+      title: document.getElementById("title-text")?.textContent || "None",
+      region: document.getElementById("region-text")?.textContent || "TN",
+      location: document.getElementById("location-text")?.textContent || "Hospital",
+    };
 
-  // New data to update
-  const updatedData = {
-    level: document.querySelector(".level-number").textContent,
-    hp: parseFloat(document.getElementById("hp-fill").style.width),
-    mp: parseFloat(document.getElementById("mp-fill").style.width),
-    stm: parseFloat(document.getElementById("stm-fill").style.width),
-    exp: parseFloat(document.getElementById("exp-fill").style.width),
-    fatigue: document.getElementById("Fatvalue").textContent,
-    name: document.getElementById("job-text").textContent,
-    ping: document.getElementById("ping-text").textContent,
-    guild: document.getElementById("guild-text").textContent,
-    race: document.getElementById("race-text").textContent,
-    title: document.getElementById("title-text").textContent,
-    region: document.getElementById("region-text").textContent,
-    location: document.getElementById("location-text").textContent,
-  };
+    // Get existing data
+    const existingData = userManager.getData();
+    const gameData = existingData.gameData || {};
 
-  // Merge existing data with updated data, updating only specified keys
-  const newData = { ...existingData, ...updatedData };
+    // Merge existing data with updated data
+    const mergedData = { ...gameData, ...newData };
 
-  // Save the merged data via user manager
-  if (window.userManager) {
-    window.userManager.setData('gameData', newData);
-    syncToDatabase();
+    // Save the merged data via user manager
+    if (userManager) {
+      userManager.setData('gameData', mergedData);
+      
+      // Save to database
+      const result = await userManager.saveUserData();
+      if (result.success) {
+        console.log('Data saved successfully');
+      } else {
+        console.error('Error saving data:', result.error);
+      }
+    }
+  } catch (error) {
+    console.error('Error saving data:', error);
   }
 }
 
 // Define the mental tasks that are the same every day
 const mentalTasks = [
-    { name: "Meditation", target: "10 min", xp: 1.5, stats: { INT: 0.5, PER: 0.25 }, completed: false },
-    { name: "Reading Books", target: "30 min", xp: 2, stats: { INT: 0.75 }, completed: false },
-    { name: "Journaling", target: "10 min", xp: 1.5, stats: { INT: 0.4, PER: 0.2 }, completed: false }
+    { name: "Study Session", target: "2 hours", xp: 2.5, stats: { INT: 1 }, completed: false },
+    { name: "Problem Solving", target: "5 problems", xp: 2.5, stats: { INT: 1 }, completed: false },
+    { name: "Reading", target: "50 pages", xp: 2.5, stats: { PER: 1 }, completed: false }
 ];
-
 
 // Function to render mental tasks
 function renderMentalTasks() {
     const goalItemsDiv = document.getElementById("goal-items");
+    if (!goalItemsDiv) {
+        console.error('Goal items div not found');
+        return;
+    }
 
     goalItemsDiv.innerHTML = ''; // Clear existing tasks
 
@@ -171,6 +248,7 @@ function completeMentalTask(taskName) {
     const task = mentalTasks.find(t => t.name === taskName);
     if (task) {
         task.completed = !task.completed;
+        console.log(`Task ${taskName} ${task.completed ? 'completed' : 'uncompleted'}`);
     }
     renderMentalTasks(); // Re-render the tasks to reflect changes
     updateCompleteCheckbox(); // Update the overall completion status
@@ -181,20 +259,61 @@ function updateCompleteCheckbox() {
     const allCompleted = mentalTasks.every(task => task.completed);
     const completeCheckbox = document.getElementById("complete");
 
-    completeCheckbox.checked = allCompleted;
+    if (completeCheckbox) {
+        completeCheckbox.checked = allCompleted;
 
-    // To trigger the animation reset
-    if (allCompleted) {
-        const label = completeCheckbox.nextElementSibling;
-        label.classList.remove('animate'); // Remove class if it exists
-        void label.offsetWidth; // Trigger reflow to reset the animation
-        label.classList.add('animate'); // Add class to trigger animation
+        // If all tasks are completed, trigger completion
+        if (allCompleted) {
+            console.log('All mental tasks completed!');
+            
+            // Update the mental quest progress in user data
+            updateMentalQuestProgress();
+            
+            // Trigger completion animation and redirect
+            const label = completeCheckbox.nextElementSibling;
+            if (label) {
+                label.classList.remove('animate'); // Remove class if it exists
+                void label.offsetWidth; // Trigger reflow to reset the animation
+                label.classList.add('animate'); // Add class to trigger animation
+            }
+            
+            // Redirect to reward page after animation
+            setTimeout(function() {
+                window.location.href = 'Quest_Rewards.html?data=mental';
+            }, 1000);
+        }
+    }
+}
 
-        setTimeout(function() {
-            const data = "mental";
-                window.location.href = `/Quest_Rewards.html?data=${data}`;   
-                }, 1000);
-                    }
+// Update mental quest progress in user data
+async function updateMentalQuestProgress() {
+    if (!userManager) {
+        console.warn('User manager not available');
+        return;
+    }
+    
+    try {
+        // Get current user data
+        const userData = userManager.getData();
+        const gameData = userData.gameData || {};
+        
+        // Update mental quest progress to completed
+        gameData.mentalQuests = "[3/3]";
+        
+        // Update user data
+        userManager.setData('gameData', gameData);
+        
+        // Save to database
+        const result = await userManager.saveUserData();
+        if (result.success) {
+            console.log('Mental quest progress saved successfully');
+        } else {
+            console.error('Error saving mental quest progress:', result.error);
+        }
+        
+    } catch (error) {
+        console.error('Error updating mental quest progress:', error);
+    }
 }
 
 // Function to complete a quest and gain XP
@@ -203,41 +322,27 @@ function completeMentalQuest(taskName) {
 
     if (task && !task.completed) {
         task.completed = true;
-        userXP += task.xp;
-
-        for (let stat in task.stats) {
-            userStats[stat] += task.stats[stat];
-        }
-
-        checkLevelUp();
-        updateMentalStatusCard();
-        renderMentalTasks(); // Re-render to reflect task completion
+        console.log(`Quest completed: ${taskName}`);
+        
+        // Update the task display
+        renderMentalTasks();
+        updateCompleteCheckbox();
     }
-}
-
-// Run the renderMentalTasks function when the page loads
-window.onload = renderMentalTasks;
-
-// Function to check if the user should level up
-function checkLevelUp() {
-    if (userXP >= xpToLevelUp) {
-        userXP -= xpToLevelUp;
-        levelUp();
-    }
-}
-
-// Function to handle leveling up
-function levelUp() {
-    console.log("You've leveled up!");
-    // Display level-up message or additional logic here
 }
 
 // Function to update the Mental Status Card (display user XP and stats)
 function updateMentalStatusCard() {
-    console.log(`Current XP: ${userXP}`);
-    console.log(`Stats: INT - ${userStats.INT}, PER - ${userStats.PER}`);
+    if (currentUserData && currentUserData.gameData) {
+        const exp = currentUserData.gameData.exp || 0;
+        const int = currentUserData.gameData.Attributes?.INT || 10;
+        const per = currentUserData.gameData.Attributes?.PER || 10;
+        console.log(`Current XP: ${exp}`);
+        console.log(`Stats: INT - ${int}, PER - ${per}`);
+    }
 }
 
+// Auto-redirect to penalty page after 2 hours (7200000 ms)
 setTimeout(function() {
-    window.location.href = `/Penalty_Quest.html`;
-        }, 7200000); 
+    console.log('Auto-redirecting to penalty page');
+    window.location.href = 'Penalty_Quest.html';
+}, 7200000); 

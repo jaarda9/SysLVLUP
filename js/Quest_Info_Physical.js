@@ -1,58 +1,117 @@
+// Physical Quest System - Updated for new UserManager
+let userManager = null;
+let currentUserData = null;
+
 document.addEventListener("DOMContentLoaded", function() {
-  // Wait for user manager to load data
-  if (window.userManager) {
-    const userData = window.userManager.getData();
-    const localStorageData = userData.gameData || {};
-    loadData(localStorageData);
-  } else {
-    console.warn('User manager not available, using fallback');
-    loadData({});
+  console.log('Physical Quest page loaded');
+  
+  // Check if we have a player name
+  const playerName = localStorage.getItem('playerName');
+  if (!playerName) {
+    console.log('No player found, redirecting to alarm page');
+    setTimeout(() => {
+      window.location.href = 'alarm.html';
+    }, 1000);
+    return;
   }
+  
+  // Initialize user manager and load data
+  initializeQuestPage();
 });
 
-// Use user manager for syncing
-async function syncToDatabase() {
-    if (window.userManager) {
-        try {
-            await window.userManager.saveUserData();
-            console.log('Sync successful via user manager');
-            return { success: true, message: 'Data synced successfully' };
-        } catch (error) {
-            console.error('Error syncing to database:', error);
-            throw error;
-        }
+// Initialize the quest page
+async function initializeQuestPage() {
+  try {
+    // Create user manager instance
+    userManager = new UserManager();
+    
+    // Set the user ID and load data
+    await userManager.setUserId(localStorage.getItem('playerName'));
+    
+    // Get current data
+    currentUserData = userManager.getData();
+    
+    if (currentUserData && currentUserData.gameData) {
+      console.log('User data loaded:', currentUserData.gameData);
+      loadData(currentUserData.gameData);
     } else {
-        console.warn('User manager not available for syncing');
-        return { success: false, message: 'User manager not available' };
+      console.log('No existing data, using defaults');
+      loadData({});
     }
+    
+    // Render the physical tasks
+    renderPhysicalTasks();
+    
+  } catch (error) {
+    console.error('Error initializing quest page:', error);
+    // Fallback to default data
+    loadData({});
+    renderPhysicalTasks();
+  }
 }
 
 // Load Data Function
 function loadData(savedData) {
   if (savedData) {
     // Load saved data into UI
-    document.querySelector(".level-number").textContent = savedData.level || 1;
-    document.getElementById("hp-fill").style.width = (savedData.hp || 100) + "%";
-    document.getElementById("mp-fill").style.width = (savedData.mp || 100) + "%";
-    document.getElementById("stm-fill").style.width = (savedData.stm || 100) + "%";
-    document.getElementById("exp-fill").style.width = (savedData.exp || 0) + "%";
-    document.getElementById("Fatvalue").textContent = savedData.fatigue || 0;
-    document.getElementById("job-text").textContent = savedData.name || "Your Name";
-    document.getElementById("ping-text").textContent = savedData.ping || "60 ms";
-    document.getElementById("guild-text").textContent = savedData.guild || "Reaper";
-    document.getElementById("race-text").textContent = savedData.race || "Hunter";
-    document.getElementById("title-text").textContent = savedData.title || "None";
-    document.getElementById("region-text").textContent = savedData.region || "TN";
-    document.getElementById("location-text").textContent = savedData.location || "Hospital";
+    const levelNumber = document.querySelector(".level-number");
+    if (levelNumber) levelNumber.textContent = savedData.level || 1;
+    
+    const hpFill = document.getElementById("hp-fill");
+    if (hpFill) hpFill.style.width = (savedData.hp || 100) + "%";
+    
+    const mpFill = document.getElementById("mp-fill");
+    if (mpFill) mpFill.style.width = (savedData.mp || 100) + "%";
+    
+    const stmFill = document.getElementById("stm-fill");
+    if (stmFill) stmFill.style.width = (savedData.stm || 100) + "%";
+    
+    const expFill = document.getElementById("exp-fill");
+    if (expFill) expFill.style.width = (savedData.exp || 0) + "%";
+    
+    const fatValue = document.getElementById("Fatvalue");
+    if (fatValue) fatValue.textContent = savedData.fatigue || 0;
+    
+    const jobText = document.getElementById("job-text");
+    if (jobText) jobText.textContent = savedData.name || "Your Name";
+    
+    const pingText = document.getElementById("ping-text");
+    if (pingText) pingText.textContent = savedData.ping || "60 ms";
+    
+    const guildText = document.getElementById("guild-text");
+    if (guildText) guildText.textContent = savedData.guild || "Reaper";
+    
+    const raceText = document.getElementById("race-text");
+    if (raceText) raceText.textContent = savedData.race || "Hunter";
+    
+    const titleText = document.getElementById("title-text");
+    if (titleText) titleText.textContent = savedData.title || "None";
+    
+    const regionText = document.getElementById("region-text");
+    if (regionText) regionText.textContent = savedData.region || "TN";
+    
+    const locationText = document.getElementById("location-text");
+    if (locationText) locationText.textContent = savedData.location || "Hospital";
     
     // Load attributes if they exist
     if (savedData.Attributes) {
-      document.getElementById("str").textContent = `STR: ${savedData.Attributes.STR}`;
-      document.getElementById("vit").textContent = `VIT: ${savedData.Attributes.VIT}`;
-      document.getElementById("agi").textContent = `AGI: ${savedData.Attributes.AGI}`;
-      document.getElementById("int").textContent = `INT: ${savedData.Attributes.INT}`;
-      document.getElementById("per").textContent = `PER: ${savedData.Attributes.PER}`;
-      document.getElementById("wis").textContent = `WIS: ${savedData.Attributes.WIS}`;
+      const strElement = document.getElementById("str");
+      if (strElement) strElement.textContent = `STR: ${savedData.Attributes.STR}`;
+      
+      const vitElement = document.getElementById("vit");
+      if (vitElement) vitElement.textContent = `VIT: ${savedData.Attributes.VIT}`;
+      
+      const agiElement = document.getElementById("agi");
+      if (agiElement) agiElement.textContent = `AGI: ${savedData.Attributes.AGI}`;
+      
+      const intElement = document.getElementById("int");
+      if (intElement) intElement.textContent = `INT: ${savedData.Attributes.INT}`;
+      
+      const perElement = document.getElementById("per");
+      if (perElement) perElement.textContent = `PER: ${savedData.Attributes.PER}`;
+      
+      const wisElement = document.getElementById("wis");
+      if (wisElement) wisElement.textContent = `WIS: ${savedData.Attributes.WIS}`;
     }
   } else {
     resetData();
@@ -96,114 +155,88 @@ function resetData() {
     },
   };
   
-  if (window.userManager) {
-    window.userManager.setData('gameData', defaultGameData);
-    syncToDatabase();
+  if (userManager) {
+    userManager.setData('gameData', defaultGameData);
   }
   
-  location.reload();
+  loadData(defaultGameData);
 }
 
 // Save Data Function
-function saveData() {
-  // Get existing data from user manager
-  const userData = window.userManager ? window.userManager.getData() : {};
-  const existingData = userData.gameData || {};
+async function saveData() {
+  if (!userManager) {
+    console.warn('User manager not available');
+    return;
+  }
+  
+  try {
+    // Get current form data
+    const newData = {
+      level: parseInt(document.querySelector(".level-number")?.textContent) || 1,
+      hp: parseInt(document.getElementById("hp-fill")?.style.width) || 100,
+      mp: parseInt(document.getElementById("mp-fill")?.style.width) || 100,
+      stm: parseInt(document.getElementById("stm-fill")?.style.width) || 100,
+      exp: parseInt(document.getElementById("exp-fill")?.style.width) || 0,
+      fatigue: parseInt(document.querySelector(".fatigue-value")?.textContent) || 0,
+      name: document.getElementById("job-text")?.textContent || "Your Name",
+      ping: document.getElementById("ping-text")?.textContent || "60 ms",
+      guild: document.getElementById("guild-text")?.textContent || "Reaper",
+      race: document.getElementById("race-text")?.textContent || "Hunter",
+      title: document.getElementById("title-text")?.textContent || "None",
+      region: document.getElementById("region-text")?.textContent || "TN",
+      location: document.getElementById("location-text")?.textContent || "Hospital",
+    };
 
-  // New data to update
-  const updatedData = {
-    level: document.querySelector(".level-number").textContent,
-    hp: parseFloat(document.getElementById("hp-fill").style.width),
-    mp: parseFloat(document.getElementById("mp-fill").style.width),
-    stm: parseFloat(document.getElementById("stm-fill").style.width),
-    exp: parseFloat(document.getElementById("exp-fill").style.width),
-    fatigue: document.getElementById("Fatvalue").textContent,
-    name: document.getElementById("job-text").textContent,
-    ping: document.getElementById("ping-text").textContent,
-    guild: document.getElementById("guild-text").textContent,
-    race: document.getElementById("race-text").textContent,
-    title: document.getElementById("title-text").textContent,
-    region: document.getElementById("region-text").textContent,
-    location: document.getElementById("location-text").textContent,
-  };
+    // Get existing data
+    const existingData = userManager.getData();
+    const gameData = existingData.gameData || {};
 
-  // Merge existing data with updated data, updating only specified keys
-  const newData = { ...existingData, ...updatedData };
+    // Merge existing data with updated data
+    const mergedData = { ...gameData, ...newData };
 
-  // Save the merged data via user manager
-  if (window.userManager) {
-    window.userManager.setData('gameData', newData);
-    syncToDatabase();
+    // Save the merged data via user manager
+    if (userManager) {
+      userManager.setData('gameData', mergedData);
+      
+      // Save to database
+      const result = await userManager.saveUserData();
+      if (result.success) {
+        console.log('Data saved successfully');
+      } else {
+        console.error('Error saving data:', result.error);
+      }
+    }
+  } catch (error) {
+    console.error('Error saving data:', error);
   }
 }
-/// Define workout routine for each day with exercises, XP, and stat increments
-const dailyTasks = {
-    Monday: [
-        { name: "Archer Push-ups", target: "24 reps", xp: 1.25, stats: { STR: 0.5, AGI: 0.25 }, completed: false },
-        { name: "Pseudo Planche Push-ups", target: "18 reps", xp: 1.25, stats: { STR: 0.5, AGI: 0.25 }, completed: false },
-        { name: "Pike Push-ups", target: "24 reps", xp: 1.25, stats: { STR: 0.5, AGI: 0.25 }, completed: false },
-        { name: "Elevated Diamond Push-ups", target: "30 reps", xp: 1.25, stats: { STR: 0.5, AGI: 0.25 }, completed: false }
-    ],
-    Tuesday: [
-        { name: "Explosive Pull-ups", target: "12 reps", xp: 1.25, stats: { STR: 0.4, AGI: 0.3 }, completed: false },
-        { name: "Towel Pull-ups", target: "18 reps", xp: 1.25, stats: { STR: 0.4, AGI: 0.3 }, completed: false },
-        { name: "Chin-ups", target: "18 reps", xp: 1.25, stats: { STR: 0.4, AGI: 0.3 }, completed: false },
-        { name: "Arched Back Pull-ups", target: "24 reps", xp: 1.25, stats: { STR: 0.4, AGI: 0.3 }, completed: false }
-    ],
-    Wednesday: [
-        { name: "Jumping Lunges", target: "40 reps", xp: 1.25, stats: { VIT: 0.5, AGI: 0.25 }, completed: false },
-        { name: "Cossack Squats", target: "32 reps", xp: 1.25, stats: { VIT: 0.5, AGI: 0.25 }, completed: false },
-        { name: "Single Leg Glute Bridge", target: "80 reps", xp: 1.25, stats: { VIT: 0.5, AGI: 0.25 }, completed: false },
-        { name: "Sissy Squats", target: "40 reps", xp: 1.25, stats: { VIT: 0.5, AGI: 0.25 }, completed: false }
-    ],
-    Thursday: [
-        { name: "Archer Push-ups", target: "24 reps", xp: 1.25, stats: { STR: 0.5, AGI: 0.25 }, completed: false },
-        { name: "Pseudo Planche Push-ups", target: "18 reps", xp: 1.25, stats: { STR: 0.5, AGI: 0.25 }, completed: false },
-        { name: "Pike Push-ups", target: "24 reps", xp: 1.25, stats: { STR: 0.5, AGI: 0.25 }, completed: false },
-        { name: "Elevated Diamond Push-ups", target: "30 reps", xp: 1.25, stats: { STR: 0.5, AGI: 0.25 }, completed: false }
-    ],
-    Friday: [
-        { name: "Explosive Pull-ups", target: "12 reps", xp: 1.25, stats: { STR: 0.4, AGI: 0.3 }, completed: false },
-        { name: "Towel Pull-ups", target: "18 reps", xp: 1.25, stats: { STR: 0.4, AGI: 0.3 }, completed: false },
-        { name: "Chin-ups", target: "18 reps", xp: 1.25, stats: { STR: 0.4, AGI: 0.3 }, completed: false },
-        { name: "Arched Back Pull-ups", target: "24 reps", xp: 1.25, stats: { STR: 0.4, AGI: 0.3 }, completed: false }
-    ],
-    Saturday: [
-        { name: "Dragon Flag", target: "60 sec", xp: 1.25, stats: { VIT: 0.4, STR: 0.3 }, completed: false },
-        { name: "Hollow Body Hold", target: "100 sec", xp: 1.25, stats: { VIT: 0.4, STR: 0.3 }, completed: false },
-        { name: "Hanging Leg Raises", target: "40 reps", xp: 1.25, stats: { VIT: 0.4, STR: 0.3 }, completed: false },
-        { name: "V Ups", target: "80 reps", xp: 1.25, stats: { VIT: 0.4, STR: 0.3 }, completed: false }
-    ],
-    Sunday: [
-        { name: "Rest Day", target: "1/1", xp: 0, stats: {}, completed: true }
-    ]
-};
 
+// Define the physical tasks that are the same every day
+const physicalTasks = [
+    { name: "Push-ups", target: "20 reps", xp: 2.5, stats: { STR: 1 }, completed: false },
+    { name: "Squats", target: "30 reps", xp: 2.5, stats: { VIT: 1 }, completed: false },
+    { name: "Plank", target: "60 seconds", xp: 2.5, stats: { VIT: 1 }, completed: false },
+    { name: "Burpees", target: "10 reps", xp: 2.5, stats: { AGI: 1 }, completed: false }
+];
 
-
-
-// Function to get the current day's tasks
-function getCurrentDayTasks() {
-    const days = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
-    const today = new Date().getDay();
-    return dailyTasks[days[today]] || [];
-}
-
-// Function to render tasks for the day
-function renderTasks() {
+// Function to render physical tasks
+function renderPhysicalTasks() {
     const goalItemsDiv = document.getElementById("goal-items");
-    const tasks = getCurrentDayTasks();
+    if (!goalItemsDiv) {
+        console.error('Goal items div not found');
+        return;
+    }
 
     goalItemsDiv.innerHTML = ''; // Clear existing tasks
 
-    tasks.forEach(task => {
+    physicalTasks.forEach(task => {
         const taskDiv = document.createElement("div");
         taskDiv.classList.add("goal-item");
 
         taskDiv.innerHTML = `
             <span class="task-name">${task.name}</span>
             <span class="task-reps">[${task.target}]</span>
-            <input type="checkbox" ${task.completed ? "checked" : ""} onchange="completeTask('${task.name}')">
+            <input type="checkbox" ${task.completed ? "checked" : ""} onchange="completePhysicalTask('${task.name}')">
         `;
         goalItemsDiv.appendChild(taskDiv);
     });
@@ -211,73 +244,107 @@ function renderTasks() {
     updateCompleteCheckbox();
 }
 
-// Function to toggle the completion state of a task
-function completeTask(taskName) {
-    const tasks = getCurrentDayTasks();
-    const task = tasks.find(t => t.name === taskName);
+// Function to toggle the completion state of a physical task
+function completePhysicalTask(taskName) {
+    const task = physicalTasks.find(t => t.name === taskName);
     if (task) {
         task.completed = !task.completed;
+        console.log(`Task ${taskName} ${task.completed ? 'completed' : 'uncompleted'}`);
     }
-    renderTasks(); // Re-render the tasks to reflect changes
+    renderPhysicalTasks(); // Re-render the tasks to reflect changes
     updateCompleteCheckbox(); // Update the overall completion status
 }
 
 // Modified updateCompleteCheckbox function
 function updateCompleteCheckbox() {
-    const tasks = getCurrentDayTasks();
-    const allCompleted = tasks.every(task => task.completed);
+    const allCompleted = physicalTasks.every(task => task.completed);
     const completeCheckbox = document.getElementById("complete");
 
-    completeCheckbox.checked = allCompleted;
+    if (completeCheckbox) {
+        completeCheckbox.checked = allCompleted;
 
-    // To trigger the animation reset
-    if (allCompleted) {
-        const label = completeCheckbox.nextElementSibling;
-        label.classList.remove('animate'); // Remove class if it exists
-        void label.offsetWidth; // Trigger reflow to reset the animation
-        label.classList.add('animate'); // Add class to trigger animation
-        setTimeout(function() {
-            const data = "physical";
-            window.location.href = `/Quest_Rewards.html?data=${data}`;
-                }, 1000); 
+        // If all tasks are completed, trigger completion
+        if (allCompleted) {
+            console.log('All physical tasks completed!');
+            
+            // Update the physical quest progress in user data
+            updatePhysicalQuestProgress();
+            
+            // Trigger completion animation and redirect
+            const label = completeCheckbox.nextElementSibling;
+            if (label) {
+                label.classList.remove('animate'); // Remove class if it exists
+                void label.offsetWidth; // Trigger reflow to reset the animation
+                label.classList.add('animate'); // Add class to trigger animation
+            }
+            
+            // Redirect to reward page after animation
+            setTimeout(function() {
+                window.location.href = 'Quest_Rewards.html?data=physical';
+            }, 1000);
+        }
+    }
+}
+
+// Update physical quest progress in user data
+async function updatePhysicalQuestProgress() {
+    if (!userManager) {
+        console.warn('User manager not available');
+        return;
+    }
+    
+    try {
+        // Get current user data
+        const userData = userManager.getData();
+        const gameData = userData.gameData || {};
         
+        // Update physical quest progress to completed
+        gameData.physicalQuests = "[4/4]";
+        
+        // Update user data
+        userManager.setData('gameData', gameData);
+        
+        // Save to database
+        const result = await userManager.saveUserData();
+        if (result.success) {
+            console.log('Physical quest progress saved successfully');
+        } else {
+            console.error('Error saving physical quest progress:', result.error);
+        }
+        
+    } catch (error) {
+        console.error('Error updating physical quest progress:', error);
     }
 }
 
 // Function to complete a quest and gain XP
-function completeQuest(questName) {
-    const tasks = getCurrentDayTasks();
-    const task = tasks.find(t => t.name === questName);
+function completePhysicalQuest(taskName) {
+    const task = physicalTasks.find(t => t.name === taskName);
 
     if (task && !task.completed) {
         task.completed = true;
-        userXP += task.xp;
-
-        for (let stat in task.stats) {
-            userStats[stat] += task.stats[stat];
-        }
-
-        checkLevelUp();
-        updateStatusCard();
-        renderTasks(); // Re-render to reflect task completion
+        console.log(`Quest completed: ${taskName}`);
+        
+        // Update the task display
+        renderPhysicalTasks();
+        updateCompleteCheckbox();
     }
 }
 
-// Run the renderTasks function when the page loads
-window.onload = renderTasks;
-
-
-
-// Function to update the Status Card (display user XP and stats)
-function updateStatusCard() {
-    // Add logic to update your status display, e.g., user XP, stats, etc.
-    console.log(`Current XP: ${userXP}`);
-    console.log(`Stats: STR - ${userStats.STR}, AGI - ${userStats.AGI}, VIT - ${userStats.VIT}`);
+// Function to update the Physical Status Card (display user XP and stats)
+function updatePhysicalStatusCard() {
+    if (currentUserData && currentUserData.gameData) {
+        const exp = currentUserData.gameData.exp || 0;
+        const str = currentUserData.gameData.Attributes?.STR || 10;
+        const vit = currentUserData.gameData.Attributes?.VIT || 10;
+        const agi = currentUserData.gameData.Attributes?.AGI || 10;
+        console.log(`Current XP: ${exp}`);
+        console.log(`Stats: STR - ${str}, VIT - ${vit}, AGI - ${agi}`);
+    }
 }
 
-// Run the renderTasks function when the page loads
-window.onload = renderTasks;
-
+// Auto-redirect to penalty page after 2 hours (7200000 ms)
 setTimeout(function() {
-    window.location.href = `/Penalty_Quest.html`;
-        }, 7200000); 
+    console.log('Auto-redirecting to penalty page');
+    window.location.href = 'Penalty_Quest.html';
+}, 7200000); 

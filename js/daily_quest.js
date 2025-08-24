@@ -1,4 +1,7 @@
 // Daily Quest System
+let userManager = null;
+let currentUserData = null;
+
 document.addEventListener("DOMContentLoaded", function() {
   console.log('Daily quest page DOM loaded');
   
@@ -7,15 +10,13 @@ document.addEventListener("DOMContentLoaded", function() {
 });
 
 // Check if we have user data available
-function checkForUserData() {
+async function checkForUserData() {
   const playerName = localStorage.getItem('playerName');
   
   if (playerName) {
     console.log('Player found:', playerName);
-    // Try to load quest data
-    loadQuestDataFromStorage();
-    setupEventListeners();
-    setupQuestNavigationListeners();
+    // Initialize user manager and load quest data
+    await initializeUserManager();
   } else {
     console.log('No player found, redirecting to alarm page');
     // No player, redirect to alarm page
@@ -25,9 +26,55 @@ function checkForUserData() {
   }
 }
 
-// Load quest data from localStorage (temporary until we implement proper data loading)
+// Initialize user manager and load data
+async function initializeUserManager() {
+  try {
+    // Create user manager instance
+    userManager = new UserManager();
+    
+    // Set the user ID and load data
+    await userManager.setUserId(localStorage.getItem('playerName'));
+    
+    // Get current data
+    currentUserData = userManager.getData();
+    
+    if (currentUserData && currentUserData.gameData) {
+      console.log('User data loaded:', currentUserData.gameData);
+      // Load quest data from user data
+      loadQuestDataFromUserData();
+    } else {
+      console.log('No existing data, using defaults');
+      loadQuestDataFromStorage();
+    }
+    
+    setupEventListeners();
+    setupQuestNavigationListeners();
+    
+  } catch (error) {
+    console.error('Error initializing user manager:', error);
+    // Fallback to default data
+    loadQuestDataFromStorage();
+    setupEventListeners();
+    setupQuestNavigationListeners();
+  }
+}
+
+// Load quest data from user data (from database)
+function loadQuestDataFromUserData() {
+  console.log('Loading quest data from user data...');
+  
+  const gameData = currentUserData.gameData || {};
+  
+  // Update quest display with actual data
+  updateQuestDisplay(gameData);
+  
+  // Check quest completion status
+  checkQuestCompletion(gameData);
+}
+
+// Load quest data from localStorage (fallback)
 function loadQuestDataFromStorage() {
-  console.log('Loading quest data from storage...');
+  console.log('Loading quest data from storage (fallback)...');
   
   // For now, use default quest data
   const defaultQuestData = {
