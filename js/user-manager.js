@@ -8,7 +8,28 @@ class UserManager {
     this.data = null;
     this.isLoading = false;
     
-    // Initialize with basic data structure immediately
+    // Don't initialize with defaults immediately - wait for MongoDB data
+    // Only set defaults if MongoDB has no data for this user
+    
+    // Try to load data from MongoDB if available
+    this.loadUserData().then(result => {
+      console.log('Initial user data load result:', result);
+      
+      // If no data was loaded from MongoDB, then set defaults
+      if (!this.data || Object.keys(this.data).length === 0) {
+        console.log('No MongoDB data found, setting initial defaults for new user');
+        this.setInitialDefaults();
+      }
+    }).catch(error => {
+      console.log('MongoDB not available, setting initial defaults:', error.message);
+      this.setInitialDefaults();
+    });
+  }
+
+  /**
+   * Set initial defaults for new users
+   */
+  setInitialDefaults() {
     this.data = {
       gameData: {
         level: 1,
@@ -48,12 +69,11 @@ class UserManager {
       STS: 0
     };
     
-    // Try to load data from MongoDB if available
-    this.loadUserData().then(result => {
-      console.log('Initial user data load result:', result);
+    // Save the initial defaults to MongoDB
+    this.saveUserData().then(() => {
+      console.log('Initial defaults saved to MongoDB');
     }).catch(error => {
-      console.log('MongoDB not available, using local data:', error.message);
-      // Data is already initialized above, so we're good
+      console.error('Error saving initial defaults:', error);
     });
   }
 

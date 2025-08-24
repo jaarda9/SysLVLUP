@@ -37,12 +37,17 @@ function measurePing(url) {
 
 // Wait for user manager to be ready
 function waitForUserManager() {
-  if (window.userManager && window.userManager.data !== null) {
-    console.log('User manager ready, loading status data...');
-    loadStatusData();
-    
-    // Set up periodic refresh to stay in sync with MongoDB
-    setupPeriodicRefresh();
+  if (window.userManager) {
+    // Check if user manager has loaded data
+    if (window.userManager.data !== null) {
+      console.log('User manager ready with data, loading status...');
+      loadStatusData();
+      setupPeriodicRefresh();
+    } else {
+      console.log('User manager exists but data not loaded yet, waiting...');
+      // Wait a bit more for data to load
+      setTimeout(waitForUserManager, 200);
+    }
   } else {
     console.log('Waiting for user manager...');
     setTimeout(waitForUserManager, 100);
@@ -104,12 +109,13 @@ function loadStatusData() {
     
     console.log('Loading status data:', gameData);
     
-    if (gameData && Object.keys(gameData).length > 0) {
-      // We have existing data, load it
+    if (gameData && Object.keys(gameData).length > 0 && gameData.level > 0) {
+      // We have valid existing data, load it
+      console.log('Loading existing game data:', gameData);
       loadData(gameData);
     } else {
-      console.log('No existing game data found, checking if we should create defaults...');
-      // Check if this is a new user or if we should load from MongoDB
+      console.log('No valid game data found, checking MongoDB...');
+      // Check if we should load from MongoDB or create defaults
       checkForExistingData();
     }
   } else {
@@ -128,15 +134,43 @@ async function checkForExistingData() {
     const userData = window.userManager.getData();
     const gameData = userData.gameData || {};
     
-    if (gameData && Object.keys(gameData).length > 0) {
+    if (gameData && Object.keys(gameData).length > 0 && gameData.level > 0) {
       console.log('Found existing data in MongoDB:', gameData);
       loadData(gameData);
+      
+      // Save this data locally to prevent future resets
+      if (window.userManager) {
+        window.userManager.setData('gameData', gameData);
+        console.log('Existing data saved locally to prevent resets');
+      }
     } else {
       console.log('No existing data found anywhere, creating initial defaults for new user');
       createInitialData();
     }
   } catch (error) {
     console.error('Error checking for existing data:', error);
+    
+    // Try to get any cached data from localStorage as fallback
+    const cachedData = localStorage.getItem('cachedGameData');
+    if (cachedData) {
+      try {
+        const parsedData = JSON.parse(cachedData);
+        if (parsedData && parsedData.level > 0) {
+          console.log('Using cached data as fallback:', parsedData);
+          loadData(parsedData);
+          
+          // Restore this data to user manager
+          if (window.userManager) {
+            window.userManager.setData('gameData', parsedData);
+            console.log('Cached data restored to user manager');
+          }
+          return;
+        }
+      } catch (parseError) {
+        console.error('Error parsing cached data:', parseError);
+      }
+    }
+    
     console.log('Creating initial defaults due to error');
     createInitialData();
   }
@@ -187,6 +221,9 @@ function createInitialData() {
   if (window.userManager) {
     window.userManager.setData('gameData', initialGameData);
     window.userManager.setData('lastResetDate', new Date().toLocaleDateString());
+    
+    // Also cache locally as backup
+    localStorage.setItem('cachedGameData', JSON.stringify(initialGameData));
     
     // Load the data into the UI
     loadData(initialGameData);
@@ -459,19 +496,19 @@ function saveData() {
 
   // New data to update
   const updatedData = {
-    level: document.querySelector(".level-number").textContent,
-    hp: parseFloat(document.getElementById("hp-fill").style.width),
-    mp: parseFloat(document.getElementById("mp-fill").style.width),
-    stm: parseFloat(document.getElementById("stm-fill").style.width),
-    exp: parseFloat(document.getElementById("exp-fill").style.width),
-    fatigue: document.getElementById("Fatvalue").textContent,
-    name: document.getElementById("job-text").textContent,
-    ping: document.getElementById("ping-text").textContent,
-    guild: document.getElementById("guild-text").textContent,
-    race: document.getElementById("race-text").textContent,
-    title: document.getElementById("title-text").textContent,
-    region: document.getElementById("region-text").textContent,
-    location: document.getElementById("location-text").textContent,
+    level: parseInt(document.querySelector(".level-number")?.textContent) || 1,
+    hp: parseInt(document.getElementById("hp-fill")?.style.width) || 100,
+    mp: parseInt(document.getElementById("mp-fill")?.style.width) || 100,
+    stm: parseInt(document.getElementById("stm-fill")?.style.width) || 100,
+    exp: parseInt(document.getElementById("exp-fill")?.style.width) || 0,
+    fatigue: parseInt(document.querySelector(".fatigue-value")?.textContent) || 0,
+    name: document.getElementById("job-text")?.textContent || "Your Name",
+    ping: document.getElementById("ping-text")?.textContent || "60 ms",
+    guild: document.getElementById("guild-text")?.textContent || "Reaper",
+    race: document.getElementById("race-text")?.textContent || "Hunter",
+    title: document.getElementById("title-text")?.textContent || "None",
+    region: document.getElementById("region-text")?.textContent || "TN",
+    location: document.getElementById("location-text")?.textContent || "Hospital",
   };
 
   // Merge existing data with updated data, updating only specified keys
@@ -480,7 +517,17 @@ function saveData() {
   // Save the merged data via user manager
   if (window.userManager) {
     window.userManager.setData('gameData', newData);
-    syncToDatabase();
+    
+    // Also cache locally as backup to prevent data loss on refresh
+    localStorage.setItem('cachedGameData', JSON.stringify(newData));
+    console.log('Data saved to user manager and cached locally');
+    
+    // Sync to database
+    syncToDatabase().then(() => {
+      console.log('Data synced to database successfully');
+    }).catch(error => {
+      console.error('Error syncing to database:', error);
+    });
   }
 }
 
