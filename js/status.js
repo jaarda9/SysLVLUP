@@ -51,15 +51,13 @@ function showNameInputModal() {
         console.log('Player name submitted:', playerName);
         
         try {
-            // Set the user ID (player name) in user manager
-            await userManager.setUserId(playerName);
+            // Set the user ID (player name) in user manager and check if data exists
+            const result = await userManager.setUserId(playerName);
             
-            // Check if this player already exists in MongoDB
-            const existingData = userManager.getData();
-            
-            if (existingData && existingData.gameData) {
-                console.log('Loading existing player data:', existingData);
+            if (result.dataFound) {
+                console.log('Loading existing player data for:', playerName);
                 // Player exists, load their data
+                const existingData = userManager.getData();
                 loadPlayerData(existingData.gameData);
             } else {
                 console.log('Creating new player data for:', playerName);
@@ -94,15 +92,13 @@ async function loadExistingPlayerData(playerName) {
     try {
         console.log('Loading data for existing player:', playerName);
         
-        // Set the user ID in user manager
-        await userManager.setUserId(playerName);
+        // Set the user ID in user manager and check if data exists
+        const result = await userManager.setUserId(playerName);
         
-        // Load data from MongoDB
-        const result = await userManager.loadUserData();
-        
-        if (result.success && result.data && result.data.gameData) {
-            console.log('Existing data loaded:', result.data);
-            loadPlayerData(result.data.gameData);
+        if (result.dataFound) {
+            console.log('Existing data loaded for:', playerName);
+            const existingData = userManager.getData();
+            loadPlayerData(existingData.gameData);
             
             // Show status content
             document.getElementById('name-input-modal').classList.add('hidden');
@@ -111,7 +107,7 @@ async function loadExistingPlayerData(playerName) {
             // Set up event listeners
             setupStatusPageListeners();
         } else {
-            console.log('No existing data found, creating new data');
+            console.log('No existing data found, creating new data for:', playerName);
             // Player name exists but no data, create new data
             const initialData = userManager.createInitialData(playerName);
             loadPlayerData(initialData.gameData);

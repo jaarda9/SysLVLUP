@@ -33,12 +33,12 @@ async function initializeUserManager() {
     userManager = new UserManager();
     
     // Set the user ID and load data
-    await userManager.setUserId(localStorage.getItem('playerName'));
+    const result = await userManager.setUserId(localStorage.getItem('playerName'));
     
     // Get current data
     currentUserData = userManager.getData();
     
-    if (currentUserData && currentUserData.gameData) {
+    if (result.dataFound && currentUserData && currentUserData.gameData) {
       console.log('User data loaded:', currentUserData.gameData);
       // Check for daily reset before loading quest data
       await checkAndPerformDailyReset();

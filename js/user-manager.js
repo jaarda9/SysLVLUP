@@ -20,9 +20,13 @@ class UserManager {
     console.log('User ID set to:', this.userId);
     
     // Try to load existing data for this player
-    await this.loadUserData();
+    const loadResult = await this.loadUserData();
     
-    return this.userId;
+    // Return both the user ID and whether data was found
+    return {
+      userId: this.userId,
+      dataFound: loadResult.success && this.data && this.data.gameData
+    };
   }
 
   /**
