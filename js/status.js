@@ -1,1071 +1,421 @@
-document.addEventListener("DOMContentLoaded", function() {
-  console.log('Status page DOM loaded');
-  
-  // Wait for user manager to be ready
-  waitForUserManager();
-  
-  // Call the measurePing function with a URL to ping
-  measurePing('https://sys-lvlup.vercel.app/status.html'); // Replace with your server URL
-});
+// Global variables
+let userManager = null;
 
-// Measure ping function
-function measurePing(url) {
-    const startTime = Date.now();
-    fetch(url)
-        .then(response => {
-            const endTime = Date.now();
-            const ping = endTime - startTime; // Calculate ping
-            console.log(`Ping: ${ping} ms`);
-            
-            // Update your UI with the ping value
-            const pingTextElement = document.getElementById("ping-text");
-            if (pingTextElement) {
-                pingTextElement.textContent = ping + " ms";
-            }
-            
-            // Update the ping input field and make it readonly
-            const pingInput = document.getElementById("ping-input");
-            if (pingInput) {
-                pingInput.value = ping; // Set the value of the input field
-                pingInput.readOnly = true; // Make the input field readonly
-            }
-        })
-        .catch(error => {
-            console.error('Error measuring ping:', error);
-        });
-}
-
-// Wait for user manager to be ready
-function waitForUserManager() {
-  if (window.userManager) {
-    // Check if user manager has loaded data
-    if (window.userManager.data !== null) {
-      console.log('User manager ready with data, loading status...');
-      loadStatusData();
-      setupPeriodicRefresh();
-    } else {
-      console.log('User manager exists but data not loaded yet, waiting...');
-      // Wait a bit more for data to load
-      setTimeout(waitForUserManager, 200);
-    }
-  } else {
-    console.log('Waiting for user manager...');
-    setTimeout(waitForUserManager, 100);
-  }
-}
-
-// Setup periodic refresh to stay in sync with MongoDB data
-function setupPeriodicRefresh() {
-  // Refresh data every 5 seconds to stay in sync
-  setInterval(() => {
-    if (window.userManager && window.userManager.data !== null) {
-      console.log('Periodic refresh: checking for updated data...');
-      refreshStatusData();
-    }
-  }, 5000);
-  
-  // Also refresh when the page becomes visible (user returns from other pages)
-  document.addEventListener('visibilitychange', function() {
-    if (!document.hidden && window.userManager && window.userManager.data !== null) {
-      console.log('Page became visible, refreshing status data...');
-      refreshStatusData();
-    }
-  });
-}
-
-// Refresh status data from MongoDB
-async function refreshStatusData() {
-  try {
-    console.log('Refreshing status data from MongoDB...');
-    
-    // Reload user data from MongoDB
-    await window.userManager.loadUserData();
-    
-    const userData = window.userManager.getData();
-    const gameData = userData.gameData || {};
-    
-    if (gameData && Object.keys(gameData).length > 0) {
-      console.log('Refreshed data from MongoDB:', gameData);
-      
-      // Update the UI with the refreshed data
-      loadData(gameData);
-      
-      // Update ping if needed
-      const pingTextElement = document.getElementById("ping-text");
-      if (pingTextElement && gameData.ping) {
-        pingTextElement.textContent = gameData.ping;
-      }
-    }
-  } catch (error) {
-    console.error('Error refreshing status data:', error);
-  }
-}
-
-// Load status data from user manager
-function loadStatusData() {
-  if (window.userManager) {
-    const userData = window.userManager.getData();
-    const gameData = userData.gameData || {};
-    
-    console.log('Loading status data:', gameData);
-    
-    if (gameData && Object.keys(gameData).length > 0 && gameData.level > 0) {
-      // We have valid existing data, load it
-      console.log('Loading existing game data:', gameData);
-      loadData(gameData);
-    } else {
-      console.log('No valid game data found, checking MongoDB...');
-      // Check if we should load from MongoDB or create defaults
-      checkForExistingData();
-    }
-  } else {
-    console.warn('User manager not available');
-  }
-}
-
-// Check for existing data in MongoDB
-async function checkForExistingData() {
-  console.log('Checking for existing data in MongoDB...');
-  
-  try {
-    // Try to load user data from MongoDB
-    await window.userManager.loadUserData();
-    
-    const userData = window.userManager.getData();
-    const gameData = userData.gameData || {};
-    
-    if (gameData && Object.keys(gameData).length > 0 && gameData.level > 0) {
-      console.log('Found existing data in MongoDB:', gameData);
-      loadData(gameData);
-      
-      // Save this data locally to prevent future resets
-      if (window.userManager) {
-        window.userManager.setData('gameData', gameData);
-        console.log('Existing data saved locally to prevent resets');
-      }
-    } else {
-      console.log('No existing data found anywhere, creating initial defaults for new user');
-      createInitialData();
-    }
-  } catch (error) {
-    console.error('Error checking for existing data:', error);
-    
-    // Try to get any cached data from localStorage as fallback
-    const cachedData = localStorage.getItem('cachedGameData');
-    if (cachedData) {
-      try {
-        const parsedData = JSON.parse(cachedData);
-        if (parsedData && parsedData.level > 0) {
-          console.log('Using cached data as fallback:', parsedData);
-          loadData(parsedData);
-          
-          // Restore this data to user manager
-          if (window.userManager) {
-            window.userManager.setData('gameData', parsedData);
-            console.log('Cached data restored to user manager');
-          }
-          return;
-        }
-      } catch (parseError) {
-        console.error('Error parsing cached data:', parseError);
-      }
-    }
-    
-    console.log('Creating initial defaults due to error');
-    createInitialData();
-  }
-}
-
-// Create initial data for new users
-function createInitialData() {
-  console.log('Creating initial data for new user...');
-  
-  const initialGameData = {
-    level: 1,
-    hp: 100,
-    mp: 100,
-    stm: 100,
-    exp: 0,
-    fatigue: 0,
-    name: "Your Name",
-    ping: "60",
-    guild: "Reaper",
-    race: "Hunter",
-    title: "None",
-    region: "TN",
-    location: "Hospital",
-    physicalQuests: "[0/4]",
-    mentalQuests: "[0/3]",
-    spiritualQuests: "[0/2]",
-    Attributes: {
-      STR: 10,
-      VIT: 10,
-      AGI: 10,
-      INT: 10,
-      PER: 10,
-      WIS: 10,
-    },
-    stackedAttributes: {
-      STR: 0,
-      VIT: 0,
-      AGI: 0,
-      INT: 0,
-      PER: 0,
-      WIS: 0,
-    },
-    lastResetDate: new Date().toLocaleDateString(),
-    STS: 0
-  };
-  
-  // Save the initial data
-  if (window.userManager) {
-    window.userManager.setData('gameData', initialGameData);
-    window.userManager.setData('lastResetDate', new Date().toLocaleDateString());
-    
-    // Also cache locally as backup
-    localStorage.setItem('cachedGameData', JSON.stringify(initialGameData));
-    
-    // Load the data into the UI
-    loadData(initialGameData);
-    
-    // Sync to database
-    syncToDatabase().then(() => {
-      console.log('Initial data created and saved');
-    }).catch(error => {
-      console.error('Error saving initial data:', error);
-    });
-  }
-}
-
-// Use user manager for syncing
-async function syncToDatabase() {
-    if (window.userManager) {
-        try {
-            await window.userManager.saveUserData();
-            console.log('Sync successful via user manager');
-            return { success: true, message: 'Data synced successfully' };
-        } catch (error) {
-            console.error('Error syncing to database:', error);
-            throw error;
-        }
-    } else {
-        console.warn('User manager not available for syncing');
-        return { success: false, message: 'User manager not available' };
-    }
-}
-
-// Constants
-const ranks = ["E-Rank", "D-Rank", "C-Rank", "B-Rank", "A-Rank", "S-Rank"];
-
-// Increment Button Functionality
-document.querySelectorAll(".increment-btn").forEach((button) => {
-  button.addEventListener("click", () => {
-    const stat = button.previousElementSibling;
-    let currentValue = parseInt(stat.textContent.split(": ")[1]);
-    let abilityPoints = parseInt(
-      document.querySelector(".attributes div:last-child span")
-        .textContent.split(": ")[1]
-    );
-
-    if (abilityPoints > 0) {
-      // Increment the stat by 1
-      stat.textContent = `${stat.textContent.split(": ")[0]}: ${currentValue + 1}`;
-      // Decrease ability points by 1
-      document.querySelector(".attributes div:last-child span").textContent = `Ability Points: ${abilityPoints - 1}`;
-    }
-  });
-});
-
-function customRound(num) {
-    return (num - Math.floor(num)) > 0.4 ? Math.ceil(num) : Math.floor(num);
-  }
-  
-  let num1 = 2.4;
-  console.log(customRound(num1));  // Output: 3
-  
-  let num2 = 2.3;
-  console.log(customRound(num2));  // Output: 2
-  
-
-// Update Fatigue Progress
-function updateFatigueProgress() {
-  const fatigueText = document.querySelector(".fatigue-value").textContent;
-  const value = parseInt(fatigueText, 10);
-  const circle = document.querySelector(".progress-ring__circle");
-  const radius = circle.r.baseVal.value;
-  const circumference = 2 * Math.PI * radius;
-  const offset = circumference - (value / 100) * circumference;
-
-  circle.style.strokeDasharray = `${circumference} ${circumference}`;
-  circle.style.strokeDashoffset = offset;
-}
-
-// Update Fatigue Function
-function updateFatigue(newFatigueValue) {
-  document.querySelector(".fatigue-value").textContent = newFatigueValue;
-  updateFatigueProgress();
-}
-
-// Toggle Edit Mode
-function toggleEditMode() {
-  const inputs = document.querySelectorAll(".detail-input");
-  const texts = document.querySelectorAll(".detail-text");
-  const saveButton = document.getElementById("save-changes");
-  const editButton = document.getElementById("edit-toggle");
-
-  inputs.forEach(input => (input.style.display = input.style.display === "none" ? "inline" : "none"));
-  texts.forEach(text => (text.style.display = text.style.display === "none" ? "inline" : "none"));
-  saveButton.style.display = saveButton.style.display === "none" ? "inline" : "none";
-  editButton.style.display = "none"; // Hide the Edit button again after editing
-}
-
-// Handle Detail Text Click
-document.querySelectorAll(".detail-text").forEach((textElement) => {
-  textElement.addEventListener("click", () => {
-    const input = textElement.nextElementSibling;
-    textElement.style.display = "none";
-    input.style.display = "inline";
-    input.value = textElement.textContent.trim();
-    input.focus();
-  });
-});
-
-// Handle Detail Input Blur and Keypress
-document.querySelectorAll(".detail-input").forEach((input) => {
-  input.addEventListener("blur", () => saveInputValue(input));
-  input.addEventListener("keypress", (event) => {
-    if (event.key === "Enter") {
-      event.preventDefault();
-      saveInputValue(input);
-    }
-  });
-});
-
-// Save Input Value Function
-function saveInputValue(input) {
-  const textElement = input.previousElementSibling;
-  const newValue = input.value.trim();
-  textElement.textContent = newValue;
-  input.style.display = "none";
-  textElement.style.display = "inline";
-  saveData();
-}
-
-// Save Changes Function
-function saveChanges() {
-  const fields = ["job", "ping", "guild", "race", "title", "region", "location"];
-  fields.forEach(field => {
-    const inputValue = document.getElementById(`${field}-input`).value;
-    if (inputValue) {
-      document.getElementById(`${field}-text`).textContent = inputValue;
-    }
-  });
-  toggleEditMode();
-}
-
-
-
-// Update Progress Bar Function
-function updateProgressBar(stat) {
-  const fillElement = document.getElementById(`${stat}-fill`);
-  const valueText = fillElement.parentElement.nextElementSibling.textContent;
-  const [currentValue, maxValue] = valueText.split("/").map(Number);
-  const percentage = (currentValue / maxValue) * 100;
-  fillElement.style.width = `${percentage}%`;
-}
-
-// Update All Progress Bars on Page Load
-["hp", "mp", "stm", "exp"].forEach(stat => updateProgressBar(stat));
-
-// Level Up Functionality
-function levelUp() {
-  const levelNumber = document.querySelector(".level-number");
-  const newLevel = parseInt(levelNumber.textContent) + 1;
-  levelNumber.textContent = newLevel;
-  document.querySelector(".quests .status:not(.done)").textContent = `Lv.${newLevel}`;
-  document.getElementById("rank-text").textContent = getRank(newLevel);
-}
-
-// Check for Level Up Function
-function checkForLevelUp() {
-  const savedData = JSON.parse(localStorage.getItem("gameData"));
-  if (savedData?.exp >= 100) {
-    while (savedData.exp >= 100) {
-      savedData.exp -= 100;
-      savedData.level += 1;
-      for (let key in savedData.stackedAttributes) {
-            if (savedData.Attributes[key] !== undefined) {
-                savedData.Attributes[key] += customRound(savedData.stackedAttributes[key]*0.25);
-            }
-        }
-        // Reset stackedAttributes  applying them to Attributes
-        for (let key in savedData.stackedAttributes) {
-            savedData.stackedAttributes[key] = 0;
-        }
-    }
-    document.querySelector(".level-number").textContent = savedData.level;
-    document.getElementById("exp-fill").style.width = `${(savedData.exp / 100) * 100}%`;
-    document.getElementById("XPvalue").textContent = `${savedData.exp}/100`;
-    document.getElementById("rank-text").textContent = getRank(savedData.level);
-    localStorage.setItem("gameData", JSON.stringify(savedData));
-    syncToDatabase()
-    loadData();
-  }
-}
-
-// Get Rank Function
-function getRank(level) {
-  if (level >= 1 && level <= 10) return ranks[0]; // E-Rank
-  if (level >= 11 && level <= 30) return ranks[1]; // D-Rank
-  if (level >= 31 && level <= 50) return ranks[2]; // C-Rank
-  if (level >= 51 && level <= 80) return ranks[3]; // B-Rank
-  if (level >= 81 && level <= 100) return ranks[4]; // A-Rank
-  if (level >= 101) return ranks[5]; // S-Rank
-}
-
-// Auto-sync when page loads using centralized user manager
-async function loadDataFromMongoDB() {
-  try {
-    // Use the centralized user manager
-    if (window.userManager) {
-      const result = await window.userManager.loadUserData();
-      console.log('Data loaded using centralized user manager:', result.success ? 'Success' : 'No data found');
-    } else {
-      console.warn('User manager not available, using local data only');
-    }
-  } catch (error) {
-    console.error('Error loading data from MongoDB:', error);
-  }
-}
-
-// Use centralized sync function
-async function syncToDatabase() {
-  try {
-    if (window.userManager) {
-      await window.userManager.syncToDatabase();
-      console.log('Sync completed using centralized user manager');
-      return { success: true, message: 'Data synced successfully' };
-    } else {
-      console.warn('User manager not available for syncing');
-      return { success: false, message: 'User manager not available' };
-    }
-  } catch (error) {
-    console.error('Error syncing to database:', error);
-    throw error;
-  }
-}
-
-// Load Data Function
-function loadData(savedData) {
-  if (savedData) {
-    document.querySelector(".level-number").textContent = savedData.level;
-    document.getElementById("HPvalue").textContent = savedData.hp + "/100";
-    document.getElementById("hp-fill").style.width = savedData.hp + "%";
-    document.getElementById("MPvalue").textContent = savedData.mp + "/100";
-    document.getElementById("mp-fill").style.width = savedData.mp + "%";
-    document.getElementById("stm-fill").style.width = savedData.stm + "%";
-    document.getElementById("STMvalue").textContent = savedData.stm + "/100";
-    document.getElementById("exp-fill").style.width = savedData.exp + "%";
-    document.getElementById("XPvalue").textContent = savedData.exp + "/100";
-    document.querySelector(".fatigue-value").textContent = savedData.fatigue;
-    document.getElementById("job-text").textContent = savedData.name;
-    document.getElementById("guild-text").textContent = savedData.guild;
-    document.getElementById("race-text").textContent = savedData.race;
-    document.getElementById("title-text").textContent = savedData.title;
-    document.getElementById("region-text").textContent = savedData.region;
-    document.getElementById("location-text").textContent = savedData.location;
-    document.getElementById("rank-text").textContent = getRank(savedData.level);
-    document.querySelector(".quests .status:not(.done)").textContent = `Lv.${savedData.level}`;
-    document.getElementById("str").textContent = `STR: ${savedData.Attributes.STR}`;
-    document.getElementById("vit").textContent = `VIT: ${savedData.Attributes.VIT}`;
-    document.getElementById("agi").textContent = `AGI: ${savedData.Attributes.AGI}`;
-    document.getElementById("int").textContent = `INT: ${savedData.Attributes.INT}`;
-    document.getElementById("per").textContent = `PER: ${savedData.Attributes.PER}`;
-    document.getElementById("wis").textContent = `WIS: ${savedData.Attributes.WIS}`;
-  }
-  else{
-    resetData();
-  }
-}
-
-// Save Data Function
-function saveData() {
-  // Get existing data from user manager
-  const userData = window.userManager ? window.userManager.getData() : {};
-  const existingData = userData.gameData || {};
-
-  // New data to update
-  const updatedData = {
-    level: parseInt(document.querySelector(".level-number")?.textContent) || 1,
-    hp: parseInt(document.getElementById("hp-fill")?.style.width) || 100,
-    mp: parseInt(document.getElementById("mp-fill")?.style.width) || 100,
-    stm: parseInt(document.getElementById("stm-fill")?.style.width) || 100,
-    exp: parseInt(document.getElementById("exp-fill")?.style.width) || 0,
-    fatigue: parseInt(document.querySelector(".fatigue-value")?.textContent) || 0,
-    name: document.getElementById("job-text")?.textContent || "Your Name",
-    ping: document.getElementById("ping-text")?.textContent || "60 ms",
-    guild: document.getElementById("guild-text")?.textContent || "Reaper",
-    race: document.getElementById("race-text")?.textContent || "Hunter",
-    title: document.getElementById("title-text")?.textContent || "None",
-    region: document.getElementById("region-text")?.textContent || "TN",
-    location: document.getElementById("location-text")?.textContent || "Hospital",
-  };
-
-  // Merge existing data with updated data, updating only specified keys
-  const newData = { ...existingData, ...updatedData };
-
-  // Save the merged data via user manager
-  if (window.userManager) {
-    window.userManager.setData('gameData', newData);
-    
-    // Also cache locally as backup to prevent data loss on refresh
-    localStorage.setItem('cachedGameData', JSON.stringify(newData));
-    console.log('Data saved to user manager and cached locally');
-    
-    // Sync to database
-    syncToDatabase().then(() => {
-      console.log('Data synced to database successfully');
-    }).catch(error => {
-      console.error('Error syncing to database:', error);
-    });
-  }
-}
-
-
-// Reset Data Function
-function resetData() {
-  const defaultGameData = {
-    level: 1,
-    hp: 100,
-    mp: 100,
-    stm: 100,
-    exp: 0,
-    fatigue: 0,
-    name: "Your Name",
-    ping: "60",
-    guild: "Reaper",
-    race: "Hunter",
-    title: "None",
-    region: "TN",
-    location: "Hospital",
-    physicalQuests: "[0/4]",
-    mentalQuests: "[0/3]",
-    spiritualQuests: "[0/2]",
-    Attributes: {
-      STR: 10,
-      VIT: 10,
-      AGI: 10,
-      INT: 10,
-      PER: 10,
-      WIS: 10,
-    },
-    stackedAttributes: {
-      STR: 0,
-      VIT: 0,
-      AGI: 0,
-      INT: 0,
-      PER: 0,
-      WIS: 0,
-    },
-  };
-  
-  if (window.userManager) {
-    window.userManager.setData('gameData', defaultGameData);
-    syncToDatabase();
-  }
-  
-  location.reload();
-}
-
-// Check for New Day Function
-function checkForNewDay() {
-  const currentDate = new Date().toLocaleDateString(); // Get today's date
-  const userData = window.userManager ? window.userManager.getData() : {};
-  const lastResetDate = userData.lastResetDate; // Get the last reset date from user manager
-
-  console.log("Current Date:", currentDate);
-  console.log("Last Reset Date:", lastResetDate);
-
-  // If no date is saved or the day has changed, reset the stats
-  if (!lastResetDate || lastResetDate !== currentDate) {
-    console.log("Resetting daily stats...");
-    currentSTS = 0; // Reset daily quests
-    
-    if (window.userManager) {
-      window.userManager.setData('STS', currentSTS);
-      window.userManager.setData('lastResetDate', currentDate);
-    }
-    
-    resetDailyStats(); // Reset daily stats
-    syncToDatabase();
-  } else {
-    console.log("No reset needed.");
-  }
-}
-
-// Reset Daily Stats Function
-function resetDailyStats() {
-  const userData = window.userManager ? window.userManager.getData() : {};
-  const savedData = userData.gameData;
-  
-  if (savedData) {
-    console.log("Resetting stats for:", savedData.name);
-    // Reset relevant stats
-    savedData.hp = 100;
-    savedData.stm = 100;
-    savedData.mp = 100;
-    savedData.fatigue = 0;
-    savedData.mentalQuests = "[0/3]";
-    savedData.physicalQuests = "[0/4]";
-    savedData.spiritualQuests = "[0/2]";
-
-    // Update the UI elements accordingly
-    document.getElementById("HPvalue").textContent = savedData.hp + "/100";
-    document.getElementById("hp-fill").style.width = savedData.hp + "%";
-    document.getElementById("MPvalue").textContent = savedData.mp + "/100";
-    document.getElementById("mp-fill").style.width = savedData.mp + "%";
-    document.getElementById("stm-fill").style.width = savedData.stm + "%";
-    document.getElementById("STMvalue").textContent = savedData.stm + "/100";
-    document.querySelector(".fatigue-value").textContent = savedData.fatigue;
-
-    // Save the updated data via user manager
-    if (window.userManager) {
-      window.userManager.setData('gameData', savedData);
-    }
-    console.log("Daily stats reset successfully.");
-  } else {
-    console.error("No saved data found for resetting stats.");
-  }
-}
-
-document.addEventListener("DOMContentLoaded", function() {
-  console.log("Page loaded.");
-  // Data loading is handled by the initial DOMContentLoaded event
-  updateFatigueProgress(); // Update fatigue progress
-  checkForLevelUp(); // Check for level up
-  checkForNewDay(); // Check if it's a new day to reset stats
-});
-
-
-const gameData = {
-    level: 1,
-    hp: 100,
-    mp: 100,
-    stm: 100,
-    exp: 0,
-    fatigue: 0,
-    name: "Your Name",
-    ping: "60",
-    guild: "Reaper",
-    race: "Hunter",
-    title: "None",
-    region: "TN",
-    location: "Hospital",
-    physicalQuests: "[0/4]",
-    mentalQuests: "[0/3]",
-    spiritualQuests: "[0/2]",
-    Attributes: {
-      STR: 10,
-      VIT: 10,
-      AGI: 10,
-      INT: 10,
-      PER: 10,
-      WIS: 10,
-    },
-    stackedAttributes: {
-      STR: 0,
-      VIT: 0,
-      AGI: 0,
-      INT: 0,
-      PER: 0,
-      WIS: 0,
-    },
-
-}
-console.log(gameData);
-
-function importData(event) {
-  const file = event.target.files[0]; // Get the selected file
-  if (!file) {
-      alert("No file selected.");
-      return;
-  }
-
-  const reader = new FileReader(); // Create a FileReader instance
-  reader.onload = function(e) {
-      try {
-          const importedData = JSON.parse(e.target.result); // Parse the file content
-          
-          // Clear existing data and import new data via user manager
-          if (window.userManager) {
-            // Clear existing data
-            window.userManager.data = {};
-            
-            // Store each key-value pair via user manager
-            for (const key in importedData) {
-                if (importedData.hasOwnProperty(key)) {
-                    window.userManager.setData(key, importedData[key]);
-                }
-            }
-            
-            // Save to database
-            syncToDatabase();
-          }
-          
-          // Show success notification
-          const notification = document.getElementById("notification");
-          notification.classList.remove("hidden"); // Remove hidden class
-          notification.classList.add("show"); // Add show class
-          
-          setTimeout(() => {
-              notification.classList.remove("show"); // Hide after 2 seconds
-              notification.classList.add("hidden"); // Add hidden class back
-          }, 2500); // 2 seconds delay before hiding
-          
-          // Redirect after a short delay
-          setTimeout(() => {
-              window.location.href = "status.html"; // Redirect to status.html
-          }, 2500); // Same delay for redirecting
-      } catch (error) {
-          alert("Failed to import data. Please make sure the file is valid."); // Error handling
-      }
-  };
-  reader.readAsText(file); // Read the file as text
-}
-
-function exportData() {
-  const allData = {}; // Create an object to hold all data
-
-  // Get all data from user manager
-  if (window.userManager) {
-    const userData = window.userManager.getData();
-    Object.assign(allData, userData);
-  }
-
-  // Function to format the date
-  function formatDate(date) {
-      const options = { year: 'numeric', month: '2-digit', day: '2-digit' };
-      const formattedDate = date.toLocaleDateString('en-US', options).replace(/\//g, '-'); // Format as MM-DD-YYYY
-      const formattedTime = date.toTimeString().split(' ')[0].replace(/:/g, '-'); // Format as HH-MM-SS
-      return `${formattedDate}_${formattedTime}`; // Combine date and time
-  }
-
-  const currentDate = new Date();
-  const dateString = formatDate(currentDate); // Get the formatted date string
-
-  // Convert the allData object to a JSON string
-  const jsonData = JSON.stringify(allData, null, 2); // Pretty print with 2 spaces
-
-  // Create a Blob from the JSON string
-  const blob = new Blob([jsonData], { type: "application/json" });
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement("a");
-  a.href = url;
-  a.download = `gamedata_${dateString}.json`; // Use the formatted date in the filename
-  document.body.appendChild(a);
-  a.click();
-  document.body.removeChild(a);
-  URL.revokeObjectURL(url); // Clean up
-}
-
-
-
-window.onload = function() {
-  // Data loading is handled by the initial DOMContentLoaded event
-  updateFatigueProgress(); // Update fatigue progress
-  checkForLevelUp(); // Check for level up
-
-  // Check the player's name and show the popup if necessary
-  const playerName = document.getElementById("job-text").textContent;
-  if (playerName === "Your Name") {
-      document.getElementById("name-popup").classList.remove("hidden"); // Show the popup
-      
-  }
-  else{
-    closePopup();
-  }
-
-
-
-  // Submit name functionality
- // Submit name functionality
-document.getElementById("submit-name").onclick = function() {
-  const nameInput = document.getElementById("name-input").value.trim();
-  if (nameInput) {
-      document.getElementById("job-text").textContent = nameInput; // Update name in status
-      saveData(); // Save updated name to local storage
-      closePopup();
-      // Trigger closing animation for the popup
-      const popup = document.getElementById("name-popup");
-      popup.classList.add("hidden"); // Start the closing animation
-      
-      // After the animation, hide the popup and trigger status container animation
-      setTimeout(() => {
-          popup.style.display = 'none'; // Hide the popup completely
-          
-          // Trigger animation on the status container
-          const statusContainer = document.querySelector('.status-container');
-          if (statusContainer) {
-              statusContainer.classList.add('animate'); // Add animation class
-          }
-      }, 600); // Match the timeout with the CSS transition duration
-  } else {
-      // Alert if the input is empty
-  }
-};
-// Function to close the popup
-function closePopup() {
-  const popup = document.getElementById("name-popup");
-  popup.classList.add("hidden"); // Hide the popup
-  
-  // Wait for the animation to finish before hiding the popup
-  setTimeout(() => {
-      popup.style.display = 'none'; // Hide the popup completely
-
-      // Show the status container and trigger the dropdown animation
-      const statusContainer = document.querySelector('.status-container');
-      if (statusContainer) {
-          statusContainer.classList.remove('hidden'); // Make sure the status container is visible
-          statusContainer.style.animation = 'dropDown 2s ease forwards'; // Apply dropdown animation
-      }
-  }, 600); // Match the timeout with the CSS transition duration
-}
-};
-
-
-// Helper functions for Gemini TTS
-const base64ToArrayBuffer = (base64) => {
-  const binaryString = window.atob(base64);
-  const len = binaryString.length;
-  const bytes = new Uint8Array(len);
-  for (let i = 0; i < len; i++) {
-    bytes[i] = binaryString.charCodeAt(i);
-  }
-  return bytes.buffer;
-};
-
-const pcmToWav = (pcm, sampleRate) => {
-  const wavData = new Int16Array(pcm);
-  const buffer = new ArrayBuffer(44 + wavData.byteLength);
-  const view = new DataView(buffer);
-  let offset = 0;
-
-  // Write WAV header
-  writeString(view, offset, 'RIFF'); offset += 4;
-  view.setUint32(offset, 36 + wavData.byteLength, true); offset += 4;
-  writeString(view, offset, 'WAVE'); offset += 4;
-  writeString(view, offset, 'fmt '); offset += 4;
-  view.setUint32(offset, 16, true); offset += 4;
-  view.setUint16(offset, 1, true); offset += 2;
-  view.setUint16(offset, 1, true); offset += 2;
-  view.setUint32(offset, sampleRate, true); offset += 4;
-  view.setUint32(offset, sampleRate * 2, true); offset += 4;
-  view.setUint16(offset, 2, true); offset += 2;
-  view.setUint16(offset, 16, true); offset += 2;
-  writeString(view, offset, 'data'); offset += 4;
-  view.setUint32(offset, wavData.byteLength, true); offset += 4;
-
-  const pcmBytes = new Uint8Array(buffer, offset);
-  pcmBytes.set(new Uint8Array(wavData.buffer));
-
-  return new Blob([buffer], { type: 'audio/wav' });
-};
-
-const writeString = (view, offset, string) => {
-  for (let i = 0; i < string.length; i++) {
-    view.setUint8(offset + i, string.charCodeAt(i));
-  }
-};
-
-// Function to make a fetch call with exponential backoff
-const fetchWithBackoff = async (url, options, retries = 5, delay = 1000) => {
-  for (let i = 0; i < retries; i++) {
-    try {
-      const response = await fetch(url, options);
-      if (response.status === 429) {
-        await new Promise(res => setTimeout(res, delay));
-        delay *= 2;
-        continue;
-      }
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-      return response;
-    } catch (error) {
-      if (i === retries - 1) throw error;
-      await new Promise(res => setTimeout(res, delay));
-      delay *= 2;
-    }
-  }
-  throw new Error('Max retries exceeded');
-};
-
-// Function to generate a new quest using the Gemini API
-const generateNewQuest = async () => {
-  const generateButton = document.getElementById('generate-quest-btn');
-  const questStatus = document.getElementById('gemini-status');
-  const generatedQuestContainer = document.getElementById('generated-quest');
-  const newQuestTitle = document.getElementById('new-quest-title');
-  const newQuestDescription = document.getElementById('new-quest-description');
-  const ttsButton = document.getElementById('tts-btn');
-
-  questStatus.innerHTML = '<div class="loader"></div>';
-  generateButton.disabled = true;
-  ttsButton.disabled = true;
-
-  const level = document.getElementById('lvlValue').textContent;
-  const str = document.getElementById('str').textContent.replace('STR: ', '');
-  const agi = document.getElementById('agi').textContent.replace('AGI: ', '');
-  const int = document.getElementById('int').textContent.replace('INT: ', '');
-  const vit = document.getElementById('vit').textContent.replace('VIT: ', '');
-  const per = document.getElementById('per').textContent.replace('PER: ', '');
-  const wis = document.getElementById('wis').textContent.replace('WIS: ', '');
-  const rank = document.getElementById('rank-text').textContent;
-  const race = document.getElementById('race-text').textContent;
-  const guild = document.getElementById('guild-text').textContent;
-
-  const prompt = `Generate a quest for a RPG character that require real life tasks for self-improvement conditionned to the Player. The character is a ${rank} rank ${race} from the ${guild} guild. Their stats are: STR:${str}, AGI:${agi}, INT:${int}, VIT:${vit}, PER:${per}, WIS:${wis}. The quest should be appropriate for a level ${level} character. Provide a creative quest title and a short, single-sentence description.The Quest Should be either mental (like reading or anything like that) or physical (Running or something like that). Format the output as JSON.`;
-
-  let chatHistory = [];
-  chatHistory.push({ role: "user", parts: [{ text: prompt }] });
-  
-  const payload = {
-    contents: chatHistory,
-    generationConfig: {
-      responseMimeType: "application/json",
-      responseSchema: {
-        type: "OBJECT",
-        properties: {
-          "quest_title": { "type": "STRING" },
-          "quest_description": { "type": "STRING" }
-        },
-        "propertyOrdering": ["quest_title", "quest_description"]
-      }
-    }
-  };
-
-  const apiKey = "AIzaSyCd8keOdeW1lZ-3CsEuVbelGeDpxE298O4";
-  const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent?key=${apiKey}`;
-
-  try {
-    const response = await fetchWithBackoff(apiUrl, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(payload)
-    });
-    const result = await response.json();
-    
-    const jsonText = result?.candidates?.[0]?.content?.parts?.[0]?.text;
-    if (!jsonText) throw new Error('Invalid response structure from API');
-
-    const questData = JSON.parse(jsonText);
-
-    newQuestTitle.textContent = questData.quest_title;
-    newQuestDescription.textContent = questData.quest_description;
-    
-    // Store the quest text to be used by the TTS function
-    document.getElementById('generated-quest').dataset.questText = questData.quest_description;
-
-    generatedQuestContainer.style.display = 'block';
-    questStatus.textContent = '';
-    ttsButton.disabled = false;
-
-  } catch (error) {
-    console.error('Error generating quest:', error);
-    questStatus.textContent = 'Error generating quest. Please try again.';
-  } finally {
-    generateButton.disabled = false;
-  }
-};
-
-// Function to play text-to-speech for the quest description
-const playQuestAudio = async () => {
-  const ttsButton = document.getElementById('tts-btn');
-  const questText = document.getElementById('generated-quest').dataset.questText;
-
-  if (!questText) {
-    return;
-  }
-
-  ttsButton.disabled = true;
-  const originalIcon = ttsButton.innerHTML;
-  ttsButton.innerHTML = '<div class="loader"></div>';
-
-  const payload = {
-    contents: [{
-      parts: [{ text: questText }]
-    }],
-    generationConfig: {
-      responseModalities: ["AUDIO"],
-      speechConfig: {
-        voiceConfig: {
-          prebuiltVoiceConfig: { voiceName: "Kore" }
-        }
-      }
-    },
-    model: "gemini-2.5-flash-preview-tts"
-  };
-  const apiKey = "AIzaSyCd8keOdeW1lZ-3CsEuVbelGeDpxE298O4";
-  const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-tts:generateContent?key=${apiKey}`;
-
-  try {
-    const response = await fetchWithBackoff(apiUrl, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(payload)
-    });
-    const result = await response.json();
-    
-    const part = result?.candidates?.[0]?.content?.parts?.[0];
-    const audioData = part?.inlineData?.data;
-    const mimeType = part?.inlineData?.mimeType;
-
-    if (audioData && mimeType && mimeType.startsWith("audio/")) {
-      const sampleRateMatch = mimeType.match(/rate=(\d+)/);
-      const sampleRate = sampleRateMatch ? parseInt(sampleRateMatch[1], 10) : 16000;
-      const pcmData = base64ToArrayBuffer(audioData);
-      const pcm16 = new Int16Array(pcmData);
-      const wavBlob = pcmToWav(pcm16, sampleRate);
-      const audioUrl = URL.createObjectURL(wavBlob);
-      
-      const audio = new Audio(audioUrl);
-      audio.play();
-
-      audio.onended = () => {
-        ttsButton.disabled = false;
-        ttsButton.innerHTML = originalIcon;
-      };
-    } else {
-      throw new Error('Invalid audio response from API');
-    }
-  } catch (error) {
-    console.error('Error playing audio:', error);
-    ttsButton.disabled = false;
-    ttsButton.innerHTML = originalIcon;
-  }
-};
-
-// Main event listener for DOM content loaded
+// Initialize when DOM is loaded
 document.addEventListener('DOMContentLoaded', () => {
-  // Data loading is handled by the initial DOMContentLoaded event
-  updateFatigueProgress();
-  checkForLevelUp();
-  checkForNewDay();
-
-  // Event listeners for new Gemini features - ensure elements exist first
-  const generateQuestBtn = document.getElementById('generate-quest-btn');
-  const ttsBtn = document.getElementById('tts-btn');
-  
-  if (generateQuestBtn) {
-    generateQuestBtn.addEventListener('click', generateNewQuest);
-  } else {
-    console.error('Generate quest button not found');
-  }
-  
-  if (ttsBtn) {
-    ttsBtn.addEventListener('click', playQuestAudio);
-  }
-
-  // Optional: Sync data to MongoDB before the user leaves the page
-  window.addEventListener('beforeunload', syncToDatabase);
+    console.log('Status page loaded, initializing...');
+    initializeStatusPage();
 });
+
+// Initialize the status page
+function initializeStatusPage() {
+    // Create user manager instance
+    userManager = new UserManager();
+    window.userManager = userManager;
+    
+    // Check if player already has a name set
+    const existingPlayerName = localStorage.getItem('playerName');
+    
+    if (existingPlayerName) {
+        console.log('Existing player found:', existingPlayerName);
+        // Player has a name, try to load their data
+        loadExistingPlayerData(existingPlayerName);
+    } else {
+        console.log('New player, showing name input');
+        // New player, show name input modal
+        showNameInputModal();
+    }
+}
+
+// Show name input modal for new players
+function showNameInputModal() {
+    const modal = document.getElementById('name-input-modal');
+    const nameForm = document.getElementById('name-form');
+    const nameInput = document.getElementById('player-name-input');
+    
+    modal.classList.remove('hidden');
+    
+    // Focus on name input
+    nameInput.focus();
+    
+    // Handle form submission
+    nameForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        
+        const playerName = nameInput.value.trim();
+        if (!playerName) {
+            alert('Please enter a valid name');
+            return;
+        }
+        
+        console.log('Player name submitted:', playerName);
+        
+        try {
+            // Set the user ID (player name) in user manager
+            await userManager.setUserId(playerName);
+            
+            // Check if this player already exists in MongoDB
+            const existingData = userManager.getData();
+            
+            if (existingData && existingData.gameData) {
+                console.log('Loading existing player data:', existingData);
+                // Player exists, load their data
+                loadPlayerData(existingData.gameData);
+            } else {
+                console.log('Creating new player data for:', playerName);
+                // New player, create initial data
+                const initialData = userManager.createInitialData(playerName);
+                loadPlayerData(initialData.gameData);
+                
+                // Save to MongoDB
+                await userManager.saveUserData();
+                console.log('Initial data saved for new player');
+            }
+            
+            // Store player name locally
+            localStorage.setItem('playerName', playerName);
+            
+            // Hide modal and show status content
+            modal.classList.add('hidden');
+            document.getElementById('status-content').classList.remove('hidden');
+            
+            // Set up event listeners for the status page
+            setupStatusPageListeners();
+            
+        } catch (error) {
+            console.error('Error setting up player:', error);
+            alert('Error setting up player. Please try again.');
+        }
+    });
+}
+
+// Load existing player data
+async function loadExistingPlayerData(playerName) {
+    try {
+        console.log('Loading data for existing player:', playerName);
+        
+        // Set the user ID in user manager
+        await userManager.setUserId(playerName);
+        
+        // Load data from MongoDB
+        const result = await userManager.loadUserData();
+        
+        if (result.success && result.data && result.data.gameData) {
+            console.log('Existing data loaded:', result.data);
+            loadPlayerData(result.data.gameData);
+            
+            // Show status content
+            document.getElementById('name-input-modal').classList.add('hidden');
+            document.getElementById('status-content').classList.remove('hidden');
+            
+            // Set up event listeners
+            setupStatusPageListeners();
+        } else {
+            console.log('No existing data found, creating new data');
+            // Player name exists but no data, create new data
+            const initialData = userManager.createInitialData(playerName);
+            loadPlayerData(initialData.gameData);
+            
+            // Save to MongoDB
+            await userManager.saveUserData();
+            
+            // Show status content
+            document.getElementById('name-input-modal').classList.add('hidden');
+            document.getElementById('status-content').classList.remove('hidden');
+            
+            // Set up event listeners
+            setupStatusPageListeners();
+        }
+        
+    } catch (error) {
+        console.error('Error loading existing player data:', error);
+        // Fallback: show name input modal
+        showNameInputModal();
+    }
+}
+
+// Load player data into the UI
+function loadPlayerData(gameData) {
+    console.log('Loading player data into UI:', gameData);
+    
+    // Update character info
+    if (gameData.name) {
+        document.getElementById('job-text').textContent = gameData.name;
+    }
+    
+    if (gameData.level) {
+        document.querySelector('.level-number').textContent = gameData.level;
+    }
+    
+    if (gameData.guild) {
+        document.getElementById('guild-text').textContent = gameData.guild;
+    }
+    
+    if (gameData.race) {
+        document.getElementById('race-text').textContent = gameData.race;
+    }
+    
+    if (gameData.title) {
+        document.getElementById('title-text').textContent = gameData.title;
+    }
+    
+    if (gameData.region) {
+        document.getElementById('region-text').textContent = gameData.region;
+    }
+    
+    if (gameData.location) {
+        document.getElementById('location-text').textContent = gameData.location;
+    }
+    
+    if (gameData.ping) {
+        document.getElementById('ping-text').textContent = gameData.ping;
+    }
+    
+    // Update stats
+    if (gameData.hp !== undefined) {
+        const hpFill = document.getElementById('hp-fill');
+        const hpValue = hpFill.nextElementSibling;
+        hpFill.style.width = `${gameData.hp}%`;
+        hpValue.textContent = gameData.hp;
+    }
+    
+    if (gameData.mp !== undefined) {
+        const mpFill = document.getElementById('mp-fill');
+        const mpValue = mpFill.nextElementSibling;
+        mpFill.style.width = `${gameData.mp}%`;
+        mpValue.textContent = gameData.mp;
+    }
+    
+    if (gameData.stm !== undefined) {
+        const stmFill = document.getElementById('stm-fill');
+        const stmValue = stmFill.nextElementSibling;
+        stmFill.style.width = `${gameData.stm}%`;
+        stmValue.textContent = gameData.stm;
+    }
+    
+    if (gameData.exp !== undefined) {
+        const expFill = document.getElementById('exp-fill');
+        const expValue = expFill.nextElementSibling;
+        expFill.style.width = `${gameData.exp}%`;
+        expValue.textContent = gameData.exp;
+    }
+    
+    if (gameData.fatigue !== undefined) {
+        document.querySelector('.fatigue-value').textContent = gameData.fatigue;
+    }
+    
+    // Update attributes
+    if (gameData.Attributes) {
+        const attrs = gameData.Attributes;
+        if (attrs.STR) document.getElementById('str-value').textContent = attrs.STR;
+        if (attrs.VIT) document.getElementById('vit-value').textContent = attrs.VIT;
+        if (attrs.AGI) document.getElementById('agi-value').textContent = attrs.AGI;
+        if (attrs.INT) document.getElementById('int-value').textContent = attrs.INT;
+        if (attrs.PER) document.getElementById('per-value').textContent = attrs.PER;
+        if (attrs.WIS) document.getElementById('wis-value').textContent = attrs.WIS;
+    }
+    
+    if (gameData.stackedAttributes) {
+        const stacked = gameData.stackedAttributes;
+        if (stacked.STR) document.getElementById('str-stacked').textContent = `+${stacked.STR}`;
+        if (stacked.VIT) document.getElementById('vit-stacked').textContent = `+${stacked.VIT}`;
+        if (stacked.AGI) document.getElementById('agi-stacked').textContent = `+${stacked.AGI}`;
+        if (stacked.INT) document.getElementById('int-stacked').textContent = `+${stacked.INT}`;
+        if (stacked.PER) document.getElementById('per-stacked').textContent = `+${stacked.PER}`;
+        if (stacked.WIS) document.getElementById('wis-stacked').textContent = `+${stacked.WIS}`;
+    }
+    
+    console.log('Player data loaded into UI successfully');
+}
+
+// Set up event listeners for the status page
+function setupStatusPageListeners() {
+    console.log('Setting up status page event listeners');
+    
+    // Export button
+    const exportBtn = document.getElementById('export-btn');
+    if (exportBtn) {
+        exportBtn.addEventListener('click', exportData);
+    }
+    
+    // Import button
+    const importBtn = document.getElementById('import-btn');
+    if (importBtn) {
+        importBtn.addEventListener('click', showImportModal);
+    }
+    
+    // Reset button
+    const resetBtn = document.getElementById('reset-btn');
+    if (resetBtn) {
+        resetBtn.addEventListener('click', resetData);
+    }
+    
+    // Logout button
+    const logoutBtn = document.getElementById('logout-btn');
+    if (logoutBtn) {
+        logoutBtn.addEventListener('click', logout);
+    }
+    
+    // Import modal buttons
+    const confirmImport = document.getElementById('confirm-import');
+    if (confirmImport) {
+        confirmImport.addEventListener('click', confirmImportData);
+    }
+    
+    const cancelImport = document.getElementById('cancel-import');
+    if (cancelImport) {
+        cancelImport.addEventListener('click', hideImportModal);
+    }
+    
+    // Set up auto-save
+    setupAutoSave();
+}
+
+// Export data
+function exportData() {
+    if (!userManager || !userManager.getData()) {
+        alert('No data to export');
+        return;
+    }
+    
+    const data = userManager.getData();
+    const dataStr = JSON.stringify(data, null, 2);
+    const dataBlob = new Blob([dataStr], { type: 'application/json' });
+    
+    const url = URL.createObjectURL(dataBlob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = `syslvlup_${userManager.getUserId()}_${new Date().toISOString().split('T')[0]}.json`;
+    link.click();
+    
+    URL.revokeObjectURL(url);
+    console.log('Data exported successfully');
+}
+
+// Show import modal
+function showImportModal() {
+    const modal = document.getElementById('import-modal');
+    modal.classList.remove('hidden');
+}
+
+// Hide import modal
+function hideImportModal() {
+    const modal = document.getElementById('import-modal');
+    modal.classList.add('hidden');
+    
+    // Clear textarea
+    const textarea = document.getElementById('import-textarea');
+    if (textarea) {
+        textarea.value = '';
+    }
+}
+
+// Confirm import data
+async function confirmImportData() {
+    const textarea = document.getElementById('import-textarea');
+    const dataStr = textarea.value.trim();
+    
+    if (!dataStr) {
+        alert('Please paste data to import');
+        return;
+    }
+    
+    try {
+        const importedData = JSON.parse(dataStr);
+        
+        if (!importedData || !importedData.gameData) {
+            alert('Invalid data format');
+            return;
+        }
+        
+        // Update user manager data
+        userManager.setData('gameData', importedData.gameData);
+        
+        // Reload UI with imported data
+        loadPlayerData(importedData.gameData);
+        
+        // Save to MongoDB
+        await userManager.saveUserData();
+        
+        // Hide modal
+        hideImportModal();
+        
+        alert('Data imported successfully!');
+        console.log('Data imported and saved:', importedData);
+        
+    } catch (error) {
+        console.error('Error importing data:', error);
+        alert('Error importing data. Please check the format.');
+    }
+}
+
+// Reset data
+async function resetData() {
+    if (!confirm('Are you sure you want to reset all your data? This cannot be undone!')) {
+        return;
+    }
+    
+    try {
+        const playerName = userManager.getUserId();
+        
+        // Create fresh initial data
+        const initialData = userManager.createInitialData(playerName);
+        
+        // Reload UI
+        loadPlayerData(initialData.gameData);
+        
+        // Save to MongoDB
+        await userManager.saveUserData();
+        
+        alert('Data reset successfully!');
+        console.log('Data reset for player:', playerName);
+        
+    } catch (error) {
+        console.error('Error resetting data:', error);
+        alert('Error resetting data. Please try again.');
+    }
+}
+
+// Logout
+function logout() {
+    if (!confirm('Are you sure you want to logout?')) {
+        return;
+    }
+    
+    // Clear local storage
+    localStorage.removeItem('playerName');
+    
+    // Clear user manager
+    userManager = null;
+    window.userManager = null;
+    
+    // Redirect to alarm page
+    window.location.href = 'alarm.html';
+}
+
+// Set up auto-save functionality
+function setupAutoSave() {
+    // Auto-save every 30 seconds
+    setInterval(async () => {
+        if (userManager && userManager.hasUserId()) {
+            try {
+                await userManager.saveUserData();
+                console.log('Auto-save completed');
+            } catch (error) {
+                console.error('Auto-save failed:', error);
+            }
+        }
+    }, 30000);
+    
+    // Auto-save before page unload
+    window.addEventListener('beforeunload', async () => {
+        if (userManager && userManager.hasUserId()) {
+            try {
+                await userManager.saveUserData();
+                console.log('Final save before unload completed');
+            } catch (error) {
+                console.error('Final save failed:', error);
+            }
+        }
+    });
+}

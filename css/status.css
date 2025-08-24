@@ -1,588 +1,490 @@
-    body {
-        background: #0A1B2E;
-        font-family: 'Consolas', 'Courier New', monospace;
-        color: #e0e6f6;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        height: 100vh;
-        margin: 0;
-    }
-
-@media (max-width: 600px) {
-    .status-container {
-        padding: 15px; /* Adjust padding for smaller screens */
-    }
-
-    button {
-        width: 100%; /* Full width buttons on small screens */
-    }
+/* Reset and base styles */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
 }
 
- /* Status Container */
-.status-container {
-    background: #0A1B2E;
-    border: 1px solid #e0e6f6;
-    border-radius: 12px;
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+    color: #333;
+    min-height: 100vh;
     padding: 20px;
-    max-width: 800px;
-    width: 100%;
-    box-shadow: 0 0 20px rgba(0, 0, 0, 0.7); /* Stronger shadow for depth */
-    animation: dropDown 2s ease forwards; /* Initial drop down animation */
-    overflow: hidden; /* Prevent overflow during animation */
 }
 
-/* If you want to hide the container initially */
-.status-container.hidden {
-    display: none; /* Completely hide the container */
-}
-    
-    @keyframes dropDown {
-        0% {
-            max-height: 0;
-            opacity: 0;
-            overflow: hidden;
-        }
-        100% {
-            max-height: 1000px; /* Adjust as needed */
-            opacity: 1;
-        }
-    }
-    .status-title {
-        font-size: 1.8em;
-        margin-bottom: 10px;
-        text-align: center;
-        color: #e0e6f6;
-        text-shadow: 0 0 8px #e0e6f6;
-        border-radius: 6px;
-        padding: 5px;
-        border: 1px solid #e0e6f6;
-        box-shadow: 0 0 10px #e0e6f6;
-        font-weight: 550;
-        
-    }
-    .detail-input {
-        font-size: 14px;
-        color: #f0f8ff;
-        background-color: #1c1f24;
-        border: 1px solid #444;
-        border-radius: 5px;
-        margin-top: 4px;
-        padding: 2px 5px;
-        width: 80px;
-        text-shadow: none; /* No glow for the input field text */
-    }
-
-    #edit-toggle, #save-changes {
-        background-color: #2b3e50;
-        color: #f0f8ff;
-        border: 1px solid #444;
-        border-radius: 5px;
-        
-        cursor: pointer;
-        margin-top: 10px;
-    }
-
-    .level-section {
-        display: flex;
-        justify-content: space-between;
-        margin-bottom: 10px;
-        
-        
-    }
-
-    .level-info {
-        text-align: center;
-        color: #e0e6f6;
-        margin-right: 10px;
-        text-shadow: 0 0 5px #e0e6f6;
-        position: relative;
-        margin-right: 30px;
-        bottom: 2px;
-    }
-    a {
-        text-decoration: none; /* Remove underline */
-        color: inherit; /* Inherit the color from the parent element */
-        background-color: transparent; /* Remove any default background color */
-    }
-    
-    a:visited {
-        color: inherit; /* Ensure visited links have the same color */
-    }
-    
-    a:hover, a:focus, a:active {
-        text-decoration: none; /* Keep underline removed on hover, focus, and active states */
-        color: inherit; /* Keep color consistent on hover, focus, and active states */
-        outline: none; /* Remove any focus outline */
-    }
-    .level-number {
-        font-size: 3.6em; /* You can adjust this value to your liking */
-        font-weight: bold;
-        color: #e0e6f6;
-        font-family:system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
-    }
-
-    .level-info div:last-child {
-        font-size: 1.2em; /* Keep the "LEVEL" font size as is */
-        color: #e0e6f6;
-    }
-    .STM{
-        margin-right: 6px;
-    }
-    .MP{
-        margin-right: 4px;
-    }
-    .HP{
-        margin-right: 2px;
-    }
-    .details {
-        font-size: 0.85em;
-        display: flex;
-        gap: 0px 70px;
-        flex-wrap: wrap;
-        justify-content: space-between;
-        width: 100%; /* Ensures it takes full container width */
-        max-width: 800px; /* Or any fixed value you want */
-        height: 100%; 
-        max-height: 100px;
-        position: relative;
-        top: 30px;
-    }
-
-    .details p {
-
-    display: flex;
-    gap: 5px;
-    align-items: center;
-    margin-top: 0px;
-    text-shadow: 0 0 5px #e0e6f6;
-
-    }
-
-    .detail-text {
-        font-size: 19px;
-        font-weight: bolder;
-    }
-  .detail-textx {
-        font-size: 19px;
-        font-weight: bolder;
-    }
-    .status-bars {
-        margin-bottom: 100px;
-    }
-
-    .status-bar {
-        display: flex;
-        align-items: center;
-        margin: 5px 0;
-    }
-
-    .bar {
-    background: linear-gradient(90deg, #1a2a3b, #3c5060); /* Gradient background */
-    border-radius: 4px; /* Rounded corners */
-    height: 12px;
-    width: 60%;
-    overflow: hidden;
-    margin: 0 10px;
-    box-shadow: 0 0 5px rgba(0, 0, 0, 0.5); /* Shadow for depth */
-}
-
-.fill {
-    background: #e0e6f6; /* Light fill color */
-    height: 100%;
-    transition: width 0.5s ease; /* Smooth transition for fill */
-}
-
-    .emoji {
-        margin-right: 5px;
-        filter: grayscale(0.2) brightness(1.3) hue-rotate(190deg) drop-shadow(0 0 5px #b5d7ff);
-        font-size: 17px;
-    }
-
- .mid-section{
-    border-radius: 8px;
-    border: 1px solid #e0e6f6;
-    box-shadow: 0 0 10px #e0e6f6;
-    padding: 15px;
-    margin-bottom: 17px;
-    height: 105px;
- }
-
-    .fatigue-section {
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        margin-bottom: 15px;
-        position:relative;
-        bottom: 185px;
-        left: 325px;
-        
-        
-    }
-
-    .fatigue-ring {
-        position: relative;
-        width: 80px;
-        height: 80px;
-    }
-
-    .progress-ring {
-        transform: rotate(-90deg);
-    }
-
-    .progress-ring__circle {
-        transition: stroke-dasharray 0.3s ease;
-        stroke-dasharray: 0 215; /* Initially no progress */
-        stroke: #e0e6f6;
-        stroke-linecap: round;
-    }
-
-    .fatigue-label {
-        position: absolute;
-        top: 50%;
-        left: 50%;
-        transform: translate(-50%, -50%);
-        font-size: 0.8em;
-        text-align: center;
-        text-shadow: 0 0 5px #e0e6f6;
-    }
-
-    .attributes {
-        display: flex;
-        flex-wrap: wrap;
-        justify-content: space-between;
-        margin-bottom: 15px;
-        border-radius: 8px;
-        border: 1px solid #e0e6f6;
-        box-shadow: 0 0 10px #e0e6f6;
-        padding: 2.3px;
-        
-        
-    }
-    
-    .attributes div {
-        margin: 5px 0;
-        width: 35%;
-        display: flex;
-        justify-content: space-around;
-        align-items: center;
-        margin-bottom: 10px;
-        font-size: 18px;
-        padding-left: 58px;
-        padding-right: 58px;
-        
-    }
-    .attributes div span{
-        position: relative;
-        right: 50px;
-    }
-   
-
-    .quests {
-        background:  #0A1B2E;
-        padding: 10px;
-        border-radius: 8px;
-        border: 1px solid #e0e6f6;
-        box-shadow: 0 0 10px #e0e6f6;
-        
-    }
-
-    .quests h2 {
-        margin: 0 0 10px 0;
-        font-size: 1em;
-        color: #e0e6f6;
-        text-shadow: 0 0 5px #e0e6f6;
-    }
-
-    .quest {
-        display: flex;
-        justify-content: space-between;
-        font-size: 0.9em;
-        margin: 5px 0;
-        
-    }
-
-    .status {
-        background:  #0d223a;
-        padding: 2px 8px;
-        border-radius: 5px;
-        cursor: pointer;
-        transition: background-color 0.3s ease; /* Smooth transition */
-
-    }
-    
-    .status:hover {
-        background: #3c5060; /* Lighter color on hover */
-    }
-    
-
-    .status_done {
-        background: #e0e6f6;
-        padding: 2px 8px;
-        border-radius: 5px;
-        color:  #0A1B2E;
-        box-shadow: 0 0 5px #e0e6f6;
-    }
-
-    .status_danger {
-        background: #e74c3c;
-        border-radius: 5px;
-        padding: 2px 8px;
-        box-shadow: 0 0 5px #e74c3c;
-    }
-
-   
-    .stat-icon {
-        margin-right: 4px; /* Reduce the margin between the icon and the text */
-        color: #f0f8ff; /* Adjust this color to match your theme */
-        filter: drop-shadow(0 0 4px #f0f8ff);
-        font-size: 20px;
-    }
-
-    .attributes span {
-        color: #f0f8ff;
-        text-shadow: 0px 0px 8px #f0f8ff;
-        margin-right: 5px;
-    }
-
-    .status button {
-        background-color: rgba(255, 255, 255, 0.795); /* Slightly transparent on hover */
-    }
-    
-    #edit-toggle {
-        display: none;
-    }
-
-    .dental-emoji {
-        font-size: 1.05em; /* Adjust size to match other icons */
-        text-shadow: 0px 0px 6px #f0f8ff;
-        vertical-align: middle; /* Align it with text */
-        padding-left: 15px;
-        padding-right: 13px;
-       
-      }
-button {
-        background-color: #1a2a3b; /* Dark background matching the theme */
-        color: white; /* White text color */
-        border: none; /* No border */
-        padding: 10px 15px; /* Consistent padding */
-        border-radius: 5px; /* Rounded corners */
-        cursor: pointer; /* Pointer cursor on hover */
-        font-size: 1.05em; /* Adjust size to match other icons */
-        text-shadow: 0px 0px 6px #f0f8ff; /* Text shadow for glowing effect */
-        vertical-align: middle; /* Align it with text */
-        margin-left: auto; /* Align to the right */
-    }
-       
-    
-    
-    button:hover {
-        background-color: #3c5060;
-    }
-
-    #export-button {
-        background: #0d223a; /* Dark background matching the theme */
-        color: white; /* White text color */
-        border: none; /* No border */
-        padding: 5px 6.5px; /* Reduced padding for smaller size */
-        border-radius: 5px; /* Rounded corners */
-        cursor: pointer; /* Pointer cursor on hover */
-        font-size: 1.05em; /* Smaller font size */
-        text-shadow: 0px 0px 4px #f0f8ff; /* Reduced text shadow for a cleaner look */
-        vertical-align: middle; /* Align it with text */
-        margin: 0; /* Remove margin to fit next to each other */
-    }
-    
-    #export-button:hover {
-        background-color: #3c5060; /* Lighter background on hover */
-    }
-    
-    #import-button {
-        background: #0d223a; /* Dark background matching the theme */
-        color: white; /* White text color */
-        border: none; /* No border */
-        padding: 5px 6.5px; /* Reduced padding for smaller size */
-        border-radius: 5px; /* Rounded corners */
-        cursor: pointer; /* Pointer cursor on hover */
-        font-size: 1.05em; /* Smaller font size */
-        text-shadow: 0px 0px 4px #f0f8ff; /* Reduced text shadow for a cleaner look */
-        vertical-align: middle; /* Align it with text */
-        margin: 0; /* Remove margin to fit next to each other */
-    }
-    
-    #import-button:hover {
-        background-color: #3c5060; /* Lighter background on hover */
-    }
-    
-/* Popup Background */
-/* Popup Base Style */
-.popup {
-    display: flex; /* Use flexbox for centering */
-    justify-content: center;
-    align-items: center;
+/* Modal styles */
+.modal {
     position: fixed;
     top: 0;
     left: 0;
-    opacity: 1; /* Fully visible */
-    transform: scale(1); /* Normal size */
-    transition: opacity 0.1s ease, transform 0.6s ease; /* Smooth transition */
     width: 100%;
     height: 100%;
-    background-color: rgb(0, 0, 0); /* Black w/ opacity */
-    z-index: 1000; /* Ensure it appears above other content */
+    background: rgba(0, 0, 0, 0.8);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
 }
 
-/* Closing Animation */
-.popup.hidden {
-    opacity: 0; /* Fade out */
+.modal.hidden {
+    display: none;
 }
-/* Closing Animation */
-.popup-content.hidden {
-    opacity: 0; /* Fade out */
-    transform: scale(0.1); /* Slightly shrink */
-}
-@import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&display=swap');
-/* Popup Content */
-.popup-content {
-    border: 1px solid #e0e6f6;
-    background-color: #071320; /* Darker background for the content area */
-    padding: 30px;
-    border-radius: 8px; /* Rounded corners */
+
+.modal-content {
+    background: white;
+    padding: 40px;
+    border-radius: 15px;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
     text-align: center;
-    box-shadow: 0 0 15px rgba(224, 230, 246, 0.5); /* Glowing effect */
-    color: #e0e6f6; /* Light text color */
-    max-width: 400px; /* Limit the width */
-    width: 90%; /* Responsive width */
-    font-size: 25px;
-    text-shadow: 0 0 8px rgba(232, 243, 228, 0.979); /* Glowing effect for alert header */
-    font-family: 'Cinzel', serif;
-    animation: dropDown 2s ease forwards; /* Shorter duration for smoother animation */
-    letter-spacing: 1px; /* Adds some space between letters */
+    max-width: 500px;
+    width: 90%;
 }
 
-
-
-/* Input Field */
-#name-input {
-    width: 80%; /* Full width */
-    padding: 10px; /* Padding for the input */
-    margin-top: 10px; /* Space above the input */
-    border: 1px solid #444; /* Dark border */
-    border-radius: 5px; /* Rounded corners */
-    background-color: #1a2a3b; /* Dark background for input */
-    color: #e0e6f6; /* Light text color */
-    transition: border-color 0.3s; /* Smooth border color transition */
+.modal-content h2 {
+    color: #2a5298;
+    margin-bottom: 20px;
+    font-size: 2em;
 }
 
-/* Input Focus */
-#name-input:focus {
-    outline: none; /* Remove default outline */
-    border-color: #576b7a; /* Change border color on focus */
+.modal-content p {
+    margin-bottom: 30px;
+    color: #666;
+    font-size: 1.1em;
 }
 
-/* Submit Button */
-#submit-name {
-    background-color: #0d223a; /* Light blue background */
-    color: #ffffff; /* White text */
-    border: none; /* No border */
-    padding: 10px 20px; /* Padding for the button */
-    border-radius: 5px; /* Rounded corners */
-    cursor: pointer; /* Pointer cursor */
-    font-size: 16px; /* Font size */
-    margin-top: 30px; /* Space above the button */
-    border: 2px solid rgba(255, 255, 255, 0.8); /* White border */
-    transition: background-color 0.3s; /* Smooth background color transition */
+#name-form {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
 }
 
-/* Submit Button Hover */
-#submit-name:hover {
-    background-color: #3c5060; /* Lighter blue on hover */
+#player-name-input {
+    padding: 15px 20px;
+    border: 2px solid #ddd;
+    border-radius: 10px;
+    font-size: 1.1em;
+    text-align: center;
+    transition: border-color 0.3s ease;
 }
 
-/* Fade-in Animation */
-@keyframes fadeIn {
-    from {
-        opacity: 0; /* Start fully transparent */
-    }
-    to {
-        opacity: 1; /* End fully opaque */
-    }
+#player-name-input:focus {
+    outline: none;
+    border-color: #2a5298;
 }
 
-.notification {
-    animation: dropDown 0.5s ease forwards; /* Extended duration for smoothness */
-    transition: max-height 0.5s ease-out; /* Extended transition time */
-    position: fixed; /* Fixed position */
-    top: 50%; /* Center vertically */
-    left: 50%; /* Center horizontally */
-    transform: translate(-50%, -50%) scale(0); /* Start off-screen and scaled down */
-    background-color: #28a745; /* Green background */
-    color: white; /* White text */
-    padding: 20px 30px; /* Increased padding for a larger button */
-    border-radius: 10px; /* Rounded corners */
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3); /* Shadow effect */
-    transition: opacity 0.1s ease, transform 0.1s ease; /* Smooth transition */
-    opacity: 0; /* Start hidden */
-    z-index: 1000; /* Ensure it appears above other elements */
-    font-size: 1.5rem; /* Larger text size */
-    text-shadow: 0 0 10px rgba(255, 255, 255, 0.8); /* Text shadow */
+#start-game-btn {
+    padding: 15px 30px;
+    background: linear-gradient(135deg, #4CAF50, #45a049);
+    color: white;
+    border: none;
+    border-radius: 10px;
+    font-size: 1.1em;
+    font-weight: bold;
+    cursor: pointer;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
-.notification.show {
-    opacity: 1; /* Fully visible */
-    transform: translate(-50%, -50%) scale(1); /* Move into place and scale up */
+#start-game-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(76, 175, 80, 0.4);
 }
 
-
+/* Main content styles */
 .hidden {
-    display: none; /* or visibility: hidden; */
+    display: none !important;
 }
- .quest-actions {
-        display: flex;
-        gap: 10px;
-        justify-content: center;
-        margin-top: 15px;
-      }
 
-      .gemini-button {
-        background: #334466;
-        color: var(--text-color);
-        border: 1px solid var(--accent-color);
-        border-radius: 8px;
-        padding: 10px 15px;
-        cursor: pointer;
-        transition: background-color 0.3s, box-shadow 0.3s;
-      }
+#status-content {
+    max-width: 1200px;
+    margin: 0 auto;
+    background: white;
+    border-radius: 20px;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+}
 
-      .gemini-button:hover {
-        background-color: #445577;
-        box-shadow: 0 0 10px var(--accent-color);
-      }
+/* Header styles */
+.status-header {
+    background: linear-gradient(135deg, #2a5298, #1e3c72);
+    color: white;
+    padding: 30px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 20px;
+}
 
-      .gemini-button:disabled {
-        background-color: #21262d;
-        color: #6a7bb4;
-        cursor: not-allowed;
-      }
+.status-header h1 {
+    font-size: 2.5em;
+    font-weight: 300;
+}
 
-      #gemini-status {
+.header-controls {
+    display: flex;
+    gap: 15px;
+    flex-wrap: wrap;
+}
+
+.header-controls button {
+    padding: 12px 20px;
+    border: none;
+    border-radius: 8px;
+    background: rgba(255, 255, 255, 0.2);
+    color: white;
+    cursor: pointer;
+    transition: background 0.3s ease;
+    font-weight: 500;
+}
+
+.header-controls button:hover {
+    background: rgba(255, 255, 255, 0.3);
+}
+
+/* Main content */
+.status-main {
+    padding: 40px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 40px;
+}
+
+@media (max-width: 768px) {
+    .status-main {
+        grid-template-columns: 1fr;
+        gap: 30px;
+    }
+}
+
+/* Character Info Section */
+.character-info {
+    background: #f8f9fa;
+    padding: 30px;
+    border-radius: 15px;
+    border: 1px solid #e9ecef;
+}
+
+.character-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 25px;
+}
+
+.character-header h2 {
+    font-size: 2em;
+    color: #2a5298;
+    margin: 0;
+}
+
+.level-badge {
+    background: linear-gradient(135deg, #ff6b6b, #ee5a24);
+    color: white;
+    padding: 8px 16px;
+    border-radius: 20px;
+    font-weight: bold;
+    font-size: 1.1em;
+}
+
+.character-details {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 15px;
+}
+
+.detail-item {
+    display: flex;
+    justify-content: space-between;
+    padding: 10px 0;
+    border-bottom: 1px solid #e9ecef;
+}
+
+.detail-item:last-child {
+    border-bottom: none;
+}
+
+.label {
+    font-weight: 600;
+    color: #666;
+}
+
+/* Stats Section */
+.stats-section {
+    background: #f8f9fa;
+    padding: 30px;
+    border-radius: 15px;
+    border: 1px solid #e9ecef;
+}
+
+.stats-section h3 {
+    color: #2a5298;
+    margin-bottom: 25px;
+    font-size: 1.5em;
+}
+
+.stat-bar {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    margin-bottom: 20px;
+}
+
+.stat-bar label {
+    min-width: 50px;
+    font-weight: 600;
+    color: #666;
+}
+
+.bar-container {
+    flex: 1;
+    height: 20px;
+    background: #e9ecef;
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+.bar-fill {
+    height: 100%;
+    border-radius: 10px;
+    transition: width 0.3s ease;
+}
+
+.hp-fill {
+    background: linear-gradient(90deg, #ff6b6b, #ee5a24);
+}
+
+.mp-fill {
+    background: linear-gradient(90deg, #4ecdc4, #44a08d);
+}
+
+.stm-fill {
+    background: linear-gradient(90deg, #feca57, #ff9ff3);
+}
+
+.exp-fill {
+    background: linear-gradient(90deg, #48dbfb, #0abde3);
+}
+
+.stat-value {
+    min-width: 40px;
+    text-align: right;
+    font-weight: 600;
+    color: #2a5298;
+}
+
+.fatigue-value {
+    font-weight: 600;
+    color: #ff6b6b;
+}
+
+/* Attributes Section */
+.attributes-section {
+    background: #f8f9fa;
+    padding: 30px;
+    border-radius: 15px;
+    border: 1px solid #e9ecef;
+    grid-column: 1 / -1;
+}
+
+.attributes-section h3 {
+    color: #2a5298;
+    margin-bottom: 25px;
+    font-size: 1.5em;
+}
+
+.attributes-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 20px;
+}
+
+.attribute-item {
+    background: white;
+    padding: 20px;
+    border-radius: 10px;
+    text-align: center;
+    border: 1px solid #e9ecef;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.attribute-item:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+}
+
+.attr-name {
+    display: block;
+    font-weight: bold;
+    color: #2a5298;
+    margin-bottom: 10px;
+    font-size: 1.2em;
+}
+
+.attr-value {
+    display: block;
+    font-size: 1.5em;
+    font-weight: bold;
+    color: #333;
+    margin-bottom: 5px;
+}
+
+.attr-stacked {
+    display: block;
+    color: #28a745;
+    font-weight: 600;
+}
+
+/* Navigation Section */
+.navigation-section {
+    background: #f8f9fa;
+    padding: 30px;
+    border-radius: 15px;
+    border: 1px solid #e9ecef;
+    grid-column: 1 / -1;
+}
+
+.navigation-section h3 {
+    color: #2a5298;
+    margin-bottom: 25px;
+    font-size: 1.5em;
+}
+
+.nav-buttons {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 20px;
+}
+
+.nav-btn {
+    display: block;
+    padding: 20px;
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    color: white;
+    text-decoration: none;
+    border-radius: 10px;
+    text-align: center;
+    font-weight: bold;
+    font-size: 1.1em;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.nav-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+}
+
+/* Import Modal */
+#import-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.8);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+#import-modal.hidden {
+    display: none;
+}
+
+#import-modal .modal-content {
+    max-width: 600px;
+    width: 90%;
+}
+
+#import-modal h3 {
+    color: #2a5298;
+    margin-bottom: 20px;
+}
+
+#import-textarea {
+    width: 100%;
+    height: 200px;
+    padding: 15px;
+    border: 2px solid #ddd;
+    border-radius: 10px;
+    font-family: monospace;
+    font-size: 0.9em;
+    resize: vertical;
+}
+
+#import-textarea:focus {
+    outline: none;
+    border-color: #2a5298;
+}
+
+.modal-buttons {
+    display: flex;
+    gap: 15px;
+    justify-content: center;
+    margin-top: 20px;
+}
+
+.modal-buttons button {
+    padding: 12px 25px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 600;
+    transition: background 0.3s ease;
+}
+
+#confirm-import {
+    background: #28a745;
+    color: white;
+}
+
+#confirm-import:hover {
+    background: #218838;
+}
+
+#cancel-import {
+    background: #6c757d;
+    color: white;
+}
+
+#cancel-import:hover {
+    background: #5a6268;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    body {
+        padding: 10px;
+    }
+    
+    .status-header {
+        flex-direction: column;
         text-align: center;
-        font-size: 0.9em;
-        margin-top: 10px;
-        min-height: 20px;
-      }
-
-      .loader {
-        border: 4px solid #f3f3f3;
-        border-radius: 50%;
-        border-top: 4px solid var(--accent-color);
-        width: 20px;
-        height: 20px;
-        animation: spin 2s linear infinite;
-        margin: auto;
-      }
-
-      @keyframes spin {
-        0% { transform: rotate(0deg); }
-        100% { transform: rotate(360deg); }
-      }
+    }
+    
+    .status-header h1 {
+        font-size: 2em;
+    }
+    
+    .header-controls {
+        justify-content: center;
+    }
+    
+    .status-main {
+        padding: 20px;
+        gap: 20px;
+    }
+    
+    .character-details {
+        grid-template-columns: 1fr;
+    }
+    
+    .attributes-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+    
+    .nav-buttons {
+        grid-template-columns: 1fr;
+    }
+}

@@ -19,16 +19,9 @@ The trials ahead will challenge your:
 
  Choose wisely, young one...`;
 
-document.addEventListener("DOMContentLoaded", function() {
-  console.log('Initiation page DOM loaded');
-  
-  // Wait for user manager to be ready
-  waitForUserManager();
-});
-
 // Wait for user manager to be ready
 function waitForUserManager() {
-  if (window.userManager && window.userManager.data !== null) {
+  if (window.userManager) {
     console.log('User manager ready, starting initiation...');
     startTypingAnimation();
     setupEventListeners();
@@ -38,202 +31,148 @@ function waitForUserManager() {
   }
 }
 
-// Start the typing animation
+// Start the typing animation for the intro text
 function startTypingAnimation() {
-  console.log('Starting typing animation...');
-  const introTextElement = document.getElementById('intro-text');
-  
-  if (!introTextElement) {
+  const introText = document.querySelector('.intro-text');
+  if (!introText) {
     console.error('Intro text element not found');
     return;
   }
+
+  const fullText = introText.textContent;
+  introText.textContent = '';
+  introText.style.visibility = 'visible';
+
+  let currentIndex = 0;
   
-  console.log('Intro text element found, clearing content...');
-  // Clear any existing text
-  introTextElement.textContent = '';
+  function typeNextChar() {
+    if (currentIndex < fullText.length) {
+      introText.textContent += fullText[currentIndex];
+      currentIndex++;
+      setTimeout(typeNextChar, 50); // Adjust speed here
+    } else {
+      // Animation finished, show the quest buttons
+      console.log('Typing animation finished, showing quest buttons');
+      showQuestButtons();
+    }
+  }
   
-  // Reset typing index
-  typingIndex = 0;
-  
-  console.log('Starting to type text...');
-  // Start typing
   typeNextChar();
 }
 
-// Type the next character
-function typeNextChar() {
-  const introTextElement = document.getElementById('intro-text');
-  
-  if (typingIndex < introText.length) {
-    const char = introText.charAt(typingIndex);
-    
-    // Handle line breaks
-    if (char === '\n') {
-      introTextElement.innerHTML += '<br>';
-            } else {
-      introTextElement.textContent += char;
-    }
-    
-    typingIndex++;
-    
-    // Continue typing
-    setTimeout(typeNextChar, typingSpeed);
-  } else {
-    console.log('Typing animation complete, showing buttons...');
-    // Show buttons after typing is complete
-    setTimeout(() => {
-      showQuestButtons();
-    }, 500); // Small delay for better effect
-  }
-}
-
-// Show the quest buttons
+// Show the Accept/Deny buttons after typing animation
 function showQuestButtons() {
-  console.log('Showing quest buttons...');
   const questButtons = document.querySelector('.quest-buttons');
   if (questButtons) {
-    // Add the show class to trigger the CSS animation
     questButtons.classList.add('show');
-    
-    // Also set inline styles as a fallback
-    questButtons.style.opacity = '1';
-    questButtons.style.transform = 'translateY(0)';
-    
-    console.log('Quest buttons should now be visible');
-    console.log('Button container opacity:', questButtons.style.opacity);
-    console.log('Button container transform:', questButtons.style.transform);
+    console.log('Quest buttons shown');
   } else {
     console.error('Quest buttons container not found');
   }
 }
 
-// Setup event listeners
+// Set up event listeners
 function setupEventListeners() {
-  console.log('Setting up event listeners...');
+  const acceptBtn = document.getElementById('accept-quest');
+  const denyBtn = document.getElementById('deny-quest');
   
-  const acceptQuestBtn = document.getElementById('accept-quest');
-  const denyQuestBtn = document.getElementById('deny-quest');
-  
-  console.log('Accept quest button found:', !!acceptQuestBtn);
-  console.log('Deny quest button found:', !!denyQuestBtn);
-  
-  if (acceptQuestBtn) {
-    acceptQuestBtn.addEventListener('click', function() {
-      console.log('Quest accepted, proceeding to game...');
-      acceptQuest();
-    });
-    console.log('Accept quest event listener added');
+  if (acceptBtn) {
+    acceptBtn.addEventListener('click', acceptQuest);
   }
   
-  if (denyQuestBtn) {
-    denyQuestBtn.addEventListener('click', function() {
-      console.log('Quest denied, returning to alarm...');
-      denyQuest();
-    });
-    console.log('Deny quest event listener added');
+  if (denyBtn) {
+    denyBtn.addEventListener('click', denyQuest);
   }
 }
 
 // Handle quest acceptance
 function acceptQuest() {
-  if (window.userManager) {
-    // Set initial game data
-    const initialGameData = {
-      level: 1,
-      hp: 100,
-      mp: 100,
-      stm: 100,
-      exp: 0,
-      fatigue: 0,
-      name: "Your Name",
-      ping: "60",
-      guild: "Reaper",
-      race: "Hunter",
-      title: "None",
-      region: "TN",
-      location: "Hospital",
-      physicalQuests: "[0/4]",
-      mentalQuests: "[0/3]",
-      spiritualQuests: "[0/2]",
-      Attributes: {
-        STR: 10,
-        VIT: 10,
-        AGI: 10,
-        INT: 10,
-        PER: 10,
-        WIS: 10,
-      },
-      stackedAttributes: {
-        STR: 0,
-        VIT: 0,
-        AGI: 0,
-        INT: 0,
-        PER: 0,
-        WIS: 0,
-      },
-      lastResetDate: new Date().toLocaleDateString(),
-      STS: 0
-    };
-    
-    // Save the initial game data
-    window.userManager.setData('gameData', initialGameData);
-    
-    // Sync to database
-    syncToDatabase().then(() => {
-      console.log('Initial game data saved, redirecting to status page...');
-      // Redirect to the main game status page
-      window.location.href = 'status.html';
-    }).catch(error => {
-      console.error('Error saving initial data:', error);
-      // Still redirect even if save fails
-      window.location.href = 'status.html';
-    });
-  } else {
-    console.warn('User manager not available, redirecting anyway...');
+  console.log('Quest accepted! Redirecting to status page...');
+  
+  // Show notification
+  showNotification('Quest accepted! You are now a player.', 'success');
+  
+  // Redirect to status page where player will enter their name
+  setTimeout(() => {
     window.location.href = 'status.html';
-  }
+  }, 1500);
 }
 
 // Handle quest denial
 function denyQuest() {
-  // Show a message and redirect back to alarm
+  console.log('Quest denied! Returning to alarm...');
+  
+  // Show notification
   showNotification('Quest denied. Returning to alarm...', 'warning');
-          
-          setTimeout(() => {
+  
+  // Redirect back to alarm page
+  setTimeout(() => {
     window.location.href = 'alarm.html';
-  }, 2000);
+  }, 1500);
 }
 
-// Show notification
+// Show notification message
 function showNotification(message, type = 'info') {
-  const notification = document.getElementById('notification');
-  if (notification) {
-    notification.querySelector('p').textContent = message;
-    notification.classList.remove('hidden');
-    
-    // Add type-specific styling
-    notification.className = `notification ${type}`;
-    
-    // Hide after 3 seconds
-          setTimeout(() => {
-      notification.classList.add('hidden');
-    }, 3000);
+  const notification = document.createElement('div');
+  notification.className = `notification ${type}`;
+  notification.textContent = message;
+  
+  // Style the notification
+  notification.style.cssText = `
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    padding: 15px 20px;
+    border-radius: 5px;
+    color: white;
+    font-weight: bold;
+    z-index: 1000;
+    animation: slideIn 0.3s ease-out;
+  `;
+  
+  // Set background color based on type
+  switch (type) {
+    case 'success':
+      notification.style.backgroundColor = '#4CAF50';
+      break;
+    case 'warning':
+      notification.style.backgroundColor = '#FF9800';
+      break;
+    case 'error':
+      notification.style.backgroundColor = '#F44336';
+      break;
+    default:
+      notification.style.backgroundColor = '#2196F3';
   }
+  
+  document.body.appendChild(notification);
+  
+  // Remove notification after 3 seconds
+  setTimeout(() => {
+    if (notification.parentNode) {
+      notification.parentNode.removeChild(notification);
+    }
+  }, 3000);
 }
 
-// Use user manager for syncing
-async function syncToDatabase() {
-    if (window.userManager) {
-        try {
-            await window.userManager.saveUserData();
-            console.log('Sync successful via user manager');
-            return { success: true, message: 'Data synced successfully' };
-      } catch (error) {
-            console.error('Error syncing to database:', error);
-            throw error;
-        }
-    } else {
-        console.warn('User manager not available for syncing');
-        return { success: false, message: 'User manager not available' };
+// Add CSS animation for notification
+const style = document.createElement('style');
+style.textContent = `
+  @keyframes slideIn {
+    from {
+      transform: translateX(100%);
+      opacity: 0;
     }
-}
+    to {
+      transform: translateX(0);
+      opacity: 1;
+    }
+  }
+`;
+document.head.appendChild(style);
+
+// Initialize when DOM is loaded
+document.addEventListener('DOMContentLoaded', () => {
+  console.log('Initiation page loaded, waiting for user manager...');
+  waitForUserManager();
+});

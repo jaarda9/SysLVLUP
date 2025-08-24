@@ -1,36 +1,167 @@
 /**
- * Simplified User Manager
- * Fetches data directly from MongoDB without localStorage conflicts
+ * Simple User Manager - Uses player name as user ID
  */
 class UserManager {
   constructor() {
-    this.userId = this.getOrCreateUserId();
+    this.userId = null;
     this.data = null;
     this.isLoading = false;
-    
-    // Don't initialize with defaults immediately - wait for MongoDB data
-    // Only set defaults if MongoDB has no data for this user
-    
-    // Try to load data from MongoDB if available
-    this.loadUserData().then(result => {
-      console.log('Initial user data load result:', result);
-      
-      // If no data was loaded from MongoDB, then set defaults
-      if (!this.data || Object.keys(this.data).length === 0) {
-        console.log('No MongoDB data found, setting initial defaults for new user');
-        this.setInitialDefaults();
-      }
-    }).catch(error => {
-      console.log('MongoDB not available, setting initial defaults:', error.message);
-      this.setInitialDefaults();
-    });
   }
 
   /**
-   * Set initial defaults for new users
+   * Set the user ID (player name) and load data
    */
-  setInitialDefaults() {
+  async setUserId(playerName) {
+    if (!playerName || playerName.trim() === '') {
+      throw new Error('Player name cannot be empty');
+    }
+    
+    this.userId = playerName.trim();
+    console.log('User ID set to:', this.userId);
+    
+    // Try to load existing data for this player
+    await this.loadUserData();
+    
+    return this.userId;
+  }
+
+  /**
+   * Get the current user ID (player name)
+   */
+  getUserId() {
+    return this.userId;
+  }
+
+  /**
+   * Check if user ID is set
+   */
+  hasUserId() {
+    return this.userId !== null;
+  }
+
+  /**
+   * Load user data from MongoDB using player name as ID
+   */
+  async loadUserData() {
+    if (!this.userId) {
+      throw new Error('User ID not set');
+    }
+
+    if (this.isLoading) {
+      console.log('Already loading data, skipping...');
+      return { success: false, message: 'Already loading' };
+    }
+
+    this.isLoading = true;
+    console.log('Loading user data for:', this.userId);
+
+    try {
+      const response = await fetch(`/api/user/${encodeURIComponent(this.userId)}`);
+      
+      if (response.ok) {
+        const result = await response.json();
+        if (result.success && result.data) {
+          this.data = result.data;
+          console.log('Data loaded successfully:', this.data);
+          return { success: true, data: this.data };
+        } else {
+          console.log('No existing data found for user:', this.userId);
+          this.data = null;
+          return { success: true, message: 'No existing data' };
+        }
+      } else {
+        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+      }
+    } catch (error) {
+      console.error('Error loading user data:', error);
+      this.data = null;
+      return { success: false, error: error.message };
+    } finally {
+      this.isLoading = false;
+    }
+  }
+
+  /**
+   * Save user data to MongoDB
+   */
+  async saveUserData() {
+    if (!this.userId) {
+      throw new Error('User ID not set');
+    }
+
+    if (!this.data) {
+      throw new Error('No data to save');
+    }
+
+    console.log('Saving user data for:', this.userId);
+
+    try {
+      const response = await fetch('/api/user', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          userId: this.userId,
+          data: this.data
+        }),
+      });
+
+      if (response.ok) {
+        const result = await response.json();
+        console.log('Data saved successfully:', result);
+        return { success: true, data: result };
+      } else {
+        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+      }
+    } catch (error) {
+      console.error('Error saving user data:', error);
+      return { success: false, error: error.message };
+    }
+  }
+
+  /**
+   * Get data from memory
+   */
+  getData() {
+    return this.data;
+  }
+
+  /**
+   * Set data in memory
+   */
+  setData(key, value) {
+    if (!this.data) {
+      this.data = {};
+    }
+    
+    if (key === 'gameData') {
+      this.data.gameData = value;
+    } else {
+      this.data[key] = value;
+    }
+    
+    console.log('Data updated:', key, value);
+  }
+
+  /**
+   * Update specific data fields
+   */
+  updateData(updates) {
+    if (!this.data) {
+      this.data = {};
+    }
+    
+    Object.assign(this.data, updates);
+    console.log('Data updated with:', updates);
+  }
+
+  /**
+   * Create initial data structure for new player
+   */
+  createInitialData(playerName) {
     this.data = {
+      userId: playerName,
       gameData: {
         level: 1,
         hp: 100,
@@ -38,8 +169,8 @@ class UserManager {
         stm: 100,
         exp: 0,
         fatigue: 0,
-        name: "Your Name",
-        ping: "60",
+        name: playerName,
+        ping: "60 ms",
         guild: "Reaper",
         race: "Hunter",
         title: "None",
@@ -66,216 +197,15 @@ class UserManager {
         },
       },
       lastResetDate: new Date().toLocaleDateString(),
-      STS: 0
+      STS: 0,
+      authenticated: true,
+      authTimestamp: Date.now()
     };
     
-    // Save the initial defaults to MongoDB
-    this.saveUserData().then(() => {
-      console.log('Initial defaults saved to MongoDB');
-    }).catch(error => {
-      console.error('Error saving initial defaults:', error);
-    });
-  }
-
-  /**
-   * Get existing user ID or create a new one
-   */
-  getOrCreateUserId() {
-    // Try to get a persistent user ID that works across URLs
-    let userId = localStorage.getItem('persistentUserId');
-    
-    if (!userId) {
-      // Check if we have any existing userId to migrate
-      const oldUserId = localStorage.getItem('userId');
-      
-      if (oldUserId) {
-        // Use the existing userId as the persistent one
-        userId = oldUserId;
-        localStorage.setItem('persistentUserId', userId);
-        localStorage.removeItem('userId'); // Clean up old key
-        console.log('Migrated existing userId to persistent:', userId);
-      } else {
-        // Generate a new persistent userId
-        const timestamp = Date.now();
-        const randomString = Math.random().toString(36).substring(2, 10);
-        userId = `user_${timestamp}_${randomString}`;
-        
-        // Store the persistent userId
-        localStorage.setItem('persistentUserId', userId);
-        console.log('Generated new persistent userId:', userId);
-      }
-    } else {
-      console.log('Using existing persistent userId:', userId);
-    }
-    
-    return userId;
-  }
-
-  /**
-   * Get the current user ID
-   */
-  getUserId() {
-    return this.userId;
-  }
-
-  /**
-   * Load user data directly from MongoDB
-   */
-  async loadUserData() {
-    if (this.isLoading) {
-      console.log('Already loading data, skipping...');
-      return;
-    }
-    
-    this.isLoading = true;
-    
-    try {
-      console.log('Loading user data directly from MongoDB for userId:', this.userId);
-      
-      const isProduction = window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1';
-      const apiEndpoint = isProduction ? '/api/user' : 'http://localhost:3000/api/user';
-      
-      const response = await fetch(`${apiEndpoint}/${this.userId}`);
-      
-      if (response.status === 404) {
-        console.log('No existing data found for user, starting fresh');
-        // Keep the default data we already set
-        return { success: true, message: 'No existing data' };
-      }
-
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-
-      const result = await response.json();
-      
-      // Merge with existing data instead of replacing
-      if (result.localStorage) {
-        this.data = { ...this.data, ...result.localStorage };
-      }
-      
-      console.log('User data loaded directly from MongoDB:', this.data);
-      
-      // Trigger UI update if needed
-      this.updateUI();
-      
-      return result;
-
-    } catch (error) {
-      console.error('Error loading user data:', error);
-      // Keep the default data we already set
-      return { success: false, error: error.message };
-    } finally {
-      this.isLoading = false;
-    }
-  }
-
-  /**
-   * Save user data directly to MongoDB
-   */
-  async saveUserData(dataToSave = null) {
-    try {
-      // Use provided data or current data
-      const data = dataToSave || this.data || {};
-      
-      console.log('Saving user data directly to MongoDB:', data);
-      
-      const isProduction = window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1';
-      const apiEndpoint = isProduction ? '/api/sync' : 'http://localhost:3000/api/sync';
-
-      const response = await fetch(apiEndpoint, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          userId: this.userId,
-          localStorageData: data
-        })
-      });
-
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-
-      const result = await response.json();
-      console.log('User data saved directly to MongoDB:', result);
-      return result;
-
-    } catch (error) {
-      console.error('Error saving user data:', error);
-      throw error;
-    }
-  }
-
-  /**
-   * Get data from memory (not localStorage)
-   */
-  getData(key = null) {
-    if (key) {
-      return this.data[key];
-    }
+    console.log('Initial data created for:', playerName);
     return this.data;
   }
-
-  /**
-   * Set data in memory (not localStorage)
-   */
-  setData(key, value) {
-    this.data[key] = value;
-    console.log('Data set in memory:', key, value);
-  }
-
-  /**
-   * Update data and save to MongoDB
-   */
-  async updateData(key, value) {
-    this.setData(key, value);
-    await this.saveUserData();
-  }
-
-  /**
-   * Update UI with current data
-   */
-  updateUI() {
-    // Dispatch custom event for UI components to listen to
-    const event = new CustomEvent('userDataUpdated', { 
-      detail: { data: this.data, userId: this.userId } 
-    });
-    window.dispatchEvent(event);
-  }
-
-  /**
-   * Simple sync function for compatibility
-   */
-  async syncToDatabase() {
-    return this.saveUserData();
-  }
-
-  /**
-   * Check if user data exists in database
-   */
-  async userDataExists() {
-    try {
-      const isProduction = window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1';
-      const apiEndpoint = isProduction ? '/api/user' : 'http://localhost:3000/api/user';
-      
-      const response = await fetch(`${apiEndpoint}/${this.userId}`);
-      return response.status !== 404;
-    } catch (error) {
-      console.error('Error checking user data:', error);
-      return false;
-    }
-  }
 }
 
-// Create global user manager instance
-window.userManager = new UserManager();
-
-// Simple alias for backward compatibility
-window.simpleUser = window.userManager;
-
-// Export for use in other modules
-if (typeof module !== 'undefined' && module.exports) {
-  module.exports = UserManager;
-}
+// Make it available globally
+window.UserManager = UserManager;
