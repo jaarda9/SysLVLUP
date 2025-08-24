@@ -65,19 +65,28 @@ function showNameInputModal() {
             } else {
                 console.log('Creating new player data for:', playerName);
                 
-                // Double-check: if we have data in userManager, don't create new data
+                // Triple-check: if we have data in userManager, don't create new data
                 const currentData = userManager.getData();
                 if (currentData && currentData.gameData) {
                     console.log('WARNING: Data exists in userManager but dataFound was false! Using existing data.');
                     loadPlayerData(currentData.gameData);
                 } else {
-                    // New player, create initial data
-                    const initialData = userManager.createInitialData(playerName);
-                    loadPlayerData(initialData.gameData);
-                    
-                    // Save to MongoDB
-                    await userManager.saveUserData();
-                    console.log('Initial data saved for new player');
+                    // Final check: try to load data one more time before creating new
+                    console.log('Final attempt to load existing data before creating new...');
+                    const finalLoadResult = await userManager.loadUserData();
+                    if (finalLoadResult.success && userManager.getData() && userManager.getData().gameData) {
+                        console.log('SUCCESS: Found existing data on final attempt!');
+                        loadPlayerData(userManager.getData().gameData);
+                    } else {
+                        // New player, create initial data
+                        console.log('Confirmed: No existing data found, creating new player data');
+                        const initialData = userManager.createInitialData(playerName);
+                        loadPlayerData(initialData.gameData);
+                        
+                        // Save to MongoDB
+                        await userManager.saveUserData();
+                        console.log('Initial data saved for new player');
+                    }
                 }
             }
             
@@ -123,18 +132,27 @@ async function loadExistingPlayerData(playerName) {
         } else {
             console.log('No existing data found, creating new data for:', playerName);
             
-            // Double-check: if we have data in userManager, don't create new data
+            // Triple-check: if we have data in userManager, don't create new data
             const currentData = userManager.getData();
             if (currentData && currentData.gameData) {
                 console.log('WARNING: Data exists in userManager but dataFound was false! Using existing data.');
                 loadPlayerData(currentData.gameData);
             } else {
-                // Player name exists but no data, create new data
-                const initialData = userManager.createInitialData(playerName);
-                loadPlayerData(initialData.gameData);
-                
-                // Save to MongoDB
-                await userManager.saveUserData();
+                // Final check: try to load data one more time before creating new
+                console.log('Final attempt to load existing data before creating new...');
+                const finalLoadResult = await userManager.loadUserData();
+                if (finalLoadResult.success && userManager.getData() && userManager.getData().gameData) {
+                    console.log('SUCCESS: Found existing data on final attempt!');
+                    loadPlayerData(userManager.getData().gameData);
+                } else {
+                    // Player name exists but no data, create new data
+                    console.log('Confirmed: No existing data found, creating new player data');
+                    const initialData = userManager.createInitialData(playerName);
+                    loadPlayerData(initialData.gameData);
+                    
+                    // Save to MongoDB
+                    await userManager.saveUserData();
+                }
             }
             
             // Show status content

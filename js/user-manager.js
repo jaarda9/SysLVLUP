@@ -252,6 +252,13 @@ class UserManager {
    * Create initial data structure for new player
    */
   createInitialData(playerName) {
+    // Check if we already have data for this user (shouldn't happen, but safety check)
+    if (this.data && this.data.userId === playerName) {
+      console.log('WARNING: Attempting to create initial data for existing user:', playerName);
+      console.log('Using existing data instead of creating new');
+      return this.data;
+    }
+    
     this.data = {
       userId: playerName,
       gameData: {
