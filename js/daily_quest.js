@@ -40,6 +40,8 @@ async function initializeUserManager() {
     
     if (currentUserData && currentUserData.gameData) {
       console.log('User data loaded:', currentUserData.gameData);
+      // Check for daily reset before loading quest data
+      await checkAndPerformDailyReset();
       // Load quest data from user data
       loadQuestDataFromUserData();
     } else {
@@ -57,6 +59,121 @@ async function initializeUserManager() {
     setupEventListeners();
     setupQuestNavigationListeners();
   }
+}
+
+// Check if daily reset is needed and perform it
+async function checkAndPerformDailyReset() {
+  try {
+    const currentData = userManager.getData();
+    if (!currentData || !currentData.gameData) {
+      console.log('No game data available for daily reset check');
+      return;
+    }
+    
+    const today = new Date().toLocaleDateString();
+    const lastResetDate = currentData.lastResetDate;
+    
+    console.log('Daily reset check - Today:', today, 'Last reset:', lastResetDate);
+    
+    // If it's a new day, perform the reset
+    if (lastResetDate !== today) {
+      console.log('New day detected, performing daily reset...');
+      await performDailyReset();
+    } else {
+      console.log('Same day, no reset needed');
+    }
+    
+  } catch (error) {
+    console.error('Error during daily reset check:', error);
+  }
+}
+
+// Perform the daily reset
+async function performDailyReset() {
+  try {
+    console.log('Performing daily reset...');
+    
+    const currentData = userManager.getData();
+    const gameData = currentData.gameData;
+    
+    // Reset HP, MP, stamina, and fatigue to full
+    gameData.hp = 100;
+    gameData.mp = 100;
+    gameData.stm = 100;
+    gameData.fatigue = 0;
+    
+    // Reset daily quests
+    gameData.physicalQuests = "[0/4]";
+    gameData.mentalQuests = "[0/3]";
+    gameData.spiritualQuests = "[0/2]";
+    
+    // Update the last reset date
+    currentData.lastResetDate = new Date().toLocaleDateString();
+    
+    // Save the reset data to the database
+    await userManager.saveUserData();
+    
+    console.log('Daily reset completed successfully');
+    
+    // Show notification to user
+    showDailyResetNotification();
+    
+  } catch (error) {
+    console.error('Error performing daily reset:', error);
+  }
+}
+
+// Show notification for daily reset
+function showDailyResetNotification() {
+  const notification = document.createElement('div');
+  notification.className = 'daily-reset-notification';
+  notification.innerHTML = `
+    <div style="
+      position: fixed;
+      top: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      padding: 20px 30px;
+      border-radius: 10px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+      z-index: 10000;
+      font-weight: bold;
+      text-align: center;
+      animation: slideDown 0.5s ease-out;
+    ">
+      <div style="font-size: 24px; margin-bottom: 10px;">🌅 Daily Reset Complete!</div>
+      <div style="font-size: 16px; opacity: 0.9;">
+        HP, MP, Stamina, Fatigue, and Daily Quests have been reset.
+      </div>
+    </div>
+  `;
+  
+  // Add CSS animation
+  const style = document.createElement('style');
+  style.textContent = `
+    @keyframes slideDown {
+      from {
+        transform: translateX(-50%) translateY(-100%);
+        opacity: 0;
+      }
+      to {
+        transform: translateX(-50%) translateY(0);
+        opacity: 1;
+      }
+    }
+  `;
+  document.head.appendChild(style);
+  
+  document.body.appendChild(notification);
+  
+  // Remove notification after 5 seconds
+  setTimeout(() => {
+    if (notification.parentNode) {
+      notification.parentNode.removeChild(notification);
+    }
+  }, 5000);
 }
 
 // Load quest data from user data (from database)
