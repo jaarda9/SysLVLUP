@@ -405,8 +405,9 @@ async function completeSpiritualQuest(taskName) {
             task.completed = true;
             console.log(`Quest completed: ${taskName}`);
             
-            // Get current game data
-            const gameData = currentUserData.gameData;
+            // Get current game data from userManager to ensure we have the latest data
+            const userData = userManager.getData();
+            const gameData = userData.gameData;
             
             // Parse current quest progress
             const currentProgress = gameData.spiritualQuests || "[0/2]";
@@ -439,6 +440,9 @@ async function completeSpiritualQuest(taskName) {
             // Update user data
             userManager.setData('gameData', gameData);
             
+            // Force save by temporarily clearing lastLoadTime
+            userManager.lastLoadTime = 0;
+            
             // Save to database
             const result = await userManager.saveUserData();
             if (result.success) {
@@ -452,6 +456,9 @@ async function completeSpiritualQuest(taskName) {
             // Update the task display
             renderSpiritualTasks();
             updateCompleteCheckbox();
+            
+            // Update currentUserData reference
+            currentUserData = userManager.getData();
             
             // Update UI to reflect new stats
             loadData(gameData);

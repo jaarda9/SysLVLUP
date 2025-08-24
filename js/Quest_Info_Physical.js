@@ -405,8 +405,9 @@ async function completePhysicalQuest(taskName) {
             task.completed = true;
             console.log(`Quest completed: ${taskName}`);
             
-            // Get current game data
-            const gameData = currentUserData.gameData;
+            // Get current game data from userManager to ensure we have the latest data
+            const userData = userManager.getData();
+            const gameData = userData.gameData;
             
             // Parse current quest progress
             const currentProgress = gameData.physicalQuests || "[0/4]";
@@ -440,6 +441,9 @@ async function completePhysicalQuest(taskName) {
             // Update user data
             userManager.setData('gameData', gameData);
             
+            // Force save by temporarily clearing lastLoadTime
+            userManager.lastLoadTime = 0;
+            
             // Save to database
             const result = await userManager.saveUserData();
             if (result.success) {
@@ -453,6 +457,9 @@ async function completePhysicalQuest(taskName) {
             // Update the task display
             renderPhysicalTasks();
             updateCompleteCheckbox();
+            
+            // Update currentUserData reference
+            currentUserData = userManager.getData();
             
             // Update UI to reflect new stats
             loadData(gameData);

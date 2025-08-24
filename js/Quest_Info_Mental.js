@@ -403,8 +403,10 @@ async function completeMentalQuest(taskName) {
             task.completed = true;
             console.log(`Quest completed: ${taskName}`);
             
-            // Get current game data
-            const gameData = currentUserData.gameData;
+            // Get current game data from userManager to ensure we have the latest data
+            const userData = userManager.getData();
+            const gameData = userData.gameData;
+            console.log('Current game data before update:', JSON.stringify(gameData, null, 2));
             
             // Parse current quest progress
             const currentProgress = gameData.mentalQuests || "[0/3]";
@@ -436,6 +438,11 @@ async function completeMentalQuest(taskName) {
             
             // Update user data
             userManager.setData('gameData', gameData);
+            console.log('Game data after update:', JSON.stringify(gameData, null, 2));
+            console.log('UserManager data after setData:', JSON.stringify(userManager.getData(), null, 2));
+            
+            // Force save by temporarily clearing lastLoadTime
+            userManager.lastLoadTime = 0;
             
             // Save to database
             const result = await userManager.saveUserData();
@@ -450,6 +457,9 @@ async function completeMentalQuest(taskName) {
             // Update the task display
             renderMentalTasks();
             updateCompleteCheckbox();
+            
+            // Update currentUserData reference
+            currentUserData = userManager.getData();
             
             // Update UI to reflect new stats
             loadData(gameData);
