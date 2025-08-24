@@ -138,91 +138,197 @@ async function loadExistingPlayerData(playerName) {
 function loadPlayerData(gameData) {
     console.log('Loading player data into UI:', gameData);
     
+    // Debug: Check what elements exist
+    console.log('Checking DOM elements...');
+    console.log('job-text exists:', !!document.getElementById('job-text'));
+    console.log('level-number exists:', !!document.querySelector('.level-number'));
+    console.log('guild-text exists:', !!document.getElementById('guild-text'));
+    console.log('race-text exists:', !!document.getElementById('race-text'));
+    console.log('title-text exists:', !!document.getElementById('title-text'));
+    console.log('region-text exists:', !!document.getElementById('region-text'));
+    console.log('location-text exists:', !!document.getElementById('location-text'));
+    console.log('ping-text exists:', !!document.getElementById('ping-text'));
+    
     // Update character info
     if (gameData.name) {
-        document.getElementById('job-text').textContent = gameData.name;
+        const jobText = document.getElementById('job-text');
+        if (jobText) {
+            jobText.textContent = gameData.name;
+        } else {
+            console.warn('job-text element not found');
+        }
     }
     
     if (gameData.level) {
-        document.querySelector('.level-number').textContent = gameData.level;
+        const levelNumber = document.querySelector('.level-number');
+        if (levelNumber) {
+            levelNumber.textContent = gameData.level;
+        } else {
+            console.warn('level-number element not found');
+        }
     }
     
     if (gameData.guild) {
-        document.getElementById('guild-text').textContent = gameData.guild;
+        const guildText = document.getElementById('guild-text');
+        if (guildText) {
+            guildText.textContent = gameData.guild;
+        } else {
+            console.warn('guild-text element not found');
+        }
     }
     
     if (gameData.race) {
-        document.getElementById('race-text').textContent = gameData.race;
+        const raceText = document.getElementById('race-text');
+        if (raceText) {
+            raceText.textContent = gameData.race;
+        } else {
+            console.warn('race-text element not found');
+        }
     }
     
     if (gameData.title) {
-        document.getElementById('title-text').textContent = gameData.title;
+        const titleText = document.getElementById('title-text');
+        if (titleText) {
+            titleText.textContent = gameData.title;
+        } else {
+            console.warn('title-text element not found');
+        }
     }
     
     if (gameData.region) {
-        document.getElementById('region-text').textContent = gameData.region;
+        const regionText = document.getElementById('region-text');
+        if (regionText) {
+            regionText.textContent = gameData.region;
+        } else {
+            console.warn('region-text element not found');
+        }
     }
     
     if (gameData.location) {
-        document.getElementById('location-text').textContent = gameData.location;
+        const locationText = document.getElementById('location-text');
+        if (locationText) {
+            locationText.textContent = gameData.location;
+        } else {
+            console.warn('location-text element not found');
+        }
     }
     
     if (gameData.ping) {
-        document.getElementById('ping-text').textContent = gameData.ping;
+        const pingText = document.getElementById('ping-text');
+        if (pingText) {
+            pingText.textContent = gameData.ping;
+        } else {
+            console.warn('ping-text element not found');
+        }
     }
     
     // Update stats
     if (gameData.hp !== undefined) {
         const hpFill = document.getElementById('hp-fill');
-        const hpValue = hpFill.nextElementSibling;
-        hpFill.style.width = `${gameData.hp}%`;
-        hpValue.textContent = gameData.hp;
+        if (hpFill) {
+            hpFill.style.width = `${gameData.hp}%`;
+            const hpValue = hpFill.nextElementSibling;
+            if (hpValue) {
+                hpValue.textContent = gameData.hp;
+            }
+        }
     }
     
     if (gameData.mp !== undefined) {
         const mpFill = document.getElementById('mp-fill');
-        const mpValue = mpFill.nextElementSibling;
-        mpFill.style.width = `${gameData.mp}%`;
-        mpValue.textContent = gameData.mp;
+        if (mpFill) {
+            mpFill.style.width = `${gameData.mp}%`;
+            const mpValue = mpFill.nextElementSibling;
+            if (mpValue) {
+                mpValue.textContent = gameData.mp;
+            }
+        }
     }
     
     if (gameData.stm !== undefined) {
         const stmFill = document.getElementById('stm-fill');
-        const stmValue = stmFill.nextElementSibling;
-        stmFill.style.width = `${gameData.stm}%`;
-        stmValue.textContent = gameData.stm;
+        if (stmFill) {
+            stmFill.style.width = `${gameData.stm}%`;
+            const stmValue = stmFill.nextElementSibling;
+            if (stmValue) {
+                stmValue.textContent = gameData.stm;
+            }
+        }
     }
     
     if (gameData.exp !== undefined) {
         const expFill = document.getElementById('exp-fill');
-        const expValue = expFill.nextElementSibling;
-        expFill.style.width = `${gameData.exp}%`;
-        expValue.textContent = gameData.exp;
+        if (expFill) {
+            expFill.style.width = `${gameData.exp}%`;
+            const expValue = expFill.nextElementSibling;
+            if (expValue) {
+                expValue.textContent = gameData.exp;
+            }
+        }
     }
     
     if (gameData.fatigue !== undefined) {
-        document.querySelector('.fatigue-value').textContent = gameData.fatigue;
+        const fatigueValue = document.querySelector('.fatigue-value');
+        if (fatigueValue) {
+            fatigueValue.textContent = gameData.fatigue;
+        }
     }
     
     // Update attributes
     if (gameData.Attributes) {
         const attrs = gameData.Attributes;
-        if (attrs.STR) document.getElementById('str-value').textContent = attrs.STR;
-        if (attrs.VIT) document.getElementById('vit-value').textContent = attrs.VIT;
-        if (attrs.AGI) document.getElementById('agi-value').textContent = attrs.AGI;
-        if (attrs.INT) document.getElementById('int-value').textContent = attrs.INT;
-        if (attrs.PER) document.getElementById('per-value').textContent = attrs.PER;
-        if (attrs.WIS) document.getElementById('wis-value').textContent = attrs.WIS;
+        if (attrs.STR) {
+            const strValue = document.getElementById('str-value');
+            if (strValue) strValue.textContent = attrs.STR;
+        }
+        if (attrs.VIT) {
+            const vitValue = document.getElementById('vit-value');
+            if (vitValue) vitValue.textContent = attrs.VIT;
+        }
+        if (attrs.AGI) {
+            const agiValue = document.getElementById('agi-value');
+            if (agiValue) agiValue.textContent = attrs.AGI;
+        }
+        if (attrs.INT) {
+            const intValue = document.getElementById('int-value');
+            if (intValue) intValue.textContent = attrs.INT;
+        }
+        if (attrs.PER) {
+            const perValue = document.getElementById('per-value');
+            if (perValue) perValue.textContent = attrs.PER;
+        }
+        if (attrs.WIS) {
+            const wisValue = document.getElementById('wis-value');
+            if (wisValue) wisValue.textContent = attrs.WIS;
+        }
     }
     
     if (gameData.stackedAttributes) {
         const stacked = gameData.stackedAttributes;
-        if (stacked.STR) document.getElementById('str-stacked').textContent = `+${stacked.STR}`;
-        if (stacked.VIT) document.getElementById('vit-stacked').textContent = `+${stacked.VIT}`;
-        if (stacked.AGI) document.getElementById('agi-stacked').textContent = `+${stacked.AGI}`;
-        if (stacked.INT) document.getElementById('int-stacked').textContent = `+${stacked.INT}`;
-        if (stacked.PER) document.getElementById('per-stacked').textContent = `+${stacked.PER}`;
-        if (stacked.WIS) document.getElementById('wis-stacked').textContent = `+${stacked.WIS}`;
+        if (stacked.STR) {
+            const strStacked = document.getElementById('str-stacked');
+            if (strStacked) strStacked.textContent = `+${stacked.STR}`;
+        }
+        if (stacked.VIT) {
+            const vitStacked = document.getElementById('vit-stacked');
+            if (vitStacked) vitStacked.textContent = `+${stacked.VIT}`;
+        }
+        if (stacked.AGI) {
+            const agiStacked = document.getElementById('agi-stacked');
+            if (agiStacked) agiStacked.textContent = `+${stacked.AGI}`;
+        }
+        if (stacked.INT) {
+            const intStacked = document.getElementById('int-stacked');
+            if (intStacked) intStacked.textContent = `+${stacked.INT}`;
+        }
+        if (stacked.PER) {
+            const perStacked = document.getElementById('per-stacked');
+            if (perStacked) perStacked.textContent = `+${stacked.PER}`;
+        }
+        if (stacked.WIS) {
+            const wisStacked = document.getElementById('wis-stacked');
+            if (wisStacked) wisStacked.textContent = `+${stacked.WIS}`;
+        }
     }
     
     console.log('Player data loaded into UI successfully');
