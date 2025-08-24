@@ -8,7 +8,6 @@ class UserManager {
     this.userId = this.getOrCreateUserId();
     this.sync = null;
     this.initializeSync();
-    this.isAuthenticated = localStorage.getItem('authToken') !== null;
     
     // Load user data immediately when user manager is created
     this.loadUserData().then(result => {
@@ -20,18 +19,8 @@ class UserManager {
 
   /**
    * Get existing user ID or create a new one
-   * Uses authenticated user ID if available, otherwise creates anonymous ID
    */
   getOrCreateUserId() {
-    // Check if user is authenticated
-    const authToken = localStorage.getItem('authToken');
-    const authenticatedUserId = localStorage.getItem('authenticatedUserId');
-    
-    if (authToken && authenticatedUserId) {
-      console.log('Using authenticated user ID:', authenticatedUserId);
-      return authenticatedUserId;
-    }
-    
     // Check if we already have a userId stored
     let userId = localStorage.getItem('userId');
     
