@@ -206,33 +206,51 @@ window.DatabaseCommands = {
   }
 };
 
-// Usage examples:
-// const db = new DatabaseManager('user123');
-// await db.push();        // Push all localStorage to database
-// await db.pull();        // Pull all data from database to localStorage
-// await db.sync();        // Push then pull (full sync)
-
 // Initialize data synchronization
 let sync;
 
 // Initialize sync when DOM is loaded
 document.addEventListener('DOMContentLoaded', function() {
-    // Initialize the sync object
-    sync = new LocalStorageSync();
-    
-    // Set up auto-sync with options
-    sync.setupAutoSync({
-        onLoad: true,      // Load data when page loads
-        onUnload: true,    // Sync when leaving page
-        interval: 30000    // Auto-sync every 30 seconds
-    });
-    
-    console.log('Data sync initialized for user:', sync.userId);
+    // Use the centralized user manager if available
+    if (window.userManager) {
+        sync = window.userManager.initializeSync();
+        if (sync) {
+            // Set up auto-sync with options
+            sync.setupAutoSync({
+                onLoad: false, // User manager handles loading
+                onUnload: true,    // Sync when leaving page
+                interval: 30000    // Auto-sync every 30 seconds
+            });
+            
+            console.log('Data sync initialized for user:', window.userManager.getUserId());
+        }
+    } else {
+        console.warn('User manager not available, falling back to direct sync initialization');
+        // Fallback to direct initialization if user manager is not available
+        if (typeof LocalStorageSync !== 'undefined') {
+            sync = new LocalStorageSync();
+            sync.setupAutoSync({
+                onLoad: true,
+                onUnload: true,
+                interval: 30000
+            });
+            console.log('Fallback sync initialized');
+        }
+    }
 });
 
 // Manual sync function that can be called from other scripts
 async function manualSync() {
-    if (sync) {
+    if (window.userManager) {
+        try {
+            await window.userManager.saveUserData();
+            console.log('Manual sync completed successfully');
+            return true;
+        } catch (error) {
+            console.error('Manual sync failed:', error);
+            return false;
+        }
+    } else if (sync) {
         try {
             await sync.syncToDatabase();
             console.log('Manual sync completed successfully');
@@ -249,7 +267,16 @@ async function manualSync() {
 
 // Function to load data from database
 async function loadDataFromDatabase() {
-    if (sync) {
+    if (window.userManager) {
+        try {
+            await window.userManager.loadUserData();
+            console.log('Data loaded from database successfully');
+            return true;
+        } catch (error) {
+            console.error('Failed to load data from database:', error);
+            return false;
+        }
+    } else if (sync) {
         try {
             await sync.loadFromDatabase();
             console.log('Data loaded from database successfully');

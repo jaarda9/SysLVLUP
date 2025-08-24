@@ -1,35 +1,35 @@
-const CACHE_NAME = 'syslvlup-v2';
+const CACHE_NAME = 'syslvlup-v3';
 const urlsToCache = [
-  '/',
-  '/index.html',
-  '/alarm.html',
-  '/daily_quest.html',
-  '/status.html',
-  '/Initiation.html',
-  '/Quest_Info_Mental.html',
-  '/Quest_Info_Physical.html',
-  '/Quest_Info_Spiritual.html',
-  '/css/login.css',
-  '/css/alarm.css',
-  '/css/daily_quest.css',
-  '/css/status.css',
-  '/css/Initiation.css',
-  '/css/Quest_Info_Mental.css',
-  '/css/Quest_Info_Physical.css',
-  '/css/Quest_Info_Spiritual.css',
-  '/js/login.js',
-  '/js/alarm.js',
-  '/js/daily_quest.js',
-  '/js/status.js',
-  '/js/Initiation.js',
-  '/js/Quest_Info_Mental.js',
-  '/js/Quest_Info_Physical.js',
-  '/js/Quest_Info_Spiritual.js',
-  '/js/database.js',
-  '/js/sync.js',
-  '/manifest.json',
-  '/icons/icon-192x192.png',
-  '/icons/icon-512x512.png'
+  './',
+  './index.html',
+  './alarm.html',
+  './daily_quest.html',
+  './status.html',
+  './Initiation.html',
+  './Quest_Info_Mental.html',
+  './Quest_Info_Physical.html',
+  './Quest_Info_Spiritual.html',
+  './css/login.css',
+  './css/alarm.css',
+  './css/daily_quest.css',
+  './css/status.css',
+  './css/Initiation.css',
+  './css/Quest_Info_Mental.css',
+  './css/Quest_Info_Physical.css',
+  './css/Quest_Info_Spiritual.css',
+  './js/login.js',
+  './js/alarm.js',
+  './js/daily_quest.js',
+  './js/status.js',
+  './js/Initiation.js',
+  './js/Quest_Info_Mental.js',
+  './js/Quest_Info_Physical.js',
+  './js/Quest_Info_Spiritual.js',
+  './js/database.js',
+  './js/sync.js',
+  './manifest.json',
+  './icons/icon-192x192.png',
+  './icons/icon-512x512.png'
 ];
 
 // Install event - cache resources
@@ -73,8 +73,13 @@ self.addEventListener('activate', event => {
 
 // Fetch event - serve from cache, fallback to network
 self.addEventListener('fetch', event => {
-  // Skip API requests and other non-GET requests
-  if (event.request.method !== 'GET' || event.request.url.includes('/api/')) {
+  // Skip API requests, chrome-extension URLs, and other non-GET requests
+  if (event.request.method !== 'GET' || 
+      event.request.url.includes('/api/') ||
+      event.request.url.startsWith('chrome-extension://') ||
+      event.request.url.startsWith('chrome://') ||
+      event.request.url.startsWith('moz-extension://') ||
+      event.request.url.startsWith('edge://')) {
     return;
   }
 
@@ -95,13 +100,19 @@ self.addEventListener('fetch', event => {
             return response;
           }
           
-          // Clone the response because it's a stream and can only be consumed once
-          const responseToCache = response.clone();
-          
-          caches.open(CACHE_NAME)
-            .then(cache => {
-              cache.put(event.request, responseToCache);
-            });
+          // Only cache same-origin requests
+          if (event.request.url.startsWith(self.location.origin)) {
+            // Clone the response because it's a stream and can only be consumed once
+            const responseToCache = response.clone();
+            
+            caches.open(CACHE_NAME)
+              .then(cache => {
+                cache.put(event.request, responseToCache);
+              })
+              .catch(error => {
+                console.log('Cache put failed:', error);
+              });
+          }
           
           return response;
         });
