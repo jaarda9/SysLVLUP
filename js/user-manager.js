@@ -61,13 +61,19 @@ class UserManager {
 
     try {
       // Try to load from /api/sync first (Vercel API)
-      const response = await fetch(`/api/sync?userId=${encodeURIComponent(this.userId)}`);
+      let response = await fetch(`/api/sync?userId=${encodeURIComponent(this.userId)}`);
+      
+      // If sync API fails, try the users API as fallback
+      if (response.status === 404) {
+        console.log('Sync API not found, trying users API...');
+        response = await fetch(`/api/users?userId=${encodeURIComponent(this.userId)}`);
+      }
       
       if (response.ok) {
         const result = await response.json();
         if (result.localStorageData) {
           this.data = result.localStorageData;
-          console.log('Data loaded successfully from sync API:', this.data);
+          console.log('Data loaded successfully from API:', this.data);
           return { success: true, data: this.data };
         } else {
           console.log('No existing data found for user:', this.userId);
@@ -75,6 +81,21 @@ class UserManager {
           return { success: true, message: 'No existing data' };
         }
       } else if (response.status === 404) {
+        // Check if it's a 404 from the API (user not found) or a 404 from Vercel (API not found)
+        try {
+          const errorData = await response.json();
+          if (errorData.error === 'User not found') {
+            console.log('User not found in database:', this.userId);
+            this.data = null;
+            return { success: true, message: 'No existing data' };
+          }
+        } catch (parseError) {
+          // If we can't parse the response, it might be a Vercel 404
+          console.log('API endpoint not found (404), treating as no existing data');
+          this.data = null;
+          return { success: true, message: 'No existing data' };
+        }
+        
         console.log('No existing data found for user:', this.userId);
         this.data = null;
         return { success: true, message: 'No existing data' };
@@ -83,8 +104,10 @@ class UserManager {
       }
     } catch (error) {
       console.error('Error loading user data:', error);
+      // If there's a network error or API is not available, treat as no existing data
+      console.log('API error, treating as no existing data');
       this.data = null;
-      return { success: false, error: error.message };
+      return { success: true, message: 'No existing data' };
     } finally {
       this.isLoading = false;
     }
@@ -113,7 +136,8 @@ class UserManager {
       
       console.log('Request body:', requestBody);
       
-      const response = await fetch('/api/sync', {
+      // Try sync API first, then users API as fallback
+      let response = await fetch('/api/sync', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -121,12 +145,24 @@ class UserManager {
         body: JSON.stringify(requestBody),
       });
 
+      // If sync API fails, try users API
+      if (response.status === 404) {
+        console.log('Sync API not found, trying users API...');
+        response = await fetch('/api/users', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(requestBody),
+        });
+      }
+
       console.log('Response status:', response.status);
       console.log('Response headers:', response.headers);
 
       if (response.ok) {
         const result = await response.json();
-        console.log('Data saved successfully via sync API:', result);
+        console.log('Data saved successfully via API:', result);
         return { success: true, data: result };
       } else {
         const errorText = await response.text();
