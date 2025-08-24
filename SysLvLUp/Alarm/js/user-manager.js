@@ -1,28 +1,37 @@
 /**
  * Centralized User Manager
  * Single source of truth for user identification and data synchronization
- * Prevents multiple user IDs from being generated across different pages
+ * Supports both authenticated users and anonymous users
  */
 class UserManager {
   constructor() {
     this.userId = this.getOrCreateUserId();
     this.sync = null;
     this.initializeSync();
+    this.isAuthenticated = localStorage.getItem('authToken') !== null;
   }
 
   /**
    * Get existing user ID or create a new one
-   * Ensures only one user ID exists per browser instance
+   * Uses authenticated user ID if available, otherwise creates anonymous ID
    */
   getOrCreateUserId() {
+    // Check if user is authenticated
+    const authToken = localStorage.getItem('authToken');
+    const authenticatedUserId = localStorage.getItem('authenticatedUserId');
+    
+    if (authToken && authenticatedUserId) {
+      console.log('Using authenticated user ID:', authenticatedUserId);
+      return authenticatedUserId;
+    }
+    
+    // Check for existing anonymous user ID
     let userId = localStorage.getItem('userId');
     if (!userId) {
-      userId = 'user_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+      userId = 'anonymous_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
       localStorage.setItem('userId', userId);
-      console.log('New user ID created:', userId);
-      
-      // Also store creation timestamp for tracking
-      localStorage.setItem('userId_created', Date.now());
+      localStorage.setItem('isAnonymous', 'true');
+      console.log('New anonymous user ID created:', userId);
     } else {
       console.log('Existing user ID found:', userId);
     }
