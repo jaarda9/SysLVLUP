@@ -298,6 +298,43 @@ async function updatePhysicalQuestProgress() {
         const userData = userManager.getData();
         const gameData = userData.gameData || {};
         
+        console.log('Updating physical quest stats...');
+        
+        // Add XP reward
+        const currentExp = parseInt(gameData.exp) || 0;
+        gameData.exp = currentExp + 5;
+        console.log(`XP increased from ${currentExp} to ${gameData.exp}`);
+        
+        // Decrease HP and STM, increase fatigue
+        const currentHP = Math.max(0, parseInt(gameData.hp) || 100);
+        gameData.hp = Math.max(0, currentHP - 20);
+        console.log(`HP decreased from ${currentHP} to ${gameData.hp}`);
+        
+        const currentSTM = Math.max(0, parseInt(gameData.stm) || 100);
+        gameData.stm = Math.max(0, currentSTM - 20);
+        console.log(`STM decreased from ${currentSTM} to ${gameData.stm}`);
+        
+        const currentFatigue = parseInt(gameData.fatigue) || 0;
+        gameData.fatigue = currentFatigue + 20;
+        console.log(`Fatigue increased from ${currentFatigue} to ${gameData.fatigue}`);
+        
+        // Add stacked attributes (will be applied on level up)
+        if (!gameData.stackedAttributes) {
+            gameData.stackedAttributes = { STR: 0, VIT: 0, AGI: 0, INT: 0, PER: 0, WIS: 0 };
+        }
+        
+        // Physical training gives STR, VIT, and AGI bonuses
+        gameData.stackedAttributes.STR += 2;  // Strength from push-ups and burpees
+        gameData.stackedAttributes.VIT += 1;  // Vitality from squats and plank
+        gameData.stackedAttributes.AGI += 1;  // Agility from burpees
+        
+        console.log('Stacked attributes updated:', gameData.stackedAttributes);
+        
+        // Check for level up
+        if (gameData.exp >= 100) {
+            await handleLevelUp(gameData);
+        }
+        
         // Update physical quest progress to completed
         gameData.physicalQuests = "[4/4]";
         
@@ -307,7 +344,7 @@ async function updatePhysicalQuestProgress() {
         // Save to database
         const result = await userManager.saveUserData();
         if (result.success) {
-            console.log('Physical quest progress saved successfully');
+            console.log('Physical quest progress and stats saved successfully');
         } else {
             console.error('Error saving physical quest progress:', result.error);
         }
@@ -315,6 +352,43 @@ async function updatePhysicalQuestProgress() {
     } catch (error) {
         console.error('Error updating physical quest progress:', error);
     }
+}
+
+// Handle level up when XP reaches 100
+async function handleLevelUp(gameData) {
+    console.log('🎉 LEVEL UP!');
+    
+    // Reset XP and increase level
+    gameData.exp = gameData.exp - 100;
+    gameData.level = parseInt(gameData.level || 1) + 1;
+    
+    console.log(`Level increased to ${gameData.level}, XP reset to ${gameData.exp}`);
+    
+    // Apply stacked attributes to base attributes
+    if (gameData.stackedAttributes && gameData.Attributes) {
+        console.log('Applying stacked attributes to base attributes...');
+        
+        for (let stat in gameData.stackedAttributes) {
+            if (gameData.Attributes[stat] !== undefined) {
+                const oldValue = gameData.Attributes[stat];
+                gameData.Attributes[stat] += gameData.stackedAttributes[stat];
+                console.log(`${stat}: ${oldValue} → ${gameData.Attributes[stat]} (+${gameData.stackedAttributes[stat]})`);
+            }
+        }
+        
+        // Reset stacked attributes
+        for (let stat in gameData.stackedAttributes) {
+            gameData.stackedAttributes[stat] = 0;
+        }
+        
+        console.log('Stacked attributes reset to 0');
+    }
+    
+    // Restore HP, MP, and STM to full on level up
+    gameData.hp = 100;
+    gameData.mp = 100;
+    gameData.stm = 100;
+    console.log('HP, MP, and STM restored to full on level up');
 }
 
 // Function to complete a quest and gain XP
