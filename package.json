@@ -1,16 +1,28 @@
 {
   "name": "syslvlup",
   "version": "1.0.0",
+  "description": "A PWA game with multi-device synchronization",
+  "main": "server.js",
   "scripts": {
-    "dev": "node server.js",
     "start": "node server.js",
-    "build": "echo 'No build step required'"
+    "dev": "nodemon server.js"
   },
   "dependencies": {
-    "express": "^5.1.0",
-    "mongodb": "^6.18.0"
+    "express": "^4.18.2",
+    "mongodb": "^5.7.0",
+    "bcryptjs": "^2.4.3",
+    "jsonwebtoken": "^9.0.2",
+    "dotenv": "^16.3.1"
   },
-  "engines": {
-    "node": ">=18.0.0"
-  }
+  "devDependencies": {
+    "nodemon": "^3.0.1"
+  },
+  "keywords": [
+    "pwa",
+    "game",
+    "multi-device",
+    "synchronization"
+  ],
+  "author": "Your Name",
+  "license": "MIT"
 }

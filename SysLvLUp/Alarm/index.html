@@ -67,7 +67,9 @@
     </div>
 
     <!-- Load scripts in correct order -->
+    <script src="js/auth-manager.js"></script>
     <script src="js/user-manager.js"></script>
+    <script src="js/multi-device-setup.js"></script>
     <script src="js/login.js"></script>
     <script>
     // Initialize user manager and load data immediately
@@ -94,14 +96,11 @@
         const isProduction = window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1';
         const apiEndpoint = isProduction ? '/api/user' : 'http://localhost:3000/api/user';
         
-        // Get userId from localStorage or generate new one
-        let userId = localStorage.getItem('userId');
+        // Get userId from localStorage
+        const userId = localStorage.getItem('userId');
         if (!userId) {
-          const timestamp = Date.now();
-          const randomString = Math.random().toString(36).substring(2, 10);
-          userId = `user_${timestamp}_${randomString}`;
-          localStorage.setItem('userId', userId);
-          console.log('Generated new userId in fallback:', userId);
+          console.error('No userId found in localStorage');
+          return;
         }
         
         const response = await fetch(`${apiEndpoint}/${userId}`);
@@ -141,7 +140,7 @@
         const apiEndpoint = isProduction ? '/api/sync' : 'http://localhost:3000/api/sync';
         
         // Get userId from localStorage
-        const userId = localStorage.getItem('userId') || 'single_user_12345';
+        const userId = localStorage.getItem('userId');
         
         // Get all localStorage data
         const localStorageData = {};

@@ -1,55 +1,34 @@
 /**
- * Authentication Manager
- * Allows users to access their data from multiple devices
- * Uses email/password authentication to sync data across devices
+ * Authentication Manager for Multi-Device Support
+ * Handles user registration, login, and cross-device data synchronization
  */
 class AuthManager {
   constructor() {
-    this.currentUser = null;
     this.isAuthenticated = false;
+    this.userId = null;
+    this.email = null;
+    this.token = null;
+    this.initializeAuth();
   }
 
   /**
-   * Initialize authentication system
+   * Initialize authentication state
    */
-  async init() {
-    // Check if user was previously logged in
-    const savedEmail = localStorage.getItem('userEmail');
-    const savedToken = localStorage.getItem('authToken');
+  initializeAuth() {
+    this.token = localStorage.getItem('authToken');
+    this.email = localStorage.getItem('userEmail');
+    this.userId = localStorage.getItem('authenticatedUserId');
     
-    if (savedEmail && savedToken) {
-      try {
-        // Verify token is still valid
-        const response = await fetch('/api/verify-token', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            email: savedEmail,
-            token: savedToken
-          })
-        });
-        
-        if (response.ok) {
-          this.currentUser = { email: savedEmail };
-          this.isAuthenticated = true;
-          console.log('User automatically logged in:', savedEmail);
-          
-          // Load user-specific data
-          await this.loadUserData();
-          return true;
-        }
-      } catch (error) {
-        console.log('Auto-login failed, requiring manual login');
-        this.logout();
-      }
+    if (this.token && this.email && this.userId) {
+      this.isAuthenticated = true;
+      console.log('User authenticated:', this.email);
+    } else {
+      console.log('User not authenticated');
     }
-    return false;
   }
 
   /**
-   * Register new user
+   * Register a new user
    */
   async register(email, password) {
     try {
@@ -58,32 +37,32 @@ class AuthManager {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({
-          email: email,
-          password: password
-        })
+        body: JSON.stringify({ email, password })
       });
 
       if (!response.ok) {
-        throw new Error(`Registration failed: ${response.status}`);
+        const error = await response.json();
+        throw new Error(error.message || 'Registration failed');
       }
 
       const result = await response.json();
       
       // Store authentication data
-      localStorage.setItem('userEmail', email);
-      localStorage.setItem('authToken', result.token);
-      localStorage.setItem('userId', result.userId);
-      
-      this.currentUser = { email: email };
+      this.token = result.token;
+      this.userId = result.userId;
+      this.email = email;
       this.isAuthenticated = true;
       
-      console.log('User registered successfully:', email);
-      return { success: true, message: 'Registration successful' };
+      localStorage.setItem('authToken', this.token);
+      localStorage.setItem('userEmail', this.email);
+      localStorage.setItem('authenticatedUserId', this.userId);
       
+      console.log('Registration successful:', this.email);
+      return result;
+
     } catch (error) {
       console.error('Registration error:', error);
-      return { success: false, message: error.message };
+      throw error;
     }
   }
 
@@ -97,35 +76,32 @@ class AuthManager {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({
-          email: email,
-          password: password
-        })
+        body: JSON.stringify({ email, password })
       });
 
       if (!response.ok) {
-        throw new Error(`Login failed: ${response.status}`);
+        const error = await response.json();
+        throw new Error(error.message || 'Login failed');
       }
 
       const result = await response.json();
       
       // Store authentication data
-      localStorage.setItem('userEmail', email);
-      localStorage.setItem('authToken', result.token);
-      localStorage.setItem('userId', result.userId);
-      
-      this.currentUser = { email: email };
+      this.token = result.token;
+      this.userId = result.userId;
+      this.email = email;
       this.isAuthenticated = true;
       
-      // Load user data from server
-      await this.loadUserData();
+      localStorage.setItem('authToken', this.token);
+      localStorage.setItem('userEmail', this.email);
+      localStorage.setItem('authenticatedUserId', this.userId);
       
-      console.log('User logged in successfully:', email);
-      return { success: true, message: 'Login successful' };
-      
+      console.log('Login successful:', this.email);
+      return result;
+
     } catch (error) {
       console.error('Login error:', error);
-      return { success: false, message: 'Invalid credentials' };
+      throw error;
     }
   }
 
@@ -133,96 +109,193 @@ class AuthManager {
    * Logout user
    */
   logout() {
-    localStorage.removeItem('userEmail');
-    localStorage.removeItem('authToken');
-    // Keep userId for local data, but mark as anonymous
-    localStorage.setItem('isAnonymous', 'true');
-    
-    this.currentUser = null;
+    this.token = null;
+    this.email = null;
+    this.userId = null;
     this.isAuthenticated = false;
+    
+    localStorage.removeItem('authToken');
+    localStorage.removeItem('userEmail');
+    localStorage.removeItem('authenticatedUserId');
     
     console.log('User logged out');
   }
 
   /**
-   * Load user data from server
+   * Verify authentication token
    */
-  async loadUserData() {
-    if (!this.isAuthenticated) return;
-    
+  async verifyToken() {
+    if (!this.token || !this.email) {
+      return false;
+    }
+
     try {
-      const userId = localStorage.getItem('userId');
-      const token = localStorage.getItem('authToken');
-      
-      const response = await fetch(`/api/user/${userId}`, {
+      const response = await fetch('/api/verify-token', {
+        method: 'POST',
         headers: {
-          'Authorization': `Bearer ${token}`
-        }
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ 
+          email: this.email, 
+          token: this.token 
+        })
       });
 
-      if (response.ok) {
-        const userData = await response.json();
-        
-        // Merge server data with local data
-        this.mergeDataWithServer(userData);
-        console.log('User data loaded from server');
-      }
-      
+      return response.ok;
+
     } catch (error) {
-      console.error('Error loading user data:', error);
+      console.error('Token verification error:', error);
+      return false;
     }
   }
 
   /**
-   * Merge server data with local data
+   * Get authenticated user data
    */
-  mergeDataWithServer(serverData) {
-    // Implementation depends on your data structure
-    // This is a basic example - you might want more sophisticated merging
-    if (serverData.localStorage) {
-      Object.keys(serverData.localStorage).forEach(key => {
-        if (!localStorage.getItem(key)) {
-          const value = serverData.localStorage[key];
-          if (typeof value === 'object') {
-            localStorage.setItem(key, JSON.stringify(value));
-          } else {
-            localStorage.setItem(key, value);
-          }
+  async getUserData() {
+    if (!this.isAuthenticated) {
+      throw new Error('User not authenticated');
+    }
+
+    try {
+      const response = await fetch(`/api/user/${this.userId}`, {
+        headers: {
+          'Authorization': `Bearer ${this.token}`
         }
       });
+
+      if (!response.ok) {
+        throw new Error('Failed to fetch user data');
+      }
+
+      return await response.json();
+
+    } catch (error) {
+      console.error('Error fetching user data:', error);
+      throw error;
+    }
+  }
+
+  /**
+   * Sync data for authenticated user
+   */
+  async syncData(localStorageData) {
+    if (!this.isAuthenticated) {
+      throw new Error('User not authenticated');
+    }
+
+    try {
+      const response = await fetch('/api/sync', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${this.token}`
+        },
+        body: JSON.stringify({
+          userId: this.userId,
+          localStorageData: localStorageData
+        })
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to sync data');
+      }
+
+      return await response.json();
+
+    } catch (error) {
+      console.error('Error syncing data:', error);
+      throw error;
+    }
+  }
+
+  /**
+   * Generate QR code for device linking
+   */
+  generateDeviceLinkCode() {
+    if (!this.isAuthenticated) {
+      throw new Error('User not authenticated');
+    }
+
+    const linkData = {
+      userId: this.userId,
+      email: this.email,
+      timestamp: Date.now()
+    };
+
+    return btoa(JSON.stringify(linkData));
+  }
+
+  /**
+   * Link device using QR code
+   */
+  async linkDevice(qrCodeData) {
+    try {
+      const linkData = JSON.parse(atob(qrCodeData));
+      
+      // Verify the link data is recent (within 5 minutes)
+      if (Date.now() - linkData.timestamp > 5 * 60 * 1000) {
+        throw new Error('QR code expired');
+      }
+
+      // Set up authentication for this device
+      this.userId = linkData.userId;
+      this.email = linkData.email;
+      
+      // Get a new token for this device
+      const response = await fetch('/api/device-link', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ 
+          userId: linkData.userId,
+          email: linkData.email 
+        })
+      });
+
+      if (!response.ok) {
+        throw new Error('Device linking failed');
+      }
+
+      const result = await response.json();
+      this.token = result.token;
+      this.isAuthenticated = true;
+      
+      localStorage.setItem('authToken', this.token);
+      localStorage.setItem('userEmail', this.email);
+      localStorage.setItem('authenticatedUserId', this.userId);
+      
+      console.log('Device linked successfully');
+      return result;
+
+    } catch (error) {
+      console.error('Device linking error:', error);
+      throw error;
     }
   }
 
   /**
    * Check if user is authenticated
    */
-  isLoggedIn() {
+  isUserAuthenticated() {
     return this.isAuthenticated;
   }
 
   /**
-   * Get current user email
+   * Get current user info
    */
-  getCurrentUser() {
-    return this.currentUser ? this.currentUser.email : null;
-  }
-
-  /**
-   * Get authentication headers for API calls
-   */
-  getAuthHeaders() {
-    const token = localStorage.getItem('authToken');
-    return token ? { 'Authorization': `Bearer ${token}` } : {};
+  getUserInfo() {
+    return {
+      isAuthenticated: this.isAuthenticated,
+      email: this.email,
+      userId: this.userId
+    };
   }
 }
 
 // Create global auth manager instance
 window.authManager = new AuthManager();
-
-// Auto-initialize on page load
-document.addEventListener('DOMContentLoaded', async () => {
-  await window.authManager.init();
-});
 
 // Export for use in other modules
 if (typeof module !== 'undefined' && module.exports) {

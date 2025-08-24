@@ -1,236 +1,389 @@
 /**
- * Multi-Device Setup Script
- * Adds authentication options to allow users to access their data from multiple devices
+ * Multi-Device Setup UI
+ * Provides authentication interface and device linking functionality
  */
-
-// Add authentication UI to login page
-function addAuthUI() {
-  const loginContainer = document.querySelector('.login-container');
-  if (!loginContainer) return;
-  
-  // Create auth section
-  const authSection = document.createElement('div');
-  authSection.className = 'auth-section';
-  authSection.innerHTML = `
-    <div class="auth-tabs">
-      <button class="auth-tab active" data-tab="login">Login</button>
-      <button class="auth-tab" data-tab="register">Register</button>
-    </div>
-    
-    <div class="auth-content">
-      <div id="login-form" class="auth-form active">
-        <input type="email" id="login-email" placeholder="Email" class="auth-input">
-        <input type="password" id="login-password" placeholder="Password" class="auth-input">
-        <button id="login-btn" class="auth-btn">Login</button>
-      </div>
-      
-      <div id="register-form" class="auth-form">
-        <input type="email" id="register-email" placeholder="Email" class="auth-input">
-        <input type="password" id="register-password" placeholder="Password" class="auth-input">
-        <input type="password" id="register-confirm" placeholder="Confirm Password" class="auth-input">
-        <button id="register-btn" class="auth-btn">Register</button>
-      </div>
-    </div>
-    
-    <p class="auth-note">Login/register to access your data from any device</p>
-  `;
-  
-  // Insert after password input
-  const passwordInput = document.getElementById('password');
-  if (passwordInput) {
-    passwordInput.parentNode.insertBefore(authSection, passwordInput.nextSibling);
+class MultiDeviceSetup {
+  constructor() {
+    this.authManager = window.authManager;
+    this.setupUI();
   }
-  
-  // Add tab functionality
-  setupAuthTabs();
-  setupAuthHandlers();
-}
 
-// Setup auth tab switching
-function setupAuthTabs() {
-  const tabs = document.querySelectorAll('.auth-tab');
-  const forms = document.querySelectorAll('.auth-form');
-  
-  tabs.forEach(tab => {
-    tab.addEventListener('click', () => {
-      const tabName = tab.getAttribute('data-tab');
+  /**
+   * Setup the authentication UI
+   */
+  setupUI() {
+    // Add authentication UI to the login page
+    const loginContainer = document.querySelector('.login-container');
+    if (loginContainer) {
+      this.addAuthUI(loginContainer);
+    }
+
+    // Add device linking UI to other pages
+    this.addDeviceLinkingUI();
+  }
+
+  /**
+   * Add authentication UI to login page
+   */
+  addAuthUI(container) {
+    // Create auth container
+    const authContainer = document.createElement('div');
+    authContainer.className = 'auth-container';
+    authContainer.innerHTML = `
+      <div class="auth-tabs">
+        <button class="auth-tab active" data-tab="login">Login</button>
+        <button class="auth-tab" data-tab="register">Register</button>
+        <button class="auth-tab" data-tab="link">Link Device</button>
+      </div>
       
-      // Update active tab
-      tabs.forEach(t => t.classList.remove('active'));
-      tab.classList.add('active');
+      <div class="auth-content">
+        <!-- Login Form -->
+        <div class="auth-form active" id="login-form">
+          <h3>Login to Sync Across Devices</h3>
+          <input type="email" id="login-email" placeholder="Email" required>
+          <input type="password" id="login-password" placeholder="Password" required>
+          <button id="login-btn" class="auth-btn">Login</button>
+          <p class="auth-message" id="login-message"></p>
+        </div>
+        
+        <!-- Register Form -->
+        <div class="auth-form" id="register-form">
+          <h3>Create Account for Multi-Device Sync</h3>
+          <input type="email" id="register-email" placeholder="Email" required>
+          <input type="password" id="register-password" placeholder="Password" required>
+          <input type="password" id="register-confirm" placeholder="Confirm Password" required>
+          <button id="register-btn" class="auth-btn">Register</button>
+          <p class="auth-message" id="register-message"></p>
+        </div>
+        
+        <!-- Device Linking Form -->
+        <div class="auth-form" id="link-form">
+          <h3>Link This Device</h3>
+          <div class="qr-section">
+            <div id="qr-code"></div>
+            <p>Scan this QR code with another device to link them</p>
+          </div>
+          <div class="manual-link">
+            <input type="text" id="link-code" placeholder="Or enter link code manually">
+            <button id="link-btn" class="auth-btn">Link Device</button>
+          </div>
+          <p class="auth-message" id="link-message"></p>
+        </div>
+      </div>
+    `;
+
+    // Insert before the existing password input
+    const passwordInput = container.querySelector('#password');
+    if (passwordInput) {
+      passwordInput.parentNode.insertBefore(authContainer, passwordInput);
+    }
+
+    // Add event listeners
+    this.addAuthEventListeners();
+  }
+
+  /**
+   * Add device linking UI to other pages
+   */
+  addDeviceLinkingUI() {
+    // Add a small device linking button to other pages
+    const body = document.body;
+    if (!body.querySelector('.device-link-btn')) {
+      const linkBtn = document.createElement('button');
+      linkBtn.className = 'device-link-btn';
+      linkBtn.innerHTML = '🔗 Link Device';
+      linkBtn.style.cssText = `
+        position: fixed;
+        top: 10px;
+        right: 10px;
+        z-index: 1000;
+        padding: 8px 12px;
+        background: #4a90e2;
+        color: white;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 12px;
+      `;
       
-      // Show corresponding form
-      forms.forEach(form => form.classList.remove('active'));
-      document.getElementById(`${tabName}-form`).classList.add('active');
+      linkBtn.addEventListener('click', () => {
+        this.showDeviceLinkingModal();
+      });
+      
+      body.appendChild(linkBtn);
+    }
+  }
+
+  /**
+   * Add event listeners for authentication
+   */
+  addAuthEventListeners() {
+    // Tab switching
+    document.querySelectorAll('.auth-tab').forEach(tab => {
+      tab.addEventListener('click', (e) => {
+        const targetTab = e.target.dataset.tab;
+        this.switchTab(targetTab);
+      });
     });
-  });
-}
 
-// Setup auth form handlers
-function setupAuthHandlers() {
-  // Login handler
-  document.getElementById('login-btn')?.addEventListener('click', async () => {
+    // Login form
+    const loginBtn = document.getElementById('login-btn');
+    if (loginBtn) {
+      loginBtn.addEventListener('click', () => this.handleLogin());
+    }
+
+    // Register form
+    const registerBtn = document.getElementById('register-btn');
+    if (registerBtn) {
+      registerBtn.addEventListener('click', () => this.handleRegister());
+    }
+
+    // Device linking
+    const linkBtn = document.getElementById('link-btn');
+    if (linkBtn) {
+      linkBtn.addEventListener('click', () => this.handleDeviceLink());
+    }
+
+    // Generate QR code for device linking
+    this.generateQRCode();
+  }
+
+  /**
+   * Switch between auth tabs
+   */
+  switchTab(tabName) {
+    // Update tab buttons
+    document.querySelectorAll('.auth-tab').forEach(tab => {
+      tab.classList.remove('active');
+    });
+    document.querySelector(`[data-tab="${tabName}"]`).classList.add('active');
+
+    // Update form visibility
+    document.querySelectorAll('.auth-form').forEach(form => {
+      form.classList.remove('active');
+    });
+    document.getElementById(`${tabName}-form`).classList.add('active');
+
+    // Generate QR code if switching to link tab
+    if (tabName === 'link') {
+      this.generateQRCode();
+    }
+  }
+
+  /**
+   * Handle user login
+   */
+  async handleLogin() {
     const email = document.getElementById('login-email').value;
     const password = document.getElementById('login-password').value;
-    
+    const messageEl = document.getElementById('login-message');
+
     if (!email || !password) {
-      showAuthMessage('Please fill in all fields', 'error');
+      this.showMessage(messageEl, 'Please fill in all fields', 'error');
       return;
     }
-    
-    const result = await window.authManager.login(email, password);
-    if (result.success) {
-      showAuthMessage('Login successful! Loading your data...', 'success');
-      setTimeout(() => window.location.reload(), 2000);
-    } else {
-      showAuthMessage(result.message, 'error');
+
+    try {
+      await this.authManager.login(email, password);
+      this.showMessage(messageEl, 'Login successful! Loading your data...', 'success');
+      
+      // Reload page to apply authenticated state
+      setTimeout(() => {
+        window.location.reload();
+      }, 1500);
+
+    } catch (error) {
+      this.showMessage(messageEl, error.message, 'error');
     }
-  });
-  
-  // Register handler
-  document.getElementById('register-btn')?.addEventListener('click', async () => {
+  }
+
+  /**
+   * Handle user registration
+   */
+  async handleRegister() {
     const email = document.getElementById('register-email').value;
     const password = document.getElementById('register-password').value;
     const confirm = document.getElementById('register-confirm').value;
-    
-    if (!email || !password || !confirm) {
-      showAuthMessage('Please fill in all fields', 'error');
-      return;
-    }
-    
-    if (password !== confirm) {
-      showAuthMessage('Passwords do not match', 'error');
-      return;
-    }
-    
-    const result = await window.authManager.register(email, password);
-    if (result.success) {
-      showAuthMessage('Registration successful! You can now login from any device.', 'success');
-      // Switch to login tab
-      document.querySelector('[data-tab="login"]').click();
-    } else {
-      showAuthMessage(result.message, 'error');
-    }
-  });
-}
+    const messageEl = document.getElementById('register-message');
 
-// Show auth messages
-function showAuthMessage(message, type) {
-  // Remove existing messages
-  const existingMsg = document.querySelector('.auth-message');
-  if (existingMsg) existingMsg.remove();
-  
-  const msgElement = document.createElement('p');
-  msgElement.className = `auth-message ${type}`;
-  msgElement.textContent = message;
-  
-  const authContent = document.querySelector('.auth-content');
-  if (authContent) {
-    authContent.appendChild(msgElement);
+    if (!email || !password || !confirm) {
+      this.showMessage(messageEl, 'Please fill in all fields', 'error');
+      return;
+    }
+
+    if (password !== confirm) {
+      this.showMessage(messageEl, 'Passwords do not match', 'error');
+      return;
+    }
+
+    if (password.length < 6) {
+      this.showMessage(messageEl, 'Password must be at least 6 characters', 'error');
+      return;
+    }
+
+    try {
+      await this.authManager.register(email, password);
+      this.showMessage(messageEl, 'Registration successful! Loading your data...', 'success');
+      
+      // Reload page to apply authenticated state
+      setTimeout(() => {
+        window.location.reload();
+      }, 1500);
+
+    } catch (error) {
+      this.showMessage(messageEl, error.message, 'error');
+    }
+  }
+
+  /**
+   * Handle device linking
+   */
+  async handleDeviceLink() {
+    const linkCode = document.getElementById('link-code').value;
+    const messageEl = document.getElementById('link-message');
+
+    if (!linkCode) {
+      this.showMessage(messageEl, 'Please enter a link code', 'error');
+      return;
+    }
+
+    try {
+      await this.authManager.linkDevice(linkCode);
+      this.showMessage(messageEl, 'Device linked successfully! Loading your data...', 'success');
+      
+      // Reload page to apply authenticated state
+      setTimeout(() => {
+        window.location.reload();
+      }, 1500);
+
+    } catch (error) {
+      this.showMessage(messageEl, error.message, 'error');
+    }
+  }
+
+  /**
+   * Generate QR code for device linking
+   */
+  generateQRCode() {
+    const qrContainer = document.getElementById('qr-code');
+    if (!qrContainer) return;
+
+    try {
+      const linkCode = this.authManager.generateDeviceLinkCode();
+      
+      // Create QR code using a simple library or generate a visual representation
+      qrContainer.innerHTML = `
+        <div class="qr-code-display">
+          <div class="qr-code-text">${linkCode}</div>
+          <p>Share this code with another device</p>
+        </div>
+      `;
+    } catch (error) {
+      qrContainer.innerHTML = '<p>Please login first to generate link code</p>';
+    }
+  }
+
+  /**
+   * Show device linking modal
+   */
+  showDeviceLinkingModal() {
+    const modal = document.createElement('div');
+    modal.className = 'device-link-modal';
+    modal.innerHTML = `
+      <div class="modal-content">
+        <h3>Link This Device</h3>
+        <div class="qr-section">
+          <div id="modal-qr-code"></div>
+          <p>Scan this QR code with another device</p>
+        </div>
+        <div class="manual-link">
+          <input type="text" id="modal-link-code" placeholder="Or enter link code manually">
+          <button id="modal-link-btn">Link Device</button>
+        </div>
+        <button class="modal-close">✕</button>
+      </div>
+    `;
+
+    modal.style.cssText = `
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0,0,0,0.5);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 10000;
+    `;
+
+    document.body.appendChild(modal);
+
+    // Add event listeners
+    modal.querySelector('.modal-close').addEventListener('click', () => {
+      document.body.removeChild(modal);
+    });
+
+    modal.querySelector('#modal-link-btn').addEventListener('click', () => {
+      const linkCode = modal.querySelector('#modal-link-code').value;
+      this.handleModalDeviceLink(linkCode, modal);
+    });
+
+    // Generate QR code
+    this.generateModalQRCode();
+  }
+
+  /**
+   * Handle device linking from modal
+   */
+  async handleModalDeviceLink(linkCode, modal) {
+    try {
+      await this.authManager.linkDevice(linkCode);
+      alert('Device linked successfully!');
+      document.body.removeChild(modal);
+      window.location.reload();
+    } catch (error) {
+      alert('Device linking failed: ' + error.message);
+    }
+  }
+
+  /**
+   * Generate QR code for modal
+   */
+  generateModalQRCode() {
+    const qrContainer = document.getElementById('modal-qr-code');
+    if (!qrContainer) return;
+
+    try {
+      const linkCode = this.authManager.generateDeviceLinkCode();
+      qrContainer.innerHTML = `
+        <div class="qr-code-display">
+          <div class="qr-code-text">${linkCode}</div>
+        </div>
+      `;
+    } catch (error) {
+      qrContainer.innerHTML = '<p>Please login first to generate link code</p>';
+    }
+  }
+
+  /**
+   * Show message in auth forms
+   */
+  showMessage(element, message, type) {
+    element.textContent = message;
+    element.className = `auth-message ${type}`;
+    element.style.display = 'block';
   }
 }
 
-// Add CSS for auth UI
-function addAuthStyles() {
-  const style = document.createElement('style');
-  style.textContent = `
-    .auth-section {
-      margin: 20px 0;
-      padding: 20px;
-      background: rgba(255, 255, 255, 0.1);
-      border-radius: 10px;
-      border: 1px solid rgba(255, 255, 255, 0.2);
-    }
-    
-    .auth-tabs {
-      display: flex;
-      margin-bottom: 15px;
-      border-bottom: 1px solid rgba(255, 255, 255, 0.2);
-    }
-    
-    .auth-tab {
-      flex: 1;
-      padding: 10px;
-      background: none;
-      border: none;
-      color: #ccc;
-      cursor: pointer;
-      border-bottom: 2px solid transparent;
-    }
-    
-    .auth-tab.active {
-      color: #4a90e2;
-      border-bottom-color: #4a90e2;
-    }
-    
-    .auth-form {
-      display: none;
-    }
-    
-    .auth-form.active {
-      display: block;
-    }
-    
-    .auth-input {
-      width: 100%;
-      padding: 10px;
-      margin: 5px 0;
-      border: 1px solid rgba(255, 255, 255, 0.3);
-      border-radius: 5px;
-      background: rgba(255, 255, 255, 0.1);
-      color: white;
-    }
-    
-    .auth-btn {
-      width: 100%;
-      padding: 12px;
-      margin: 10px 0;
-      background: #4a90e2;
-      color: white;
-      border: none;
-      border-radius: 5px;
-      cursor: pointer;
-    }
-    
-    .auth-btn:hover {
-      background: #357abD;
-    }
-    
-    .auth-note {
-      font-size: 12px;
-      color: #888;
-      margin-top: 10px;
-      text-align: center;
-    }
-    
-    .auth-message {
-      padding: 10px;
-      border-radius: 5px;
-      margin: 10px 0;
-      text-align: center;
-    }
-    
-    .auth-message.success {
-      background: rgba(76, 175, 80, 0.2);
-      color: #4CAF50;
-      border: 1px solid #4CAF50;
-    }
-    
-    .auth-message.error {
-      background: rgba(244, 67, 54, 0.2);
-      color: #F44336;
-      border: 1px solid #F44336;
-    }
-  `;
-  document.head.appendChild(style);
-}
-
-// Initialize when DOM is loaded
+// Initialize multi-device setup when DOM is loaded
 document.addEventListener('DOMContentLoaded', () => {
-  // Only add auth UI to login page
-  if (window.location.pathname.includes('index.html') || 
-      window.location.pathname.endsWith('/')) {
-    addAuthStyles();
-    addAuthUI();
+  if (window.authManager) {
+    window.multiDeviceSetup = new MultiDeviceSetup();
   }
 });
+
+// Export for use in other modules
+if (typeof module !== 'undefined' && module.exports) {
+  module.exports = MultiDeviceSetup;
+}
