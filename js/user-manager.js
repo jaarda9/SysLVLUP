@@ -56,19 +56,24 @@ class UserManager {
     console.log('Loading user data for:', this.userId);
 
     try {
-      const response = await fetch(`/api/user/${encodeURIComponent(this.userId)}`);
+      // Try to load from /api/sync first (Vercel API)
+      const response = await fetch(`/api/sync?userId=${encodeURIComponent(this.userId)}`);
       
       if (response.ok) {
         const result = await response.json();
-        if (result.success && result.data) {
-          this.data = result.data;
-          console.log('Data loaded successfully:', this.data);
+        if (result.localStorageData) {
+          this.data = result.localStorageData;
+          console.log('Data loaded successfully from sync API:', this.data);
           return { success: true, data: this.data };
         } else {
           console.log('No existing data found for user:', this.userId);
           this.data = null;
           return { success: true, message: 'No existing data' };
         }
+      } else if (response.status === 404) {
+        console.log('No existing data found for user:', this.userId);
+        this.data = null;
+        return { success: true, message: 'No existing data' };
       } else {
         throw new Error(`HTTP ${response.status}: ${response.statusText}`);
       }
@@ -94,24 +99,34 @@ class UserManager {
     }
 
     console.log('Saving user data for:', this.userId);
+    console.log('Data to save:', this.data);
 
     try {
-      const response = await fetch('/api/user', {
+      const requestBody = {
+        userId: this.userId,
+        localStorageData: this.data
+      };
+      
+      console.log('Request body:', requestBody);
+      
+      const response = await fetch('/api/sync', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({
-          userId: this.userId,
-          data: this.data
-        }),
+        body: JSON.stringify(requestBody),
       });
+
+      console.log('Response status:', response.status);
+      console.log('Response headers:', response.headers);
 
       if (response.ok) {
         const result = await response.json();
-        console.log('Data saved successfully:', result);
+        console.log('Data saved successfully via sync API:', result);
         return { success: true, data: result };
       } else {
+        const errorText = await response.text();
+        console.error('API response error:', response.status, errorText);
         throw new Error(`HTTP ${response.status}: ${response.statusText}`);
       }
     } catch (error) {
