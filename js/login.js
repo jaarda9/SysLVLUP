@@ -1,167 +1,184 @@
-// Simple Dynamic Key System
-console.log('Login.js loaded - Dynamic Key System');
+// Dynamic Key Authentication System
+let currentKey = null;
+let typingIndex = 0;
+const text = "Enter The Dungeon";
+const typingSpeed = 100;
 
-// Generate a random 8-character key
+// Initialize dynamic key when page loads
+document.addEventListener('DOMContentLoaded', function() {
+    initializeDynamicKey();
+    startTypingAnimation();
+});
+
 function generateKey() {
     const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
-    let key = '';
+    let result = '';
     for (let i = 0; i < 8; i++) {
-        key += chars.charAt(Math.floor(Math.random() * chars.length));
+        result += chars.charAt(Math.floor(Math.random() * chars.length));
     }
-    console.log('Generated key:', key);
-    return key;
+    return result;
 }
 
-// Show the key on the page
-function showKey(key) {
-    console.log('Showing key:', key);
-    
-    // Create the key display element
-    const keyDiv = document.createElement('div');
-    keyDiv.id = 'key-display';
-    keyDiv.style.cssText = `
-        margin: 20px 0;
-        padding: 15px;
-        background: linear-gradient(135deg, rgba(74, 144, 226, 0.2), rgba(138, 43, 226, 0.2));
-        border: 2px solid rgba(74, 144, 226, 0.5);
-        border-radius: 10px;
-        text-align: center;
-        color: white;
-        font-family: 'Courier New', monospace;
-        font-size: 1.5rem;
-        font-weight: bold;
-        letter-spacing: 2px;
-        text-shadow: 0 0 10px rgba(74, 144, 226, 0.5);
-        animation: fadeIn 1s ease-in-out;
-    `;
-    
-    keyDiv.innerHTML = `
-        <div style="font-size: 0.9rem; margin-bottom: 8px; opacity: 0.8;">Your Session Key:</div>
-        <div style="color: #4A90E2; cursor: pointer;" onclick="generateNewKey()">${key}</div>
-        <div style="font-size: 0.8rem; margin-top: 8px; opacity: 0.6; font-style: italic;">Click to generate new key</div>
-    `;
-    
-    // Find where to insert it
-    const container = document.querySelector('.login-container');
-    const passwordInput = document.getElementById('password');
-    
-    if (container && passwordInput) {
-        // Insert before the password input
-        container.insertBefore(keyDiv, passwordInput);
-        console.log('Key display added successfully');
-    } else {
-        console.error('Could not find container or password input');
-    }
-}
-
-// Generate new key when clicked
-function generateNewKey() {
-    console.log('Generating new key...');
-    const newKey = generateKey();
-    localStorage.setItem('sessionKey', newKey);
-    
-    // Update the display
-    const keyDisplay = document.getElementById('key-display');
-    if (keyDisplay) {
-        const keyElement = keyDisplay.querySelector('div:nth-child(2)');
-        if (keyElement) {
-            keyElement.textContent = newKey;
-        }
-    }
-    
-    // Update the current key variable
-    window.currentSessionKey = newKey;
-}
-
-// Main initialization
-document.addEventListener("DOMContentLoaded", function() {
-    console.log('DOM loaded - initializing dynamic key system');
-    
-    // Generate or get existing key
-    let sessionKey = localStorage.getItem('sessionKey');
-    if (!sessionKey) {
-        sessionKey = generateKey();
-        localStorage.setItem('sessionKey', sessionKey);
-        console.log('Created new session key:', sessionKey);
-    } else {
-        console.log('Using existing session key:', sessionKey);
-    }
-    
-    // Store key globally for access
-    window.currentSessionKey = sessionKey;
-    
-    // Type out the title
-    const ascendTextElement = document.getElementById('ascend-text');
-    if (ascendTextElement) {
-        const text = "Enter The Dungeon";
-        let i = 0;
+function initializeDynamicKey() {
+    // Check if we have a user manager
+    if (window.userManager) {
+        let sessionKey = window.userManager.getData('sessionKey');
         
-        function typeChar() {
-            if (i < text.length) {
-                ascendTextElement.innerHTML += text.charAt(i);
-                i++;
-                setTimeout(typeChar, 100);
-            } else {
-                // Show key after typing is done
-                setTimeout(() => showKey(sessionKey), 500);
-            }
+        if (!sessionKey) {
+            sessionKey = generateKey();
+            window.userManager.setData('sessionKey', sessionKey);
+            console.log('Generated new session key:', sessionKey);
+        } else {
+            console.log('Using existing session key:', sessionKey);
         }
-        typeChar();
+        
+        currentKey = sessionKey;
     } else {
-        console.error('Could not find ascend-text element');
-        // Show key immediately if typing element not found
-        setTimeout(() => showKey(sessionKey), 1000);
+        console.warn('User manager not available, using fallback');
+        currentKey = generateKey();
+    }
+}
+
+function showKey() {
+    console.log('Showing dynamic key:', currentKey);
+    
+    const keyDisplay = document.createElement('div');
+    keyDisplay.id = 'dynamic-key-display';
+    keyDisplay.innerHTML = `
+        <div class="key-container">
+            <div class="key-label">Your Session Key:</div>
+            <div class="key-value">${currentKey}</div>
+            <div class="key-instruction">Click to generate new key</div>
+        </div>
+    `;
+    
+    // Add inline styles to avoid CSS loading issues
+    keyDisplay.style.cssText = `
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        background: rgba(0, 0, 0, 0.9);
+        color: #00ff00;
+        padding: 20px;
+        border-radius: 10px;
+        border: 2px solid #00ff00;
+        text-align: center;
+        z-index: 1000;
+        font-family: 'Courier New', monospace;
+        animation: fadeIn 0.5s ease-in;
+    `;
+    
+    // Add fadeIn animation if not already present
+    if (!document.querySelector('#fadeIn-style')) {
+        const style = document.createElement('style');
+        style.id = 'fadeIn-style';
+        style.textContent = `
+            @keyframes fadeIn {
+                from { opacity: 0; transform: translate(-50%, -50%) scale(0.8); }
+                to { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+            }
+        `;
+        document.head.appendChild(style);
     }
     
-    // Handle password input
+    // Add click handler to generate new key
+    keyDisplay.addEventListener('click', function() {
+        generateNewKey();
+        keyDisplay.remove();
+    });
+    
+    document.body.appendChild(keyDisplay);
+    
+    // Remove key display after 5 seconds
+    setTimeout(() => {
+        if (keyDisplay.parentNode) {
+            keyDisplay.remove();
+        }
+    }, 5000);
+}
+
+function generateNewKey() {
+    const newKey = generateKey();
+    currentKey = newKey;
+    
+    if (window.userManager) {
+        window.userManager.setData('sessionKey', newKey);
+        console.log('Generated new session key:', newKey);
+    }
+    
+    showKey();
+}
+
+function startTypingAnimation() {
+    const ascendText = document.getElementById('ascend-text');
+    if (!ascendText) return;
+    
+    function typeNextChar() {
+        if (typingIndex < text.length) {
+            ascendText.textContent += text.charAt(typingIndex);
+            typingIndex++;
+            setTimeout(typeNextChar, typingSpeed);
+        } else {
+            // Show the dynamic key after typing animation completes
+            setTimeout(showKey, 500);
+        }
+    }
+    
+    typeNextChar();
+}
+
+// Password input handling
+document.addEventListener('DOMContentLoaded', function() {
     const passwordInput = document.getElementById('password');
+    const messageElement = document.getElementById('message');
+    
     if (passwordInput) {
-        passwordInput.addEventListener('keypress', function(event) {
-            if (event.key === 'Enter') {
-                const inputValue = this.value.trim();
-                const messageElement = document.getElementById('message');
+        passwordInput.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                const enteredPassword = passwordInput.value.trim();
                 
-                console.log('Checking password:', inputValue, 'against:', sessionKey);
+                if (!currentKey) {
+                    console.error('No session key available');
+                    showMessage('Error: No session key available', 'error');
+                    return;
+                }
                 
-                if (inputValue === sessionKey) {
-                    console.log('Authentication successful');
-                    messageElement.textContent = "Access Granted!";
-                    messageElement.style.color = "#00ff88";
-                    messageElement.classList.remove("hidden");
+                if (enteredPassword === currentKey) {
+                    // Authentication successful
+                    if (window.userManager) {
+                        window.userManager.setData('authenticated', true);
+                        window.userManager.setData('authTimestamp', Date.now().toString());
+                        console.log('Authentication successful with key:', currentKey);
+                    }
                     
-                    // Store authentication
-                    localStorage.setItem('authenticated', 'true');
-                    localStorage.setItem('authTimestamp', Date.now().toString());
+                    showMessage('Access Granted! Redirecting...', 'success');
                     
-                    // Redirect
+                    // Redirect to main page after a short delay
                     setTimeout(() => {
                         window.location.href = 'alarm.html';
-                    }, 1500);
+                    }, 1000);
+                    
                 } else {
-                    console.log('Authentication failed');
-                    messageElement.textContent = "Incorrect Key. Please try again.";
-                    messageElement.style.color = "#ff4444";
-                    messageElement.classList.remove("hidden");
-                    this.value = "";
+                    showMessage('Invalid Session Key', 'error');
+                    passwordInput.value = '';
                 }
             }
         });
-    } else {
-        console.error('Could not find password input');
     }
 });
 
-// Add fadeIn animation if not already present
-if (!document.querySelector('style[data-dynamic-key]')) {
-    const style = document.createElement('style');
-    style.setAttribute('data-dynamic-key', 'true');
-    style.textContent = `
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(-10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-    `;
-    document.head.appendChild(style);
+function showMessage(message, type) {
+    const messageElement = document.getElementById('message');
+    if (messageElement) {
+        messageElement.textContent = message;
+        messageElement.className = type === 'success' ? 'success' : 'error';
+        messageElement.classList.remove('hidden');
+        
+        setTimeout(() => {
+            messageElement.classList.add('hidden');
+        }, 3000);
+    }
 }
 
 

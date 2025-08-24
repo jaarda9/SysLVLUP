@@ -1,5 +1,14 @@
 document.addEventListener("DOMContentLoaded", function() {
-  const savedData = JSON.parse(localStorage.getItem("gameData"));
+  // Wait for user manager to load data
+  if (window.userManager) {
+    const userData = window.userManager.getData();
+    const savedData = userData.gameData || {};
+    loadData(savedData);
+  } else {
+    console.warn('User manager not available, using fallback');
+    loadData({});
+  }
+
   function measurePing(url) {
       const startTime = Date.now();
       fetch(url)
@@ -22,20 +31,21 @@ document.addEventListener("DOMContentLoaded", function() {
   // Call the measurePing function with a URL to ping
   measurePing('https://sys-lvlup.vercel.app/status.html'); // Replace with your server URL
 });
-// Use simple user manager for syncing
+
+// Use user manager for syncing
 async function syncToDatabase() {
-    if (window.simpleUser) {
+    if (window.userManager) {
         try {
-            await window.simpleUser.saveUserData();
-            console.log('Sync successful via simple user manager');
+            await window.userManager.saveUserData();
+            console.log('Sync successful via user manager');
             return { success: true, message: 'Data synced successfully' };
         } catch (error) {
             console.error('Error syncing to database:', error);
             throw error;
         }
     } else {
-        console.warn('Simple user manager not available for syncing');
-        return { success: false, message: 'Simple user manager not available' };
+        console.warn('User manager not available for syncing');
+        return { success: false, message: 'User manager not available' };
     }
 }
 
@@ -265,8 +275,7 @@ async function syncToDatabase() {
 }
 
 // Load Data Function
-function loadData() {
-  const savedData = JSON.parse(localStorage.getItem("gameData"));
+function loadData(savedData) {
   if (savedData) {
     document.querySelector(".level-number").textContent = savedData.level;
     document.getElementById("HPvalue").textContent = savedData.hp + "/100";
@@ -300,8 +309,9 @@ function loadData() {
 
 // Save Data Function
 function saveData() {
-  // Retrieve existing data from localStorage, or initialize with an empty object if not present
-  const existingData = JSON.parse(localStorage.getItem("gameData")) || {};
+  // Get existing data from user manager
+  const userData = window.userManager ? window.userManager.getData() : {};
+  const existingData = userData.gameData || {};
 
   // New data to update
   const updatedData = {
@@ -323,9 +333,11 @@ function saveData() {
   // Merge existing data with updated data, updating only specified keys
   const newData = { ...existingData, ...updatedData };
 
-  // Save the merged data back to localStorage
-  localStorage.setItem("gameData", JSON.stringify(newData));
-  syncToDatabase();
+  // Save the merged data via user manager
+  if (window.userManager) {
+    window.userManager.setData('gameData', newData);
+    syncToDatabase();
+  }
 }
 
 
@@ -365,15 +377,20 @@ function resetData() {
       WIS: 0,
     },
   };
-  localStorage.setItem("gameData", JSON.stringify(defaultGameData));
-  syncToDatabase()
+  
+  if (window.userManager) {
+    window.userManager.setData('gameData', defaultGameData);
+    syncToDatabase();
+  }
+  
   location.reload();
 }
 
 // Check for New Day Function
 function checkForNewDay() {
   const currentDate = new Date().toLocaleDateString(); // Get today's date
-  const lastResetDate = localStorage.getItem("lastResetDate"); // Get the last reset date from localStorage
+  const userData = window.userManager ? window.userManager.getData() : {};
+  const lastResetDate = userData.lastResetDate; // Get the last reset date from user manager
 
   console.log("Current Date:", currentDate);
   console.log("Last Reset Date:", lastResetDate);
@@ -382,9 +399,13 @@ function checkForNewDay() {
   if (!lastResetDate || lastResetDate !== currentDate) {
     console.log("Resetting daily stats...");
     currentSTS = 0; // Reset daily quests
-    localStorage.setItem("STS", currentSTS); // Update STS in localStorage
+    
+    if (window.userManager) {
+      window.userManager.setData('STS', currentSTS);
+      window.userManager.setData('lastResetDate', currentDate);
+    }
+    
     resetDailyStats(); // Reset daily stats
-    localStorage.setItem("lastResetDate", currentDate); // Update the last reset date
     syncToDatabase();
   } else {
     console.log("No reset needed.");
@@ -393,7 +414,9 @@ function checkForNewDay() {
 
 // Reset Daily Stats Function
 function resetDailyStats() {
-  const savedData = JSON.parse(localStorage.getItem("gameData"));
+  const userData = window.userManager ? window.userManager.getData() : {};
+  const savedData = userData.gameData;
+  
   if (savedData) {
     console.log("Resetting stats for:", savedData.name);
     // Reset relevant stats
@@ -414,8 +437,10 @@ function resetDailyStats() {
     document.getElementById("STMvalue").textContent = savedData.stm + "/100";
     document.querySelector(".fatigue-value").textContent = savedData.fatigue;
 
-    // Save the updated data back to localStorage
-    localStorage.setItem("gameData", JSON.stringify(savedData));
+    // Save the updated data via user manager
+    if (window.userManager) {
+      window.userManager.setData('gameData', savedData);
+    }
     console.log("Daily stats reset successfully.");
   } else {
     console.error("No saved data found for resetting stats.");
@@ -424,7 +449,7 @@ function resetDailyStats() {
 
 document.addEventListener("DOMContentLoaded", function() {
   console.log("Page loaded.");
-  loadData(); // Load existing data
+  // Data loading is handled by the initial DOMContentLoaded event
   updateFatigueProgress(); // Update fatigue progress
   checkForLevelUp(); // Check for level up
   checkForNewDay(); // Check if it's a new day to reset stats
@@ -480,15 +505,20 @@ function importData(event) {
       try {
           const importedData = JSON.parse(e.target.result); // Parse the file content
           
-          // Clear existing local storage (optional)
-          localStorage.clear();
-          
-          // Store each key-value pair back into local storage
-          for (const key in importedData) {
-              if (importedData.hasOwnProperty(key)) {
-                  localStorage.setItem(key, importedData[key]);
-                syncToDatabase()
-              }
+          // Clear existing data and import new data via user manager
+          if (window.userManager) {
+            // Clear existing data
+            window.userManager.data = {};
+            
+            // Store each key-value pair via user manager
+            for (const key in importedData) {
+                if (importedData.hasOwnProperty(key)) {
+                    window.userManager.setData(key, importedData[key]);
+                }
+            }
+            
+            // Save to database
+            syncToDatabase();
           }
           
           // Show success notification
@@ -513,13 +543,12 @@ function importData(event) {
 }
 
 function exportData() {
-  const allData = {}; // Create an object to hold all local storage data
+  const allData = {}; // Create an object to hold all data
 
-  // Iterate through all local storage items
-  for (let i = 0; i < localStorage.length; i++) {
-      const key = localStorage.key(i);
-      const value = localStorage.getItem(key);
-      allData[key] = value; // Store in the object
+  // Get all data from user manager
+  if (window.userManager) {
+    const userData = window.userManager.getData();
+    Object.assign(allData, userData);
   }
 
   // Function to format the date
@@ -551,7 +580,7 @@ function exportData() {
 
 
 window.onload = function() {
-  loadData(); // Load existing data
+  // Data loading is handled by the initial DOMContentLoaded event
   updateFatigueProgress(); // Update fatigue progress
   checkForLevelUp(); // Check for level up
 
@@ -827,8 +856,7 @@ const playQuestAudio = async () => {
 
 // Main event listener for DOM content loaded
 document.addEventListener('DOMContentLoaded', () => {
-  // Load existing game data
-  loadData();
+  // Data loading is handled by the initial DOMContentLoaded event
   updateFatigueProgress();
   checkForLevelUp();
   checkForNewDay();

@@ -1,15 +1,14 @@
 /**
- * Centralized User Manager
- * Single source of truth for user identification and data synchronization
- * Supports both authenticated users and anonymous users
+ * Simplified User Manager
+ * Fetches data directly from MongoDB without localStorage conflicts
  */
 class UserManager {
   constructor() {
     this.userId = this.getOrCreateUserId();
-    this.sync = null;
-    this.initializeSync();
+    this.data = null;
+    this.isLoading = false;
     
-    // Load user data immediately when user manager is created
+    // Load data immediately when user manager is created
     this.loadUserData().then(result => {
       console.log('Initial user data load result:', result);
     }).catch(error => {
@@ -19,7 +18,6 @@ class UserManager {
 
   /**
    * Get existing user ID or create a new one
-   * Uses a persistent identifier that works across different URLs
    */
   getOrCreateUserId() {
     // Try to get a persistent user ID that works across URLs
@@ -60,29 +58,27 @@ class UserManager {
   }
 
   /**
-   * Initialize sync with the user ID
-   */
-  initializeSync() {
-    if (typeof LocalStorageSync !== 'undefined') {
-      this.sync = new LocalStorageSync(this.userId);
-      console.log('Sync initialized for user:', this.userId);
-      return this.sync;
-    } else {
-      console.warn('LocalStorageSync not available');
-      return null;
-    }
-  }
-
-  /**
-   * Load user data from database
+   * Load user data directly from MongoDB
    */
   async loadUserData() {
+    if (this.isLoading) {
+      console.log('Already loading data, skipping...');
+      return;
+    }
+    
+    this.isLoading = true;
+    
     try {
-      console.log('Loading user data for userId:', this.userId);
-      const response = await fetch(`/api/user/${this.userId}`);
+      console.log('Loading user data directly from MongoDB for userId:', this.userId);
+      
+      const isProduction = window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1';
+      const apiEndpoint = isProduction ? '/api/user' : 'http://localhost:3000/api/user';
+      
+      const response = await fetch(`${apiEndpoint}/${this.userId}`);
       
       if (response.status === 404) {
         console.log('No existing data found for user, starting fresh');
+        this.data = {};
         return { success: true, message: 'No existing data' };
       }
 
@@ -92,61 +88,46 @@ class UserManager {
 
       const result = await response.json();
       
-      if (result.localStorage && Object.keys(result.localStorage).length > 0) {
-        // Load data into localStorage
-        Object.keys(result.localStorage).forEach(key => {
-          const value = result.localStorage[key];
-          if (typeof value === 'object') {
-            localStorage.setItem(key, JSON.stringify(value));
-          } else {
-            localStorage.setItem(key, value);
-          }
-        });
-        console.log('User data loaded from database successfully');
-        
-        // Trigger a page reload to update the UI with loaded data
-        if (window.location.pathname.includes('alarm.html') || 
-            window.location.pathname.includes('status.html') ||
-            window.location.pathname.includes('daily_quest.html')) {
-          console.log('Reloading page to update UI with loaded data');
-          window.location.reload();
-        }
-      }
+      // Store data in memory instead of localStorage
+      this.data = result.localStorage || {};
+      
+      console.log('User data loaded directly from MongoDB:', this.data);
+      
+      // Trigger UI update if needed
+      this.updateUI();
       
       return result;
 
     } catch (error) {
       console.error('Error loading user data:', error);
-      // Don't throw error - allow app to continue with local data
+      this.data = {};
       return { success: false, error: error.message };
+    } finally {
+      this.isLoading = false;
     }
   }
 
   /**
-   * Save user data to database
+   * Save user data directly to MongoDB
    */
-  async saveUserData() {
+  async saveUserData(dataToSave = null) {
     try {
-      // Get all localStorage data
-      const localStorageData = {};
-      for (let i = 0; i < localStorage.length; i++) {
-        const key = localStorage.key(i);
-        try {
-          localStorageData[key] = JSON.parse(localStorage.getItem(key));
-        } catch (e) {
-          localStorageData[key] = localStorage.getItem(key);
-        }
-      }
+      // Use provided data or current data
+      const data = dataToSave || this.data || {};
+      
+      console.log('Saving user data directly to MongoDB:', data);
+      
+      const isProduction = window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1';
+      const apiEndpoint = isProduction ? '/api/sync' : 'http://localhost:3000/api/sync';
 
-      // Send data to MongoDB
-      const response = await fetch('/api/sync', {
+      const response = await fetch(apiEndpoint, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
           userId: this.userId,
-          localStorageData: localStorageData
+          localStorageData: data
         })
       });
 
@@ -154,8 +135,9 @@ class UserManager {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
 
-      console.log('User data saved successfully');
-      return true;
+      const result = await response.json();
+      console.log('User data saved directly to MongoDB:', result);
+      return result;
 
     } catch (error) {
       console.error('Error saving user data:', error);
@@ -164,7 +146,44 @@ class UserManager {
   }
 
   /**
-   * Simple sync function for compatibility with existing code
+   * Get data from memory (not localStorage)
+   */
+  getData(key = null) {
+    if (key) {
+      return this.data[key];
+    }
+    return this.data;
+  }
+
+  /**
+   * Set data in memory (not localStorage)
+   */
+  setData(key, value) {
+    this.data[key] = value;
+    console.log('Data set in memory:', key, value);
+  }
+
+  /**
+   * Update data and save to MongoDB
+   */
+  async updateData(key, value) {
+    this.setData(key, value);
+    await this.saveUserData();
+  }
+
+  /**
+   * Update UI with current data
+   */
+  updateUI() {
+    // Dispatch custom event for UI components to listen to
+    const event = new CustomEvent('userDataUpdated', { 
+      detail: { data: this.data, userId: this.userId } 
+    });
+    window.dispatchEvent(event);
+  }
+
+  /**
+   * Simple sync function for compatibility
    */
   async syncToDatabase() {
     return this.saveUserData();
@@ -175,7 +194,10 @@ class UserManager {
    */
   async userDataExists() {
     try {
-      const response = await fetch(`/api/user/${this.userId}`);
+      const isProduction = window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1';
+      const apiEndpoint = isProduction ? '/api/user' : 'http://localhost:3000/api/user';
+      
+      const response = await fetch(`${apiEndpoint}/${this.userId}`);
       return response.status !== 404;
     } catch (error) {
       console.error('Error checking user data:', error);

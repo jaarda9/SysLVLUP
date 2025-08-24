@@ -71,122 +71,19 @@
     <script src="js/user-manager.js"></script>
     <script src="js/login.js"></script>
     <script>
-    // Initialize user manager and load data immediately
+    // Initialize user manager - data loading is handled automatically
     document.addEventListener('DOMContentLoaded', function() {
-        // Ensure user manager is loaded
         if (window.userManager) {
             console.log('User manager initialized with userId:', window.userManager.getUserId());
-            
-            // Load user data immediately
-            window.userManager.loadUserData().then(result => {
-                console.log('Initial data load result:', result);
-            }).catch(error => {
-                console.error('Error loading initial data:', error);
-            });
         } else {
-            console.warn('User manager not available, using fallback');
-            loadDataFromMongoDB();
+            console.warn('User manager not available');
         }
     });
     
-    // Simple data sync functions with dynamic user ID
-    async function loadDataFromMongoDB() {
-      try {
-        const isProduction = window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1';
-        const apiEndpoint = isProduction ? '/api/user' : 'http://localhost:3000/api/user';
-        
-        // Get userId from localStorage (try persistent first, then fallback)
-        let userId = localStorage.getItem('persistentUserId') || localStorage.getItem('userId');
-        if (!userId) {
-          console.error('No userId found in localStorage');
-          return;
-        }
-        
-        const response = await fetch(`${apiEndpoint}/${userId}`);
-        
-        if (response.status === 404) {
-          console.log('User data not found. Starting fresh.');
-          return;
-        }
-        
-        if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`);
-        }
-        
-        const result = await response.json();
-        
-        if (result.localStorage && Object.keys(result.localStorage).length > 0) {
-          // Load data into localStorage
-          Object.keys(result.localStorage).forEach(key => {
-            const value = result.localStorage[key];
-            if (typeof value === 'object') {
-              localStorage.setItem(key, JSON.stringify(value));
-            } else {
-              localStorage.setItem(key, value);
-            }
-          });
-          console.log('Data loaded successfully.');
-        }
-      } catch (error) {
-        console.error('Error loading data from MongoDB:', error);
-      }
-    }
-    
-    // Save data to MongoDB
-    async function saveDataToMongoDB() {
-      try {
-        const isProduction = window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1';
-        const apiEndpoint = isProduction ? '/api/sync' : 'http://localhost:3000/api/sync';
-        
-        // Get userId from localStorage (try persistent first, then fallback)
-        const userId = localStorage.getItem('persistentUserId') || localStorage.getItem('userId');
-        
-        // Get all localStorage data
-        const localStorageData = {};
-        for (let i = 0; i < localStorage.length; i++) {
-          const key = localStorage.key(i);
-          try {
-            localStorageData[key] = JSON.parse(localStorage.getItem(key));
-          } catch (e) {
-            localStorageData[key] = localStorage.getItem(key);
-          }
-        }
-        
-        if (Object.keys(localStorageData).length === 0) {
-          console.log('No data to save');
-          return;
-        }
-        
-        const response = await fetch(apiEndpoint, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            userId: userId,
-            localStorageData: localStorageData
-          })
-        });
-        
-        if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`);
-        }
-        
-        const result = await response.json();
-        console.log('Data saved successfully.');
-      } catch (error) {
-        console.error('Error saving data:', error);
-      }
-    }
-    
-    // Save data when page is unloaded
-    window.addEventListener('beforeunload', saveDataToMongoDB);
-    
-    // Also save data when page becomes hidden (for mobile devices)
-    document.addEventListener('visibilitychange', function() {
-      if (document.visibilityState === 'hidden') {
-        saveDataToMongoDB();
-      }
+    // Listen for data updates from user manager
+    window.addEventListener('userDataUpdated', function(event) {
+        console.log('User data updated:', event.detail);
+        // UI components can listen to this event to update their display
     });
     </script>
 </body>

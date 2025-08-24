@@ -1,167 +1,138 @@
-  async function syncToDatabase() {
-    try {
-      // Use centralized user manager if available
-      if (window.userManager) {
-        await window.userManager.syncToDatabase();
-        console.log('Sync successful using centralized user manager');
-        return { success: true, message: 'Data synced successfully' };
-      }
-      
-      // Fallback to original logic if user manager not available
-      const localStorageData = JSON.parse(localStorage.getItem("gameData"));
-      
-      if (!localStorageData || Object.keys(localStorageData).length === 0) {
-        console.log('No localStorage data to sync');
-        return { success: true, message: 'No data to sync' };
-      }
-
-      // Get userId from localStorage
-      const userId = localStorage.getItem('userId');
-      if (!userId) {
-        console.error('No userId found in localStorage');
-        return { success: false, message: 'No userId available' };
-      }
-
-      const response = await fetch('/api/sync', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          userId: userId,
-          localStorageData: localStorageData
-        })
-      });
-
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-
-      const result = await response.json();
-      console.log('Sync successful:', result);
-      return result;
-
-    } catch (error) {
-      console.error('Error syncing to database:', error);
-      throw error;
-    }
+document.addEventListener("DOMContentLoaded", function() {
+  // Wait for user manager to load data
+  if (window.userManager) {
+    const userData = window.userManager.getData();
+    const localStorageData = userData.gameData || {};
+    loadData(localStorageData);
+  } else {
+    console.warn('User manager not available, using fallback');
+    loadData({});
   }
-document.addEventListener('DOMContentLoaded', function() {
-    const introTextElement = document.getElementById('intro-text');
-    const ritualContainer = document.querySelector('.ritual-container');
-    const messageElement = document.getElementById('message');
+});
 
-    const introText = "Welcome, Traveler. You stand on the precipice of transformation.\n This system awaits your awakening. It is a realm where the past dissolves and the future unfolds.";
-    const messages = 
-    "Finish a Book.<br><br>Finish A Lecture.<br><br>Memorize One Page.<br><br>Finish a Workout.<br><br>Remain Silent for the whole Day.";
-
-    const typingSpeed = 65; // Speed in milliseconds
-
-    // Function to type out the text
-   // Function to type out the text
-function typeText(text, element, speed) {
-    element.classList.add('typing'); // Add typing class for cursor effect
-
-    // Split the text by <br> to handle line breaks
-    const segments = text.split('<br>');
-    let currentSegment = 0;
-
-    function typeSegment(segment) {
-        let i = 0;
-        function typeChar() {
-            if (i < segment.length) {
-                element.innerHTML += segment.charAt(i);
-                i++;
-                setTimeout(typeChar, speed);
-            } else {
-                currentSegment++;
-                if (currentSegment < segments.length) {
-                    element.innerHTML += '<br>'; // Add a line break before the next segment
-                    typeSegment(segments[currentSegment]); // Type the next segment
-                } else {
-                    element.classList.remove('typing'); // Remove typing class after finishing
-                    ritualContainer.classList.remove('hidden'); // Show the ritual container
-                }
-            }
+// Use user manager for syncing
+async function syncToDatabase() {
+    if (window.userManager) {
+        try {
+            await window.userManager.saveUserData();
+            console.log('Sync successful via user manager');
+            return { success: true, message: 'Data synced successfully' };
+        } catch (error) {
+            console.error('Error syncing to database:', error);
+            throw error;
         }
-        typeChar();
+    } else {
+        console.warn('User manager not available for syncing');
+        return { success: false, message: 'User manager not available' };
     }
-
-    // Start typing the first segment
-    typeSegment(segments[currentSegment]);
 }
-    // Start typing the intro text
-   
-    setTimeout(function() {
-        typeText(introText, introTextElement, typingSpeed); // Start typing messages after delay
-    }, 3000);
-    setTimeout(function() {
-        typeText(messages, messageElement, typingSpeed); // Start typing messages after delay
-    }, 19000);
-});
 
-
-document.getElementById("accept-quest").addEventListener("click", function() {
-     // Replace with your logic for accepting the quest
-    // You can redirect to another page or load quest details here
-    window.location.href = "Rituaal.html"; // Example redirection
-});
-
-document.getElementById("deny-quest").addEventListener("click", function() {
-     
-    const initiationContainer = document.querySelector(".initiation-container");
-    initiationContainer.style.display = "none"; // Hide the initiation container
-});
-
-document.addEventListener('DOMContentLoaded', function() {
-    // Function to handle file import
-  function importData(event) {
-  const file = event.target.files[0]; // Get the selected file
-  if (!file) {
-      alert("No file selected.");
-      return;
+// Load Data Function
+function loadData(savedData) {
+  if (savedData) {
+    // Load saved data into UI
+    document.querySelector(".level-number").textContent = savedData.level || 1;
+    document.getElementById("hp-fill").style.width = (savedData.hp || 100) + "%";
+    document.getElementById("mp-fill").style.width = (savedData.mp || 100) + "%";
+    document.getElementById("stm-fill").style.width = (savedData.stm || 100) + "%";
+    document.getElementById("exp-fill").style.width = (savedData.exp || 0) + "%";
+    document.getElementById("Fatvalue").textContent = savedData.fatigue || 0;
+    document.getElementById("job-text").textContent = savedData.name || "Your Name";
+    document.getElementById("ping-text").textContent = savedData.ping || "60 ms";
+    document.getElementById("guild-text").textContent = savedData.guild || "Reaper";
+    document.getElementById("race-text").textContent = savedData.race || "Hunter";
+    document.getElementById("title-text").textContent = savedData.title || "None";
+    document.getElementById("region-text").textContent = savedData.region || "TN";
+    document.getElementById("location-text").textContent = savedData.location || "Hospital";
+    
+    // Load attributes if they exist
+    if (savedData.Attributes) {
+      document.getElementById("str").textContent = `STR: ${savedData.Attributes.STR}`;
+      document.getElementById("vit").textContent = `VIT: ${savedData.Attributes.VIT}`;
+      document.getElementById("agi").textContent = `AGI: ${savedData.Attributes.AGI}`;
+      document.getElementById("int").textContent = `INT: ${savedData.Attributes.INT}`;
+      document.getElementById("per").textContent = `PER: ${savedData.Attributes.PER}`;
+      document.getElementById("wis").textContent = `WIS: ${savedData.Attributes.WIS}`;
+    }
+  } else {
+    resetData();
   }
-
-  const reader = new FileReader(); // Create a FileReader instance
-  reader.onload = function(e) {
-      try {
-          const importedData = JSON.parse(e.target.result); // Parse the file content
-          
-          // Clear existing local storage (optional)
-          localStorage.clear();
-          
-          // Store each key-value pair back into local storage
-          for (const key in importedData) {
-              if (importedData.hasOwnProperty(key)) {
-                  localStorage.setItem(key, importedData[key]);
-              }
-          }
-          
-          // Show success notification
-          const notification = document.getElementById("notification");
-          notification.classList.remove("hidden"); // Remove hidden class
-          notification.classList.add("show"); // Add show class
-          
-          setTimeout(() => {
-              notification.classList.remove("show"); // Hide after 2 seconds
-              notification.classList.add("hidden"); // Add hidden class back
-          }, 2500); // 2 seconds delay before hiding
-          
-          // Redirect after a short delay
-          setTimeout(() => {
-              window.location.href = "status.html"; // Redirect to status.html
-          }, 2500); // Same delay for redirecting
-      } catch (error) {
-          alert("Failed to import data. Please make sure the file is valid."); // Error handling
-      }
-  };
-  reader.readAsText(file); // Read the file as text
 }
-    // Event listener for the import input
-    document.getElementById("import-input").addEventListener("change", importData);
 
-    // Event listener for the import button
-    document.getElementById("import-button").addEventListener("click", function() {
-        document.getElementById("import-input").click(); // Trigger the file input click
-    });
-});
+// Reset Data Function
+function resetData() {
+  const defaultGameData = {
+    level: 1,
+    hp: 100,
+    mp: 100,
+    stm: 100,
+    exp: 0,
+    fatigue: 0,
+    name: "Your Name",
+    ping: "60",
+    guild: "Reaper",
+    race: "Hunter",
+    title: "None",
+    region: "TN",
+    location: "Hospital",
+    physicalQuests: "[0/4]",
+    mentalQuests: "[0/3]",
+    spiritualQuests: "[0/2]",
+    Attributes: {
+      STR: 10,
+      VIT: 10,
+      AGI: 10,
+      INT: 10,
+      PER: 10,
+      WIS: 10,
+    },
+    stackedAttributes: {
+      STR: 0,
+      VIT: 0,
+      AGI: 0,
+      INT: 0,
+      PER: 0,
+      WIS: 0,
+    },
+  };
+  
+  if (window.userManager) {
+    window.userManager.setData('gameData', defaultGameData);
+    syncToDatabase();
+  }
+  
+  location.reload();
+}
+
+// Save Data Function
+function saveData() {
+  // Get existing data from user manager
+  const userData = window.userManager ? window.userManager.getData() : {};
+  const existingData = userData.gameData || {};
+
+  // New data to update
+  const updatedData = {
+    level: document.querySelector(".level-number").textContent,
+    hp: parseFloat(document.getElementById("hp-fill").style.width),
+    mp: parseFloat(document.getElementById("mp-fill").style.width),
+    stm: parseFloat(document.getElementById("stm-fill").style.width),
+    exp: parseFloat(document.getElementById("exp-fill").style.width),
+    fatigue: document.getElementById("Fatvalue").textContent,
+    name: document.getElementById("job-text").textContent,
+    ping: document.getElementById("ping-text").textContent,
+    guild: document.getElementById("guild-text").textContent,
+    race: document.getElementById("race-text").textContent,
+    title: document.getElementById("title-text").textContent,
+    region: document.getElementById("region-text").textContent,
+    location: document.getElementById("location-text").textContent,
+  };
+
+  // Merge existing data with updated data, updating only specified keys
+  const newData = { ...existingData, ...updatedData };
+
+  // Save the merged data via user manager
+  if (window.userManager) {
+    window.userManager.setData('gameData', newData);
+    syncToDatabase();
+  }
+}

@@ -46,161 +46,200 @@
       throw error;
     }
   }
-document.addEventListener("DOMContentLoaded", function () {
-  // Retrieve game data from localStorage
-  let savedData = JSON.parse(localStorage.getItem("gameData"));
-
-  if (!savedData) {
-    console.error("No saved game data found!");
-    return;
-  }
-  function shakeElement() {
-    const element = document.getElementById("complete");
-    let position = 0;
-    const interval = setInterval(() => {
-      position = (position + 1) % 4;
-      const offset = position % 2 === 0 ? -10 : 10;
-      element.style.transform = `translateX(${offset}px)`;
-
-      if (position === 0) {
-        clearInterval(interval);
-        element.style.transform = "translateX(0px)";
-      }
-    }, 100);
-  }
-  // Handle Physical Quests Button
-  const physicalQuestsBtn = document.getElementById("physicalQuests");
-  if (physicalQuestsBtn) {
-    if (savedData.physicalQuests === "[4/4]") {
-      physicalQuestsBtn.disabled = true; // Disable the button if physical quests are completed
-      physicalQuestsBtn.classList.add("completed"); // Add 'completed' class to change hover effect
-    } else {
-      physicalQuestsBtn.addEventListener("click", function () {
-        window.location.href = "/Quest_Info_Physical.html";
-      });
-    }
+document.addEventListener("DOMContentLoaded", function() {
+  // Wait for user manager to load data
+  if (window.userManager) {
+    const userData = window.userManager.getData();
+    const localStorageData = userData.gameData || {};
+    loadData(localStorageData);
   } else {
-    console.error("Element with ID 'physicalQuests' not found.");
-  }
-
-  // Handle Mental Quests Button
-  const mentalQuestsBtn = document.getElementById("mentalQuests");
-  if (mentalQuestsBtn) {
-    if (savedData.mentalQuests === "[3/3]") {
-      mentalQuestsBtn.disabled = true; // Disable the button if mental quests are completed
-      mentalQuestsBtn.classList.add("completed"); // Add 'completed' class to change hover effect
-    } else {
-      mentalQuestsBtn.addEventListener("click", function () {
-        window.location.href = "../Quest_Info_Mental.html";
-      });
-    }
-  } else {
-    console.error("Element with ID 'mentalQuests' not found.");
-  }
-
-  // Handle Spiritual Quests Button
-  const spiritualQuestsBtn = document.getElementById("spiritualQuests");
-  if (spiritualQuestsBtn) {
-    if (savedData.spiritualQuests === "[2/2]") {
-      spiritualQuestsBtn.disabled = true; // Disable the button if spiritual quests are completed
-      spiritualQuestsBtn.classList.add("completed"); // Add 'completed' class to change hover effect
-    } else {
-      spiritualQuestsBtn.addEventListener("click", function () {
-        window.location.href = "../Quest_Info_Spiritual.html";
-      });
-    }
-  } else {
-    console.error("Element with ID 'spiritualQuests' not found.");
-  }
-
-  // Optionally, update the task counts visually
-  updateDailyQuestCounts();
-
-  console.log(mentalQuestsBtn.disabled);
-
-  if (
-    mentalQuestsBtn.disabled &&
-    physicalQuestsBtn.disabled &&
-    spiritualQuestsBtn.disabled
-  ) {
-    const comp = document.getElementById("complete");
-    const section = document.getElementById("complete-section");
-    shakeElement();
-    comp.checked = true;
-    section.classList.add("animatedd");
-    comp.classList.add("animatedd"); // Add class to trigger animation
-
-    setTimeout(function () {
-      window.location.href = `status.html`;
-    }, 3000);
+    console.warn('User manager not available, using fallback');
+    loadData({});
   }
 });
 
-// Function to update the task counts and display in [x/x] format
-function updateDailyQuestCounts() {
-  let savedData = JSON.parse(localStorage.getItem("gameData"));
-
-  if (!savedData) {
-    console.error("No saved game data found!");
-    return;
-  }
-
-  document.querySelector("#physicalQuests").innerHTML =
-    savedData.physicalQuests;
-  document.querySelector("#mentalQuests").innerHTML = savedData.mentalQuests;
-  document.querySelector("#spiritualQuests").innerHTML =
-    savedData.spiritualQuests;
-
-  document.querySelector("#physical-checkbox").checked =
-    savedData.physicalQuests === "[4/4]";
-  document.querySelector("#mental-checkbox").checked =
-    savedData.mentalQuests === "[3/3]";
-  document.querySelector("#spiritual-checkbox").checked =
-    savedData.spiritualQuests === "[2/2]";
+// Use user manager for syncing
+async function syncToDatabase() {
+    if (window.userManager) {
+        try {
+            await window.userManager.saveUserData();
+            console.log('Sync successful via user manager');
+            return { success: true, message: 'Data synced successfully' };
+        } catch (error) {
+            console.error('Error syncing to database:', error);
+            throw error;
+        }
+    } else {
+        console.warn('User manager not available for syncing');
+        return { success: false, message: 'User manager not available' };
+    }
 }
 
-// Call this function after rendering tasks
-function renderTasks() {
-  // Logic to render tasks goes here (similar to the original code)
-  updateDailyQuestCounts(); // Make sure to call this after rendering the tasks
-}
-
-function resetDailyStats() {
-  const savedData = JSON.parse(localStorage.getItem("gameData"));
-
+// Load Data Function
+function loadData(savedData) {
   if (savedData) {
-    savedData.mentalQuests = "[0/3]";
-    savedData.physicalQuests = "[0/4]";
-    savedData.spiritualQuests = "[0/2]";
-    document.getElementById("mentalQuests").textContent =
-      savedData.mentalQuests;
-    document.getElementById("physicalQuests").textContent =
-      savedData.physicalQuests;
-    document.getElementById("spiritualQuests").textContent =
-      savedData.spiritualQuests;
+    // Load saved data into UI
+    document.querySelector(".level-number").textContent = savedData.level || 1;
+    document.getElementById("hp-fill").style.width = (savedData.hp || 100) + "%";
+    document.getElementById("mp-fill").style.width = (savedData.mp || 100) + "%";
+    document.getElementById("stm-fill").style.width = (savedData.stm || 100) + "%";
+    document.getElementById("exp-fill").style.width = (savedData.exp || 0) + "%";
+    document.getElementById("Fatvalue").textContent = savedData.fatigue || 0;
+    document.getElementById("job-text").textContent = savedData.name || "Your Name";
+    document.getElementById("ping-text").textContent = savedData.ping || "60 ms";
+    document.getElementById("guild-text").textContent = savedData.guild || "Reaper";
+    document.getElementById("race-text").textContent = savedData.race || "Hunter";
+    document.getElementById("title-text").textContent = savedData.title || "None";
+    document.getElementById("region-text").textContent = savedData.region || "TN";
+    document.getElementById("location-text").textContent = savedData.location || "Hospital";
+    
+    // Load attributes if they exist
+    if (savedData.Attributes) {
+      document.getElementById("str").textContent = `STR: ${savedData.Attributes.STR}`;
+      document.getElementById("vit").textContent = `VIT: ${savedData.Attributes.VIT}`;
+      document.getElementById("agi").textContent = `AGI: ${savedData.Attributes.AGI}`;
+      document.getElementById("int").textContent = `INT: ${savedData.Attributes.INT}`;
+      document.getElementById("per").textContent = `PER: ${savedData.Attributes.PER}`;
+      document.getElementById("wis").textContent = `WIS: ${savedData.Attributes.WIS}`;
+    }
+  } else {
+    resetData();
+  }
+}
 
-    // Save the updated data
-    localStorage.setItem("gameData", JSON.stringify(savedData));
+// Reset Data Function
+function resetData() {
+  const defaultGameData = {
+    level: 1,
+    hp: 100,
+    mp: 100,
+    stm: 100,
+    exp: 0,
+    fatigue: 0,
+    name: "Your Name",
+    ping: "60",
+    guild: "Reaper",
+    race: "Hunter",
+    title: "None",
+    region: "TN",
+    location: "Hospital",
+    physicalQuests: "[0/4]",
+    mentalQuests: "[0/3]",
+    spiritualQuests: "[0/2]",
+    Attributes: {
+      STR: 10,
+      VIT: 10,
+      AGI: 10,
+      INT: 10,
+      PER: 10,
+      WIS: 10,
+    },
+    stackedAttributes: {
+      STR: 0,
+      VIT: 0,
+      AGI: 0,
+      INT: 0,
+      PER: 0,
+      WIS: 0,
+    },
+  };
+  
+  if (window.userManager) {
+    window.userManager.setData('gameData', defaultGameData);
+    syncToDatabase();
+  }
+  
+  location.reload();
+}
+
+// Save Data Function
+function saveData() {
+  // Get existing data from user manager
+  const userData = window.userManager ? window.userManager.getData() : {};
+  const existingData = userData.gameData || {};
+
+  // New data to update
+  const updatedData = {
+    level: document.querySelector(".level-number").textContent,
+    hp: parseFloat(document.getElementById("hp-fill").style.width),
+    mp: parseFloat(document.getElementById("mp-fill").style.width),
+    stm: parseFloat(document.getElementById("stm-fill").style.width),
+    exp: parseFloat(document.getElementById("exp-fill").style.width),
+    fatigue: document.getElementById("Fatvalue").textContent,
+    name: document.getElementById("job-text").textContent,
+    ping: document.getElementById("ping-text").textContent,
+    guild: document.getElementById("guild-text").textContent,
+    race: document.getElementById("race-text").textContent,
+    title: document.getElementById("title-text").textContent,
+    region: document.getElementById("region-text").textContent,
+    location: document.getElementById("location-text").textContent,
+  };
+
+  // Merge existing data with updated data, updating only specified keys
+  const newData = { ...existingData, ...updatedData };
+
+  // Save the merged data via user manager
+  if (window.userManager) {
+    window.userManager.setData('gameData', newData);
     syncToDatabase();
   }
 }
 
-// Function to check if a new day has started
+// Check for New Day Function
 function checkForNewDay() {
   const currentDate = new Date().toLocaleDateString(); // Get today's date
-  const lastResetDate = localStorage.getItem("lastResetDate"); // Get the last reset date from localStorage
+  const userData = window.userManager ? window.userManager.getData() : {};
+  const lastResetDate = userData.lastResetDate; // Get the last reset date from user manager
 
+  console.log("Current Date:", currentDate);
+  console.log("Last Reset Date:", lastResetDate);
+
+  // If no date is saved or the day has changed, reset the stats
   if (!lastResetDate || lastResetDate !== currentDate) {
-    // If no date is saved or the day has changed, reset the stats
-    resetDailyStats();
-
-    // Update the last reset date in localStorage
-    localStorage.setItem("lastResetDate", currentDate);
-    syncToDatabase()
+    console.log("Resetting daily stats...");
+    
+    if (window.userManager) {
+      window.userManager.setData('lastResetDate', currentDate);
+    }
+    
+    resetDailyStats(); // Reset daily stats
+    syncToDatabase();
+  } else {
+    console.log("No reset needed.");
   }
 }
 
-// Call this function when the page loads
-document.addEventListener("DOMContentLoaded", (event) => {
-  checkForNewDay();
-});
+// Reset Daily Stats Function
+function resetDailyStats() {
+  const userData = window.userManager ? window.userManager.getData() : {};
+  const savedData = userData.gameData;
+  
+  if (savedData) {
+    console.log("Resetting stats for:", savedData.name);
+    // Reset relevant stats
+    savedData.hp = 100;
+    savedData.stm = 100;
+    savedData.mp = 100;
+    savedData.fatigue = 0;
+    savedData.mentalQuests = "[0/3]";
+    savedData.physicalQuests = "[0/4]";
+    savedData.spiritualQuests = "[0/2]";
+
+    // Update the UI elements accordingly
+    document.getElementById("HPvalue").textContent = savedData.hp + "/100";
+    document.getElementById("hp-fill").style.width = savedData.hp + "%";
+    document.getElementById("MPvalue").textContent = savedData.mp + "/100";
+    document.getElementById("mp-fill").style.width = savedData.mp + "%";
+    document.getElementById("stm-fill").style.width = savedData.stm + "%";
+    document.getElementById("STMvalue").textContent = savedData.stm + "/100";
+    document.querySelector(".fatigue-value").textContent = savedData.fatigue;
+
+    // Save the updated data via user manager
+    if (window.userManager) {
+      window.userManager.setData('gameData', savedData);
+    }
+    console.log("Daily stats reset successfully.");
+  } else {
+    console.error("No saved data found for resetting stats.");
+  }
+}
