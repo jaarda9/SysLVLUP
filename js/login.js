@@ -24,7 +24,7 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 function initializeKeyWithUserManager() {
-    if (window.userManager) {
+      if (window.userManager) {
         console.log('User manager found, initializing key...');
         let sessionKey = window.userManager.getData('sessionKey');
         
@@ -163,12 +163,12 @@ document.addEventListener("DOMContentLoaded", function() {
                         window.location.href = 'alarm.html';
                     }, 1000);
                     
-                } else {
+        } else {
                     showMessage('Invalid Session Key', 'error');
                     passwordInput.value = '';
-                }
-            }
-        });
+        }
+    }
+});
     }
 });
 
