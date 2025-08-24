@@ -302,6 +302,12 @@ async function updatePhysicalQuestProgress() {
         const userData = userManager.getData();
         const gameData = userData.gameData || {};
         
+        // Check if physical quests are already completed to prevent double execution
+        if (gameData.physicalQuests === "[4/4]") {
+            console.log('⚠️ Physical quests already completed, skipping...');
+            return;
+        }
+        
         console.log('🎉 ALL PHYSICAL QUESTS COMPLETED! Applying final rewards and costs...');
         
         // Apply costs for completing ALL physical quests

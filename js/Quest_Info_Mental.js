@@ -301,12 +301,18 @@ async function updateMentalQuestProgress() {
         const userData = userManager.getData();
         const gameData = userData.gameData || {};
         
+        // Check if mental quests are already completed to prevent double execution
+        if (gameData.mentalQuests === "[3/3]") {
+            console.log('⚠️ Mental quests already completed, skipping...');
+            return;
+        }
+        
         console.log('🎉 ALL MENTAL QUESTS COMPLETED! Applying final rewards and costs...');
         
         // Apply costs for completing ALL mental quests
         const currentMP = Math.max(0, parseInt(gameData.mp) || 100);
         gameData.mp = Math.max(0, currentMP - 20);
-        console.log(`MP decreased from ${currentMP} to ${gameData.mp}`);
+        console.log(`🎯 MENTAL QUEST COMPLETION: MP decreased from ${currentMP} to ${gameData.mp} (-20 MP)`);
         
         const currentSTM = Math.max(0, parseInt(gameData.stm) || 100);
         gameData.stm = Math.max(0, currentSTM - 10);
