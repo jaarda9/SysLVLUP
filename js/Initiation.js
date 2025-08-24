@@ -15,9 +15,9 @@ The trials ahead will challenge your:
  Are you ready to begin your initiation?
  Will you accept the quest and embrace the path of the warrior?
 
-The choice is yours, but remember: once you step forward, there is no turning back.
+ The choice is yours, but remember: once you step forward, there is no turning back.
 
-Choose wisely, young one...`;
+ Choose wisely, young one...`;
 
 document.addEventListener("DOMContentLoaded", function() {
   console.log('Initiation page DOM loaded');
