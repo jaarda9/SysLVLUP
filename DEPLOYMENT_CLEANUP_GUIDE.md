@@ -17,37 +17,16 @@
 - Kept only the root-level project files
 
 ### 2. Updated Vercel Configuration
-Enhanced `vercel.json` with proper build and routing configuration:
+Simplified `vercel.json` with proper function runtime configuration:
 
 ```json
 {
   "version": 2,
-  "builds": [
-    {
-      "src": "server.js",
-      "use": "@vercel/node"
-    },
-    {
-      "src": "*.html",
-      "use": "@vercel/static"
-    },
-    {
-      "src": "css/**",
-      "use": "@vercel/static"
-    },
-    {
-      "src": "js/**",
-      "use": "@vercel/static"
-    },
-    {
-      "src": "icons/**",
-      "use": "@vercel/static"
-    },
-    {
-      "src": "api/**",
-      "use": "@vercel/node"
+  "functions": {
+    "api/*.js": {
+      "runtime": "nodejs18.x"
     }
-  ],
+  },
   "routes": [
     {
       "src": "/api/(.*)",
@@ -61,7 +40,12 @@ Enhanced `vercel.json` with proper build and routing configuration:
 }
 ```
 
-### 3. Committed and Pushed Changes
+### 3. Fixed Module System Issues
+- Converted all API files from ES modules to CommonJS
+- Fixed mixed `require`/`export` syntax in API files
+- Updated `server.js` to reference root directory instead of nested structure
+
+### 4. Committed and Pushed Changes
 - All changes committed to `main` branch
 - Pushed to GitHub to trigger new Vercel deployment
 
