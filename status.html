@@ -275,36 +275,23 @@
   </div>
 </div>
     <!-- Load scripts in correct order -->
-    <script src="js/status.js"></script>
-    <script>
-    // Example: Call the functions when the page loads
-    document.addEventListener('DOMContentLoaded', () => {
-        loadDataFromMongoDB();
-        // Save data when the user closes the page
-        window.addEventListener('beforeunload', saveDataToMongoDB);
-    });
-    </script>
-</script>
-
-  
-    <!-- User Manager Initialization -->
+    <script src="js/auth-check.js"></script>
     <script src="js/user-manager.js"></script>
+    <script src="js/status.js"></script>
+    
+    <!-- Service Worker Registration -->
     <script>
-      document.addEventListener('DOMContentLoaded', function() {
-        // Ensure user manager is loaded
-        if (window.userManager) {
-          console.log('User manager initialized with userId:', window.userManager.getUserId());
-          
-          // Load user data immediately
-          window.userManager.loadUserData().then(result => {
-            console.log('Initial data load result:', result);
-          }).catch(error => {
-            console.error('Error loading initial data:', error);
-          });
-        } else {
-          console.warn('User manager not available');
-        }
-      });
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+          navigator.serviceWorker.register('sw.js')
+            .then(registration => {
+              console.log('SW registered: ', registration);
+            })
+            .catch(registrationError => {
+              console.log('SW registration failed: ', registrationError);
+            });
+        });
+      }
     </script>
-</body>
+  </body>
 </html>

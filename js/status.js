@@ -1,36 +1,204 @@
 document.addEventListener("DOMContentLoaded", function() {
-  // Wait for user manager to load data
-  if (window.userManager) {
-    const userData = window.userManager.getData();
-    const savedData = userData.gameData || {};
-    loadData(savedData);
-  } else {
-    console.warn('User manager not available, using fallback');
-    loadData({});
-  }
-
-  function measurePing(url) {
-      const startTime = Date.now();
-      fetch(url)
-          .then(response => {
-              const endTime = Date.now();
-              const ping = endTime - startTime; // Calculate ping
-              console.log(`Ping: ${ping} ms`);
-              
-              // Update your UI with the ping value
-              document.getElementById("ping-text").textContent = ping + " ms";
-              
-              // Update the ping input field and make it readonly
-              const pingInput = document.getElementById("ping-input");
-              pingInput.value = ping; // Set the value of the input field
-              pingInput.readOnly = true; // Make the input field readonly
-          })
-          
-  }
-
+  console.log('Status page DOM loaded');
+  
+  // Wait for user manager to be ready
+  waitForUserManager();
+  
   // Call the measurePing function with a URL to ping
   measurePing('https://sys-lvlup.vercel.app/status.html'); // Replace with your server URL
 });
+
+// Measure ping function
+function measurePing(url) {
+    const startTime = Date.now();
+    fetch(url)
+        .then(response => {
+            const endTime = Date.now();
+            const ping = endTime - startTime; // Calculate ping
+            console.log(`Ping: ${ping} ms`);
+            
+            // Update your UI with the ping value
+            const pingTextElement = document.getElementById("ping-text");
+            if (pingTextElement) {
+                pingTextElement.textContent = ping + " ms";
+            }
+            
+            // Update the ping input field and make it readonly
+            const pingInput = document.getElementById("ping-input");
+            if (pingInput) {
+                pingInput.value = ping; // Set the value of the input field
+                pingInput.readOnly = true; // Make the input field readonly
+            }
+        })
+        .catch(error => {
+            console.error('Error measuring ping:', error);
+        });
+}
+
+// Wait for user manager to be ready
+function waitForUserManager() {
+  if (window.userManager && window.userManager.data !== null) {
+    console.log('User manager ready, loading status data...');
+    loadStatusData();
+    
+    // Set up periodic refresh to stay in sync with MongoDB
+    setupPeriodicRefresh();
+  } else {
+    console.log('Waiting for user manager...');
+    setTimeout(waitForUserManager, 100);
+  }
+}
+
+// Setup periodic refresh to stay in sync with MongoDB data
+function setupPeriodicRefresh() {
+  // Refresh data every 5 seconds to stay in sync
+  setInterval(() => {
+    if (window.userManager && window.userManager.data !== null) {
+      console.log('Periodic refresh: checking for updated data...');
+      refreshStatusData();
+    }
+  }, 5000);
+  
+  // Also refresh when the page becomes visible (user returns from other pages)
+  document.addEventListener('visibilitychange', function() {
+    if (!document.hidden && window.userManager && window.userManager.data !== null) {
+      console.log('Page became visible, refreshing status data...');
+      refreshStatusData();
+    }
+  });
+}
+
+// Refresh status data from MongoDB
+async function refreshStatusData() {
+  try {
+    console.log('Refreshing status data from MongoDB...');
+    
+    // Reload user data from MongoDB
+    await window.userManager.loadUserData();
+    
+    const userData = window.userManager.getData();
+    const gameData = userData.gameData || {};
+    
+    if (gameData && Object.keys(gameData).length > 0) {
+      console.log('Refreshed data from MongoDB:', gameData);
+      
+      // Update the UI with the refreshed data
+      loadData(gameData);
+      
+      // Update ping if needed
+      const pingTextElement = document.getElementById("ping-text");
+      if (pingTextElement && gameData.ping) {
+        pingTextElement.textContent = gameData.ping;
+      }
+    }
+  } catch (error) {
+    console.error('Error refreshing status data:', error);
+  }
+}
+
+// Load status data from user manager
+function loadStatusData() {
+  if (window.userManager) {
+    const userData = window.userManager.getData();
+    const gameData = userData.gameData || {};
+    
+    console.log('Loading status data:', gameData);
+    
+    if (gameData && Object.keys(gameData).length > 0) {
+      // We have existing data, load it
+      loadData(gameData);
+    } else {
+      console.log('No existing game data found, checking if we should create defaults...');
+      // Check if this is a new user or if we should load from MongoDB
+      checkForExistingData();
+    }
+  } else {
+    console.warn('User manager not available');
+  }
+}
+
+// Check for existing data in MongoDB
+async function checkForExistingData() {
+  console.log('Checking for existing data in MongoDB...');
+  
+  try {
+    // Try to load user data from MongoDB
+    await window.userManager.loadUserData();
+    
+    const userData = window.userManager.getData();
+    const gameData = userData.gameData || {};
+    
+    if (gameData && Object.keys(gameData).length > 0) {
+      console.log('Found existing data in MongoDB:', gameData);
+      loadData(gameData);
+    } else {
+      console.log('No existing data found anywhere, creating initial defaults for new user');
+      createInitialData();
+    }
+  } catch (error) {
+    console.error('Error checking for existing data:', error);
+    console.log('Creating initial defaults due to error');
+    createInitialData();
+  }
+}
+
+// Create initial data for new users
+function createInitialData() {
+  console.log('Creating initial data for new user...');
+  
+  const initialGameData = {
+    level: 1,
+    hp: 100,
+    mp: 100,
+    stm: 100,
+    exp: 0,
+    fatigue: 0,
+    name: "Your Name",
+    ping: "60",
+    guild: "Reaper",
+    race: "Hunter",
+    title: "None",
+    region: "TN",
+    location: "Hospital",
+    physicalQuests: "[0/4]",
+    mentalQuests: "[0/3]",
+    spiritualQuests: "[0/2]",
+    Attributes: {
+      STR: 10,
+      VIT: 10,
+      AGI: 10,
+      INT: 10,
+      PER: 10,
+      WIS: 10,
+    },
+    stackedAttributes: {
+      STR: 0,
+      VIT: 0,
+      AGI: 0,
+      INT: 0,
+      PER: 0,
+      WIS: 0,
+    },
+    lastResetDate: new Date().toLocaleDateString(),
+    STS: 0
+  };
+  
+  // Save the initial data
+  if (window.userManager) {
+    window.userManager.setData('gameData', initialGameData);
+    window.userManager.setData('lastResetDate', new Date().toLocaleDateString());
+    
+    // Load the data into the UI
+    loadData(initialGameData);
+    
+    // Sync to database
+    syncToDatabase().then(() => {
+      console.log('Initial data created and saved');
+    }).catch(error => {
+      console.error('Error saving initial data:', error);
+    });
+  }
+}
 
 // Use user manager for syncing
 async function syncToDatabase() {
@@ -217,30 +385,6 @@ function getRank(level) {
   if (level >= 81 && level <= 100) return ranks[4]; // A-Rank
   if (level >= 101) return ranks[5]; // S-Rank
 }
-document.addEventListener("DOMContentLoaded", function() {
-  const savedData = JSON.parse(localStorage.getItem("gameData"));
-  function measurePing(url) {
-      const startTime = Date.now();
-      fetch(url)
-          .then(response => {
-              const endTime = Date.now();
-              const ping = endTime - startTime; // Calculate ping
-              console.log(`Ping: ${ping} ms`);
-              
-              // Update your UI with the ping value
-              document.getElementById("ping-text").textContent = ping + " ms";
-              
-              // Update the ping input field and make it readonly
-              const pingInput = document.getElementById("ping-input");
-              pingInput.value = ping; // Set the value of the input field
-              pingInput.readOnly = true; // Make the input field readonly
-          })
-          
-  }
-
-  // Call the measurePing function with a URL to ping
-  measurePing('https://sys-lvlup.vercel.app/status.html'); // Replace with your server URL
-});
 
 // Auto-sync when page loads using centralized user manager
 async function loadDataFromMongoDB() {
