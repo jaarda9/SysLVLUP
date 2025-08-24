@@ -34,15 +34,17 @@ function startTypingAnimation() {
     return;
   }
 
-  const fullText = introTextElement.textContent;
+  console.log('Starting typing animation with text:', introText);
+  
+  // Clear the element and start typing
   introTextElement.textContent = '';
   introTextElement.style.visibility = 'visible';
 
   let currentIndex = 0;
   
   function typeNextChar() {
-    if (currentIndex < fullText.length) {
-      introTextElement.textContent += fullText[currentIndex];
+    if (currentIndex < introText.length) {
+      introTextElement.textContent += introText[currentIndex];
       currentIndex++;
       setTimeout(typeNextChar, 50); // Adjust speed here
     } else {
