@@ -137,6 +137,13 @@ h2 {
 .quest-buttons {
     margin-top: 20px; /* Space above buttons */
     opacity: 0; /* Start hidden until typing is complete */
+    transition: opacity 0.5s ease, transform 0.5s ease; /* Smooth transition for showing */
+    transform: translateY(20px); /* Start below final position */
+}
+
+.quest-buttons.show {
+    opacity: 1; /* Show when typing is complete */
+    transform: translateY(0); /* Move to final position */
 }
 
 .quest-button {
@@ -149,8 +156,10 @@ h2 {
     transition: all 0.3s ease; /* Smooth transition for all properties */
     font-size: 1em; /* Standard size */
     margin: 0 10px; /* Space between buttons */
-    opacity: 0; /* Start hidden */
-    transform: translateY(20px); /* Start below final position */
+    /* Remove opacity: 0 and transform from here since we control it from parent */
+    font-weight: bold;
+    text-shadow: 0 0 5px rgba(255, 255, 255, 0.5);
+    box-shadow: 0 0 10px rgba(255, 255, 255, 0.1);
 }
 
 .quest-button:hover {

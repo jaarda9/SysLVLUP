@@ -8,12 +8,12 @@ You stand at the threshold of a journey that will test your mind, body, and spir
 The trials ahead will challenge your:
 • Physical endurance and strength
 • Mental clarity and wisdom  
-• Spiritual resilience and faith
+• Spiritual resilience and faith .
 
-Each quest completed, each challenge overcome, brings you closer to understanding your true potential.
+ Each quest completed, each challenge overcome, brings you closer to understanding your true potential.
 
-Are you ready to begin your initiation?
-Will you accept the quest and embrace the path of the warrior?
+ Are you ready to begin your initiation?
+ Will you accept the quest and embrace the path of the warrior?
 
 The choice is yours, but remember: once you step forward, there is no turning back.
 
@@ -48,9 +48,14 @@ function startTypingAnimation() {
     return;
   }
   
+  console.log('Intro text element found, clearing content...');
   // Clear any existing text
   introTextElement.textContent = '';
   
+  // Reset typing index
+  typingIndex = 0;
+  
+  console.log('Starting to type text...');
   // Start typing
   typeNextChar();
 }
@@ -74,31 +79,50 @@ function typeNextChar() {
     // Continue typing
     setTimeout(typeNextChar, typingSpeed);
   } else {
-    console.log('Typing animation complete');
+    console.log('Typing animation complete, showing buttons...');
     // Show buttons after typing is complete
-    showQuestButtons();
+    setTimeout(() => {
+      showQuestButtons();
+    }, 500); // Small delay for better effect
   }
 }
 
 // Show the quest buttons
 function showQuestButtons() {
+  console.log('Showing quest buttons...');
   const questButtons = document.querySelector('.quest-buttons');
   if (questButtons) {
+    // Add the show class to trigger the CSS animation
+    questButtons.classList.add('show');
+    
+    // Also set inline styles as a fallback
     questButtons.style.opacity = '1';
-    questButtons.style.animation = 'fadeIn 1s ease forwards';
+    questButtons.style.transform = 'translateY(0)';
+    
+    console.log('Quest buttons should now be visible');
+    console.log('Button container opacity:', questButtons.style.opacity);
+    console.log('Button container transform:', questButtons.style.transform);
+  } else {
+    console.error('Quest buttons container not found');
   }
 }
 
 // Setup event listeners
 function setupEventListeners() {
+  console.log('Setting up event listeners...');
+  
   const acceptQuestBtn = document.getElementById('accept-quest');
   const denyQuestBtn = document.getElementById('deny-quest');
+  
+  console.log('Accept quest button found:', !!acceptQuestBtn);
+  console.log('Deny quest button found:', !!denyQuestBtn);
   
   if (acceptQuestBtn) {
     acceptQuestBtn.addEventListener('click', function() {
       console.log('Quest accepted, proceeding to game...');
       acceptQuest();
     });
+    console.log('Accept quest event listener added');
   }
   
   if (denyQuestBtn) {
@@ -106,6 +130,7 @@ function setupEventListeners() {
       console.log('Quest denied, returning to alarm...');
       denyQuest();
     });
+    console.log('Deny quest event listener added');
   }
 }
 
