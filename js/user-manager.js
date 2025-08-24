@@ -70,16 +70,36 @@ class UserManager {
 
     try {
       // Try to load from /api/sync first (Vercel API)
-      let response = await fetch(`/api/sync?userId=${encodeURIComponent(this.userId)}`);
+      const timestamp = Date.now();
+      const syncUrl = `/api/sync?userId=${encodeURIComponent(this.userId)}&_t=${timestamp}`;
+      console.log('Trying sync API URL:', syncUrl);
+      let response = await fetch(syncUrl, {
+        method: 'GET',
+        headers: {
+          'Cache-Control': 'no-cache',
+          'Pragma': 'no-cache'
+        }
+      });
+      console.log('Sync API response status:', response.status);
       
       // If sync API fails, try the users API as fallback
       if (response.status === 404) {
         console.log('Sync API not found, trying users API...');
-        response = await fetch(`/api/users?userId=${encodeURIComponent(this.userId)}`);
+        const usersUrl = `/api/users?userId=${encodeURIComponent(this.userId)}&_t=${timestamp}`;
+        console.log('Trying users API URL:', usersUrl);
+        response = await fetch(usersUrl, {
+          method: 'GET',
+          headers: {
+            'Cache-Control': 'no-cache',
+            'Pragma': 'no-cache'
+          }
+        });
+        console.log('Users API response status:', response.status);
       }
       
       if (response.ok) {
         const result = await response.json();
+        console.log('API response data:', result);
         if (result.localStorageData) {
           this.data = result.localStorageData;
           this.lastLoadTime = Date.now();
