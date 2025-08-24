@@ -19,22 +19,34 @@ class UserManager {
 
   /**
    * Get existing user ID or create a new one
+   * Uses a persistent identifier that works across different URLs
    */
   getOrCreateUserId() {
-    // Check if we already have a userId stored
-    let userId = localStorage.getItem('userId');
+    // Try to get a persistent user ID that works across URLs
+    let userId = localStorage.getItem('persistentUserId');
     
     if (!userId) {
-      // Generate a new userId with timestamp and random string
-      const timestamp = Date.now();
-      const randomString = Math.random().toString(36).substring(2, 10);
-      userId = `user_${timestamp}_${randomString}`;
+      // Check if we have any existing userId to migrate
+      const oldUserId = localStorage.getItem('userId');
       
-      // Store the userId in localStorage
-      localStorage.setItem('userId', userId);
-      console.log('Generated new userId:', userId);
+      if (oldUserId) {
+        // Use the existing userId as the persistent one
+        userId = oldUserId;
+        localStorage.setItem('persistentUserId', userId);
+        localStorage.removeItem('userId'); // Clean up old key
+        console.log('Migrated existing userId to persistent:', userId);
+      } else {
+        // Generate a new persistent userId
+        const timestamp = Date.now();
+        const randomString = Math.random().toString(36).substring(2, 10);
+        userId = `user_${timestamp}_${randomString}`;
+        
+        // Store the persistent userId
+        localStorage.setItem('persistentUserId', userId);
+        console.log('Generated new persistent userId:', userId);
+      }
     } else {
-      console.log('Using existing userId:', userId);
+      console.log('Using existing persistent userId:', userId);
     }
     
     return userId;
