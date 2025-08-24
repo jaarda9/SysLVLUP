@@ -289,7 +289,7 @@ function updateCompleteCheckbox() {
     }
 }
 
-// Update mental quest progress in user data
+// Update mental quest progress in user data (FULL QUEST COMPLETION)
 async function updateMentalQuestProgress() {
     if (!userManager) {
         console.warn('User manager not available');
@@ -301,14 +301,9 @@ async function updateMentalQuestProgress() {
         const userData = userManager.getData();
         const gameData = userData.gameData || {};
         
-        console.log('Updating mental quest stats...');
+        console.log('🎉 ALL MENTAL QUESTS COMPLETED! Applying final rewards and costs...');
         
-        // Add XP reward
-        const currentExp = parseInt(gameData.exp) || 0;
-        gameData.exp = currentExp + 5;
-        console.log(`XP increased from ${currentExp} to ${gameData.exp}`);
-        
-        // Decrease MP and STM, increase fatigue
+        // Apply costs for completing ALL mental quests
         const currentMP = Math.max(0, parseInt(gameData.mp) || 100);
         gameData.mp = Math.max(0, currentMP - 20);
         console.log(`MP decreased from ${currentMP} to ${gameData.mp}`);
@@ -321,22 +316,6 @@ async function updateMentalQuestProgress() {
         gameData.fatigue = currentFatigue + 20;
         console.log(`Fatigue increased from ${currentFatigue} to ${gameData.fatigue}`);
         
-        // Add stacked attributes (will be applied on level up)
-        if (!gameData.stackedAttributes) {
-            gameData.stackedAttributes = { STR: 0, VIT: 0, AGI: 0, INT: 0, PER: 0, WIS: 0 };
-        }
-        
-        // Mental training gives INT and PER bonuses
-        gameData.stackedAttributes.INT += 2;  // Intelligence from study and problem solving
-        gameData.stackedAttributes.PER += 1;  // Perception from reading
-        
-        console.log('Stacked attributes updated:', gameData.stackedAttributes);
-        
-        // Check for level up
-        if (gameData.exp >= 100) {
-            await handleLevelUp(gameData);
-        }
-        
         // Update mental quest progress to completed
         gameData.mentalQuests = "[3/3]";
         
@@ -346,9 +325,11 @@ async function updateMentalQuestProgress() {
         // Save to database
         const result = await userManager.saveUserData();
         if (result.success) {
-            console.log('Mental quest progress and stats saved successfully');
+            console.log('Mental quest completion saved successfully');
+            showNotification(`🎉 All Mental Quests Complete! -20 MP, -10 STM, +20 Fatigue`, 'success');
         } else {
-            console.error('Error saving mental quest progress:', result.error);
+            console.error('Error saving mental quest completion:', result.error);
+            showNotification('❌ Error saving quest completion', 'error');
         }
         
     } catch (error) {
@@ -419,8 +400,8 @@ async function completeMentalQuest(taskName) {
             gameData.mentalQuests = `[${newCompleted}/${totalQuests}]`;
             
             // Add EXP for completing the quest
-            gameData.exp = (gameData.exp || 0) + 25;
-            console.log(`EXP gained: +25 (Total: ${gameData.exp})`);
+            gameData.exp = (gameData.exp || 0) + 5;
+            console.log(`EXP gained: +5 (Total: ${gameData.exp})`);
             
             // Add stacked attributes for mental training
             if (!gameData.stackedAttributes) {
@@ -448,7 +429,7 @@ async function completeMentalQuest(taskName) {
             const result = await userManager.saveUserData();
             if (result.success) {
                 console.log('Quest completion saved successfully');
-                showNotification(`✅ Quest completed! +25 EXP, +2 INT, +1 PER`, 'success');
+                showNotification(`✅ Quest completed! +5 EXP, +2 INT, +1 PER`, 'success');
             } else {
                 console.error('Error saving quest completion:', result.error);
                 showNotification('❌ Error saving quest completion', 'error');

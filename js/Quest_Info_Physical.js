@@ -290,7 +290,7 @@ function updateCompleteCheckbox() {
     }
 }
 
-// Update physical quest progress in user data
+// Update physical quest progress in user data (FULL QUEST COMPLETION)
 async function updatePhysicalQuestProgress() {
     if (!userManager) {
         console.warn('User manager not available');
@@ -302,14 +302,9 @@ async function updatePhysicalQuestProgress() {
         const userData = userManager.getData();
         const gameData = userData.gameData || {};
         
-        console.log('Updating physical quest stats...');
+        console.log('🎉 ALL PHYSICAL QUESTS COMPLETED! Applying final rewards and costs...');
         
-        // Add XP reward
-        const currentExp = parseInt(gameData.exp) || 0;
-        gameData.exp = currentExp + 5;
-        console.log(`XP increased from ${currentExp} to ${gameData.exp}`);
-        
-        // Decrease HP and STM, increase fatigue
+        // Apply costs for completing ALL physical quests
         const currentHP = Math.max(0, parseInt(gameData.hp) || 100);
         gameData.hp = Math.max(0, currentHP - 20);
         console.log(`HP decreased from ${currentHP} to ${gameData.hp}`);
@@ -322,23 +317,6 @@ async function updatePhysicalQuestProgress() {
         gameData.fatigue = currentFatigue + 20;
         console.log(`Fatigue increased from ${currentFatigue} to ${gameData.fatigue}`);
         
-        // Add stacked attributes (will be applied on level up)
-        if (!gameData.stackedAttributes) {
-            gameData.stackedAttributes = { STR: 0, VIT: 0, AGI: 0, INT: 0, PER: 0, WIS: 0 };
-        }
-        
-        // Physical training gives STR, VIT, and AGI bonuses
-        gameData.stackedAttributes.STR += 2;  // Strength from push-ups and burpees
-        gameData.stackedAttributes.VIT += 1;  // Vitality from squats and plank
-        gameData.stackedAttributes.AGI += 1;  // Agility from burpees
-        
-        console.log('Stacked attributes updated:', gameData.stackedAttributes);
-        
-        // Check for level up
-        if (gameData.exp >= 100) {
-            await handleLevelUp(gameData);
-        }
-        
         // Update physical quest progress to completed
         gameData.physicalQuests = "[4/4]";
         
@@ -348,9 +326,11 @@ async function updatePhysicalQuestProgress() {
         // Save to database
         const result = await userManager.saveUserData();
         if (result.success) {
-            console.log('Physical quest progress and stats saved successfully');
+            console.log('Physical quest completion saved successfully');
+            showNotification(`🎉 All Physical Quests Complete! -20 HP, -20 STM, +20 Fatigue`, 'success');
         } else {
-            console.error('Error saving physical quest progress:', result.error);
+            console.error('Error saving physical quest completion:', result.error);
+            showNotification('❌ Error saving quest completion', 'error');
         }
         
     } catch (error) {
@@ -420,8 +400,8 @@ async function completePhysicalQuest(taskName) {
             gameData.physicalQuests = `[${newCompleted}/${totalQuests}]`;
             
             // Add EXP for completing the quest
-            gameData.exp = (gameData.exp || 0) + 25;
-            console.log(`EXP gained: +25 (Total: ${gameData.exp})`);
+            gameData.exp = (gameData.exp || 0) + 5;
+            console.log(`EXP gained: +5 (Total: ${gameData.exp})`);
             
             // Add stacked attributes for physical training
             if (!gameData.stackedAttributes) {
@@ -448,7 +428,7 @@ async function completePhysicalQuest(taskName) {
             const result = await userManager.saveUserData();
             if (result.success) {
                 console.log('Quest completion saved successfully');
-                showNotification(`✅ Quest completed! +25 EXP, +2 STR, +1 VIT, +1 AGI`, 'success');
+                showNotification(`✅ Quest completed! +5 EXP, +2 STR, +1 VIT, +1 AGI`, 'success');
             } else {
                 console.error('Error saving quest completion:', result.error);
                 showNotification('❌ Error saving quest completion', 'error');
