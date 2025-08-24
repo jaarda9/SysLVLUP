@@ -8,7 +8,7 @@ const PORT = process.env.PORT || 3000;
 
 // Middleware
 app.use(express.json());
-app.use(express.static(path.join(__dirname, 'SysLvLUp', 'Alarm')));
+app.use(express.static(__dirname));
 
 // MongoDB connection
 let db;
@@ -27,7 +27,7 @@ async function connectDB() {
 
 // Routes
 app.get('/', (req, res) => {
-  res.sendFile(path.join(__dirname, 'SysLvLUp', 'Alarm', 'index.html'));
+  res.sendFile(path.join(__dirname, 'index.html'));
 });
 
 // Sync localStorage data endpoint

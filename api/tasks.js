@@ -1,6 +1,6 @@
 const { MongoClient } = require('mongodb');
 
-export default async function handler(req, res) {
+module.exports = async function handler(req, res) {
   const client = new MongoClient(process.env.MONGODB_URI);
   try {
     await client.connect();

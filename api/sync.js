@@ -1,9 +1,9 @@
-import { MongoClient } from 'mongodb';
+const { MongoClient } = require('mongodb');
 
 // Environment variable for MongoDB connection
 const MONGODB_URI = process.env.MONGODB_URI || 'mongodb://localhost:27017/gamedata';
 
-export default async function handler(req, res) {
+module.exports = async function handler(req, res) {
   // Enable CORS
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
