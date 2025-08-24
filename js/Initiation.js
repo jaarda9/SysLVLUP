@@ -1,14 +1,200 @@
+// Initiation Phase with Typing Animation
+let typingIndex = 0;
+let typingSpeed = 50; // Speed of typing animation
+const introText = `Welcome, young initiate, to the sacred halls of SysLVLUP.
+
+You stand at the threshold of a journey that will test your mind, body, and spirit. This is not merely a game - it is a path to self-discovery and growth.
+
+The trials ahead will challenge your:
+• Physical endurance and strength
+• Mental clarity and wisdom  
+• Spiritual resilience and faith
+
+Each quest completed, each challenge overcome, brings you closer to understanding your true potential.
+
+Are you ready to begin your initiation?
+Will you accept the quest and embrace the path of the warrior?
+
+The choice is yours, but remember: once you step forward, there is no turning back.
+
+Choose wisely, young one...`;
+
 document.addEventListener("DOMContentLoaded", function() {
-  // Wait for user manager to load data
-  if (window.userManager) {
-    const userData = window.userManager.getData();
-    const localStorageData = userData.gameData || {};
-    loadData(localStorageData);
-  } else {
-    console.warn('User manager not available, using fallback');
-    loadData({});
-  }
+  console.log('Initiation page DOM loaded');
+  
+  // Wait for user manager to be ready
+  waitForUserManager();
 });
+
+// Wait for user manager to be ready
+function waitForUserManager() {
+  if (window.userManager && window.userManager.data !== null) {
+    console.log('User manager ready, starting initiation...');
+    startTypingAnimation();
+    setupEventListeners();
+  } else {
+    console.log('Waiting for user manager...');
+    setTimeout(waitForUserManager, 100);
+  }
+}
+
+// Start the typing animation
+function startTypingAnimation() {
+  console.log('Starting typing animation...');
+  const introTextElement = document.getElementById('intro-text');
+  
+  if (!introTextElement) {
+    console.error('Intro text element not found');
+    return;
+  }
+  
+  // Clear any existing text
+  introTextElement.textContent = '';
+  
+  // Start typing
+  typeNextChar();
+}
+
+// Type the next character
+function typeNextChar() {
+  const introTextElement = document.getElementById('intro-text');
+  
+  if (typingIndex < introText.length) {
+    const char = introText.charAt(typingIndex);
+    
+    // Handle line breaks
+    if (char === '\n') {
+      introTextElement.innerHTML += '<br>';
+    } else {
+      introTextElement.textContent += char;
+    }
+    
+    typingIndex++;
+    
+    // Continue typing
+    setTimeout(typeNextChar, typingSpeed);
+  } else {
+    console.log('Typing animation complete');
+    // Show buttons after typing is complete
+    showQuestButtons();
+  }
+}
+
+// Show the quest buttons
+function showQuestButtons() {
+  const questButtons = document.querySelector('.quest-buttons');
+  if (questButtons) {
+    questButtons.style.opacity = '1';
+    questButtons.style.animation = 'fadeIn 1s ease forwards';
+  }
+}
+
+// Setup event listeners
+function setupEventListeners() {
+  const acceptQuestBtn = document.getElementById('accept-quest');
+  const denyQuestBtn = document.getElementById('deny-quest');
+  
+  if (acceptQuestBtn) {
+    acceptQuestBtn.addEventListener('click', function() {
+      console.log('Quest accepted, proceeding to game...');
+      acceptQuest();
+    });
+  }
+  
+  if (denyQuestBtn) {
+    denyQuestBtn.addEventListener('click', function() {
+      console.log('Quest denied, returning to alarm...');
+      denyQuest();
+    });
+  }
+}
+
+// Handle quest acceptance
+function acceptQuest() {
+  if (window.userManager) {
+    // Set initial game data
+    const initialGameData = {
+      level: 1,
+      hp: 100,
+      mp: 100,
+      stm: 100,
+      exp: 0,
+      fatigue: 0,
+      name: "Your Name",
+      ping: "60",
+      guild: "Reaper",
+      race: "Hunter",
+      title: "None",
+      region: "TN",
+      location: "Hospital",
+      physicalQuests: "[0/4]",
+      mentalQuests: "[0/3]",
+      spiritualQuests: "[0/2]",
+      Attributes: {
+        STR: 10,
+        VIT: 10,
+        AGI: 10,
+        INT: 10,
+        PER: 10,
+        WIS: 10,
+      },
+      stackedAttributes: {
+        STR: 0,
+        VIT: 0,
+        AGI: 0,
+        INT: 0,
+        PER: 0,
+        WIS: 0,
+      },
+      lastResetDate: new Date().toLocaleDateString(),
+      STS: 0
+    };
+    
+    // Save the initial game data
+    window.userManager.setData('gameData', initialGameData);
+    
+    // Sync to database
+    syncToDatabase().then(() => {
+      console.log('Initial game data saved, redirecting to status page...');
+      // Redirect to the main game status page
+      window.location.href = 'status.html';
+    }).catch(error => {
+      console.error('Error saving initial data:', error);
+      // Still redirect even if save fails
+      window.location.href = 'status.html';
+    });
+  } else {
+    console.warn('User manager not available, redirecting anyway...');
+    window.location.href = 'status.html';
+  }
+}
+
+// Handle quest denial
+function denyQuest() {
+  // Show a message and redirect back to alarm
+  showNotification('Quest denied. Returning to alarm...', 'warning');
+  
+  setTimeout(() => {
+    window.location.href = 'alarm.html';
+  }, 2000);
+}
+
+// Show notification
+function showNotification(message, type = 'info') {
+  const notification = document.getElementById('notification');
+  if (notification) {
+    notification.querySelector('p').textContent = message;
+    notification.classList.remove('hidden');
+    
+    // Add type-specific styling
+    notification.className = `notification ${type}`;
+    
+    // Hide after 3 seconds
+    setTimeout(() => {
+      notification.classList.add('hidden');
+    }, 3000);
+  }
+}
 
 // Use user manager for syncing
 async function syncToDatabase() {
@@ -25,114 +211,4 @@ async function syncToDatabase() {
         console.warn('User manager not available for syncing');
         return { success: false, message: 'User manager not available' };
     }
-}
-
-// Load Data Function
-function loadData(savedData) {
-  if (savedData) {
-    // Load saved data into UI
-    document.querySelector(".level-number").textContent = savedData.level || 1;
-    document.getElementById("hp-fill").style.width = (savedData.hp || 100) + "%";
-    document.getElementById("mp-fill").style.width = (savedData.mp || 100) + "%";
-    document.getElementById("stm-fill").style.width = (savedData.stm || 100) + "%";
-    document.getElementById("exp-fill").style.width = (savedData.exp || 0) + "%";
-    document.getElementById("Fatvalue").textContent = savedData.fatigue || 0;
-    document.getElementById("job-text").textContent = savedData.name || "Your Name";
-    document.getElementById("ping-text").textContent = savedData.ping || "60 ms";
-    document.getElementById("guild-text").textContent = savedData.guild || "Reaper";
-    document.getElementById("race-text").textContent = savedData.race || "Hunter";
-    document.getElementById("title-text").textContent = savedData.title || "None";
-    document.getElementById("region-text").textContent = savedData.region || "TN";
-    document.getElementById("location-text").textContent = savedData.location || "Hospital";
-    
-    // Load attributes if they exist
-    if (savedData.Attributes) {
-      document.getElementById("str").textContent = `STR: ${savedData.Attributes.STR}`;
-      document.getElementById("vit").textContent = `VIT: ${savedData.Attributes.VIT}`;
-      document.getElementById("agi").textContent = `AGI: ${savedData.Attributes.AGI}`;
-      document.getElementById("int").textContent = `INT: ${savedData.Attributes.INT}`;
-      document.getElementById("per").textContent = `PER: ${savedData.Attributes.PER}`;
-      document.getElementById("wis").textContent = `WIS: ${savedData.Attributes.WIS}`;
-    }
-  } else {
-    resetData();
-  }
-}
-
-// Reset Data Function
-function resetData() {
-  const defaultGameData = {
-    level: 1,
-    hp: 100,
-    mp: 100,
-    stm: 100,
-    exp: 0,
-    fatigue: 0,
-    name: "Your Name",
-    ping: "60",
-    guild: "Reaper",
-    race: "Hunter",
-    title: "None",
-    region: "TN",
-    location: "Hospital",
-    physicalQuests: "[0/4]",
-    mentalQuests: "[0/3]",
-    spiritualQuests: "[0/2]",
-    Attributes: {
-      STR: 10,
-      VIT: 10,
-      AGI: 10,
-      INT: 10,
-      PER: 10,
-      WIS: 10,
-    },
-    stackedAttributes: {
-      STR: 0,
-      VIT: 0,
-      AGI: 0,
-      INT: 0,
-      PER: 0,
-      WIS: 0,
-    },
-  };
-  
-  if (window.userManager) {
-    window.userManager.setData('gameData', defaultGameData);
-    syncToDatabase();
-  }
-  
-  location.reload();
-}
-
-// Save Data Function
-function saveData() {
-  // Get existing data from user manager
-  const userData = window.userManager ? window.userManager.getData() : {};
-  const existingData = userData.gameData || {};
-
-  // New data to update
-  const updatedData = {
-    level: document.querySelector(".level-number").textContent,
-    hp: parseFloat(document.getElementById("hp-fill").style.width),
-    mp: parseFloat(document.getElementById("mp-fill").style.width),
-    stm: parseFloat(document.getElementById("stm-fill").style.width),
-    exp: parseFloat(document.getElementById("exp-fill").style.width),
-    fatigue: document.getElementById("Fatvalue").textContent,
-    name: document.getElementById("job-text").textContent,
-    ping: document.getElementById("ping-text").textContent,
-    guild: document.getElementById("guild-text").textContent,
-    race: document.getElementById("race-text").textContent,
-    title: document.getElementById("title-text").textContent,
-    region: document.getElementById("region-text").textContent,
-    location: document.getElementById("location-text").textContent,
-  };
-
-  // Merge existing data with updated data, updating only specified keys
-  const newData = { ...existingData, ...updatedData };
-
-  // Save the merged data via user manager
-  if (window.userManager) {
-    window.userManager.setData('gameData', newData);
-    syncToDatabase();
-  }
 }

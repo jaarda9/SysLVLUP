@@ -24,6 +24,19 @@ body {
     text-shadow: 0 0 5px #e0e6f61a;
     letter-spacing: 0.5px;
     text-align: left;
+    position: relative;
+}
+
+.intro-text::after {
+    content: '|';
+    animation: blink 1s infinite;
+    color: #00ff00;
+    font-weight: bold;
+}
+
+@keyframes blink {
+    0%, 50% { opacity: 1; }
+    51%, 100% { opacity: 0; }
 }
 
 .initiation-container {
@@ -123,6 +136,7 @@ h2 {
 /* Button Styles */
 .quest-buttons {
     margin-top: 20px; /* Space above buttons */
+    opacity: 0; /* Start hidden until typing is complete */
 }
 
 .quest-button {
@@ -132,42 +146,72 @@ h2 {
     padding: 10px 20px; /* Padding for buttons */
     border-radius: 5px; /* Rounded corners */
     cursor: pointer; /* Pointer cursor */
-    transition: background-color 0.3s, color 0.3s; /* Smooth transition */
+    transition: all 0.3s ease; /* Smooth transition for all properties */
     font-size: 1em; /* Standard size */
     margin: 0 10px; /* Space between buttons */
-    animation: dropDown 2s ease forwards; /* Extended duration for smoothness */
-    transition: max-height 2s ease-out; /* Extended transition time */
-    animation-delay: 14.5s; /* Delay before the animation starts */
-    opacity: 0; /* Ensure it starts invisible */
+    opacity: 0; /* Start hidden */
+    transform: translateY(20px); /* Start below final position */
 }
 
 .quest-button:hover {
     background-color: rgba(255, 255, 255, 0.116);
     color: #ffffff; /* Dark text on hover */
+    transform: translateY(-2px); /* Slight lift on hover */
+    box-shadow: 0 4px 15px rgba(255, 255, 255, 0.2); /* Glow effect on hover */
 }
 
+/* Typing animation cursor effect */
+.intro-text {
+    position: relative;
+}
+
+.intro-text::after {
+    content: '|';
+    animation: blink 1s infinite;
+    color: #00ff00;
+    font-weight: bold;
+}
+
+@keyframes blink {
+    0%, 50% { opacity: 1; }
+    51%, 100% { opacity: 0; }
+}
+
+/* Enhanced notification styles */
 .notification {
-    animation: dropDown 0.5s ease forwards; /* Extended duration for smoothness */
-    transition: max-height 0.5s ease-out; /* Extended transition time */
-    position: fixed; /* Fixed position */
-    top: 50%; /* Center vertically */
-    left: 50%; /* Center horizontally */
-    transform: translate(-50%, -50%) scale(0); /* Start off-screen and scaled down */
-    background-color: #28a745; /* Green background */
-    color: white; /* White text */
-    padding: 20px 30px; /* Increased padding for a larger button */
-    border-radius: 10px; /* Rounded corners */
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3); /* Shadow effect */
-    transition: opacity 0.1s ease, transform 0.1s ease; /* Smooth transition */
-    opacity: 0; /* Start hidden */
-    z-index: 1000; /* Ensure it appears above other elements */
-    font-size: 1.5rem; /* Larger text size */
-    text-shadow: 0 0 10px rgba(255, 255, 255, 0.8); /* Text shadow */
+    animation: dropDown 0.5s ease forwards;
+    transition: all 0.3s ease;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%) scale(0);
+    background-color: #28a745;
+    color: white;
+    padding: 20px 30px;
+    border-radius: 10px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+    opacity: 0;
+    z-index: 1000;
+    font-size: 1.5rem;
+    text-shadow: 0 0 10px rgba(255, 255, 255, 0.8);
+}
+
+.notification.warning {
+    background-color: #ffc107;
+    color: #212529;
+}
+
+.notification.error {
+    background-color: #dc3545;
+}
+
+.notification.info {
+    background-color: #17a2b8;
 }
 
 .notification.show {
-    opacity: 1; /* Fully visible */
-    transform: translate(-50%, -50%) scale(1); /* Move into place and scale up */
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1);
 }
 
 /* Animation Keyframes */
