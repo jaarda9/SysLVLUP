@@ -448,7 +448,7 @@ async function completePhysicalQuest(taskName) {
             currentUserData = userManager.getData();
             
             // Update UI to reflect new stats
-            loadData(gameData);
+            updateUI(gameData);
             
         } catch (error) {
             console.error('Error completing quest:', error);
@@ -467,6 +467,98 @@ function updatePhysicalStatusCard() {
         console.log(`Current XP: ${exp}`);
         console.log(`Stats: STR - ${str}, VIT - ${vit}, AGI - ${agi}`);
     }
+}
+
+// Update UI function that safely updates only existing elements
+function updateUI(gameData) {
+    console.log('Updating UI with data:', gameData);
+    
+    // Update level if element exists
+    const levelNumber = document.querySelector(".level-number");
+    if (levelNumber) {
+        levelNumber.textContent = gameData.level || 1;
+        console.log('Updated level to:', gameData.level);
+    }
+    
+    // Update HP if element exists
+    const hpFill = document.getElementById("hp-fill");
+    if (hpFill) {
+        hpFill.style.width = (gameData.hp || 100) + "%";
+        console.log('Updated HP to:', gameData.hp);
+    }
+    
+    // Update MP if element exists
+    const mpFill = document.getElementById("mp-fill");
+    if (mpFill) {
+        mpFill.style.width = (gameData.mp || 100) + "%";
+        console.log('Updated MP to:', gameData.mp);
+    }
+    
+    // Update STM if element exists
+    const stmFill = document.getElementById("stm-fill");
+    if (stmFill) {
+        stmFill.style.width = (gameData.stm || 100) + "%";
+        console.log('Updated STM to:', gameData.stm);
+    }
+    
+    // Update EXP if element exists
+    const expFill = document.getElementById("exp-fill");
+    if (expFill) {
+        expFill.style.width = (gameData.exp || 0) + "%";
+        console.log('Updated EXP to:', gameData.exp);
+    }
+    
+    // Update fatigue if element exists
+    const fatValue = document.getElementById("Fatvalue");
+    if (fatValue) {
+        fatValue.textContent = gameData.fatigue || 0;
+        console.log('Updated fatigue to:', gameData.fatigue);
+    }
+    
+    // Update character info if elements exist
+    const jobText = document.getElementById("job-text");
+    if (jobText) jobText.textContent = gameData.name || "Your Name";
+    
+    const pingText = document.getElementById("ping-text");
+    if (pingText) pingText.textContent = gameData.ping || "60 ms";
+    
+    const guildText = document.getElementById("guild-text");
+    if (guildText) guildText.textContent = gameData.guild || "Reaper";
+    
+    const raceText = document.getElementById("race-text");
+    if (raceText) raceText.textContent = gameData.race || "Hunter";
+    
+    const titleText = document.getElementById("title-text");
+    if (titleText) titleText.textContent = gameData.title || "None";
+    
+    const regionText = document.getElementById("region-text");
+    if (regionText) regionText.textContent = gameData.region || "TN";
+    
+    const locationText = document.getElementById("location-text");
+    if (locationText) locationText.textContent = gameData.location || "Hospital";
+    
+    // Update attributes if they exist
+    if (gameData.Attributes) {
+        const strElement = document.getElementById("str");
+        if (strElement) strElement.textContent = `STR: ${gameData.Attributes.STR}`;
+        
+        const vitElement = document.getElementById("vit");
+        if (vitElement) vitElement.textContent = `VIT: ${gameData.Attributes.VIT}`;
+        
+        const agiElement = document.getElementById("agi");
+        if (agiElement) agiElement.textContent = `AGI: ${gameData.Attributes.AGI}`;
+        
+        const intElement = document.getElementById("int");
+        if (intElement) intElement.textContent = `INT: ${gameData.Attributes.INT}`;
+        
+        const perElement = document.getElementById("per");
+        if (perElement) perElement.textContent = `PER: ${gameData.Attributes.PER}`;
+        
+        const wisElement = document.getElementById("wis");
+        if (wisElement) wisElement.textContent = `WIS: ${gameData.Attributes.WIS}`;
+    }
+    
+    console.log('UI update completed');
 }
 
 // Show notification function
