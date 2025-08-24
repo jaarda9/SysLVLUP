@@ -67,15 +67,44 @@
     </div>
 
     <!-- Load scripts in correct order -->
+    <script src="js/user-manager.js"></script>
     <script src="js/login.js"></script>
     <script>
-    // Simple data sync functions with fixed user ID
+    // Initialize user manager and load data immediately
+    document.addEventListener('DOMContentLoaded', function() {
+        // Ensure user manager is loaded
+        if (window.userManager) {
+            console.log('User manager initialized with userId:', window.userManager.getUserId());
+            
+            // Load user data immediately
+            window.userManager.loadUserData().then(result => {
+                console.log('Initial data load result:', result);
+            }).catch(error => {
+                console.error('Error loading initial data:', error);
+            });
+        } else {
+            console.warn('User manager not available, using fallback');
+            loadDataFromMongoDB();
+        }
+    });
+    
+    // Simple data sync functions with dynamic user ID
     async function loadDataFromMongoDB() {
       try {
         const isProduction = window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1';
         const apiEndpoint = isProduction ? '/api/user' : 'http://localhost:3000/api/user';
         
-        const response = await fetch(`${apiEndpoint}?userId=single_user_12345`);
+        // Get userId from localStorage or generate new one
+        let userId = localStorage.getItem('userId');
+        if (!userId) {
+          const timestamp = Date.now();
+          const randomString = Math.random().toString(36).substring(2, 10);
+          userId = `user_${timestamp}_${randomString}`;
+          localStorage.setItem('userId', userId);
+          console.log('Generated new userId in fallback:', userId);
+        }
+        
+        const response = await fetch(`${apiEndpoint}/${userId}`);
         
         if (response.status === 404) {
           console.log('User data not found. Starting fresh.');
@@ -88,10 +117,10 @@
         
         const result = await response.json();
         
-        if (result.localStorageData && Object.keys(result.localStorageData).length > 0) {
+        if (result.localStorage && Object.keys(result.localStorage).length > 0) {
           // Load data into localStorage
-          Object.keys(result.localStorageData).forEach(key => {
-            const value = result.localStorageData[key];
+          Object.keys(result.localStorage).forEach(key => {
+            const value = result.localStorage[key];
             if (typeof value === 'object') {
               localStorage.setItem(key, JSON.stringify(value));
             } else {
@@ -110,6 +139,9 @@
       try {
         const isProduction = window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1';
         const apiEndpoint = isProduction ? '/api/sync' : 'http://localhost:3000/api/sync';
+        
+        // Get userId from localStorage
+        const userId = localStorage.getItem('userId') || 'single_user_12345';
         
         // Get all localStorage data
         const localStorageData = {};
@@ -133,7 +165,7 @@
             'Content-Type': 'application/json',
           },
           body: JSON.stringify({
-            userId: 'single_user_12345',
+            userId: userId,
             localStorageData: localStorageData
           })
         });
@@ -148,9 +180,6 @@
         console.error('Error saving data:', error);
       }
     }
-    
-    // Load data when page loads
-    loadDataFromMongoDB();
     
     // Save data when page is unloaded
     window.addEventListener('beforeunload', saveDataToMongoDB);

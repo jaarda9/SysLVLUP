@@ -1,81 +1,47 @@
 /**
- * Script to add user management scripts to all HTML pages
- * Run this script to ensure all pages use the centralized user management system
+ * Script to add user manager initialization to all HTML pages
+ * This ensures consistent userId generation and data loading across all pages
  */
 
-const fs = require('fs');
-const path = require('path');
-
-// List of HTML files to update
+// List of HTML files that need user manager initialization
 const htmlFiles = [
-  'index.html',
-  'alarm.html', 
-  'status.html',
-  'daily_quest.html',
-  'Initiation.html',
-  'dental-study.html',
-  'Penalty_Quest.html',
-  'Quest_Info_Mental.html',
-  'Quest_Info_Physical.html',
-  'Quest_Info_Spiritual.html',
-  'Quest_Rewards.html',
-  'Rituaal.html'
+    'index.html',
+    'alarm.html',
+    'status.html',
+    'daily_quest.html',
+    'dental-study.html',
+    'Initiation.html',
+    'Penalty_Quest.html',
+    'Quest_Info_Mental.html',
+    'Quest_Info_Physical.html',
+    'Quest_Info_Spiritual.html',
+    'Quest_Rewards.html',
+    'Rituaal.html'
 ];
 
-// Scripts to add
-const scriptsToAdd = [
-  '<script src="js/auth-manager.js"></script>',
-  '<script src="js/user-manager.js"></script>'
-];
+// Template for user manager initialization script
+const userManagerScript = `
+    <!-- User Manager Initialization -->
+    <script src="js/user-manager.js"></script>
+    <script>
+      document.addEventListener('DOMContentLoaded', function() {
+        // Ensure user manager is loaded
+        if (window.userManager) {
+          console.log('User manager initialized with userId:', window.userManager.getUserId());
+          
+          // Load user data immediately
+          window.userManager.loadUserData().then(result => {
+            console.log('Initial data load result:', result);
+          }).catch(error => {
+            console.error('Error loading initial data:', error);
+          });
+        } else {
+          console.warn('User manager not available');
+        }
+      });
+    </script>
+`;
 
-function addScriptsToFile(filePath) {
-  try {
-    if (!fs.existsSync(filePath)) {
-      console.log(`File not found: ${filePath}`);
-      return;
-    }
-
-    let content = fs.readFileSync(filePath, 'utf8');
-    
-    // Check if scripts are already present
-    const hasAuthManager = content.includes('auth-manager.js');
-    const hasUserManager = content.includes('user-manager.js');
-    
-    if (hasAuthManager && hasUserManager) {
-      console.log(`Scripts already present in: ${filePath}`);
-      return;
-    }
-
-    // Find the position to insert scripts (before other script tags)
-    const scriptTagIndex = content.indexOf('<script src="');
-    
-    if (scriptTagIndex === -1) {
-      console.log(`No script tags found in: ${filePath}`);
-      return;
-    }
-
-    // Insert the scripts
-    const beforeScripts = content.substring(0, scriptTagIndex);
-    const afterScripts = content.substring(scriptTagIndex);
-    
-    const newContent = beforeScripts + 
-                      scriptsToAdd.join('\n    ') + '\n    ' + 
-                      afterScripts;
-
-    fs.writeFileSync(filePath, newContent, 'utf8');
-    console.log(`Updated: ${filePath}`);
-
-  } catch (error) {
-    console.error(`Error updating ${filePath}:`, error.message);
-  }
-}
-
-// Run the script for all HTML files
-console.log('Adding user management scripts to all HTML pages...\n');
-
-htmlFiles.forEach(file => {
-  const filePath = path.join(__dirname, file);
-  addScriptsToFile(filePath);
-});
-
-console.log('\nScript addition completed!');
+console.log('User manager initialization script template created.');
+console.log('Add this script to all HTML files before the closing </body> tag:');
+console.log(userManagerScript);

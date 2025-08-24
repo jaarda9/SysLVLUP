@@ -7,8 +7,8 @@
         return { success: true, message: 'Data synced successfully' };
       }
       
-      // Use fixed user ID
-      const userId = 'single_user_12345';
+      // Get userId from localStorage or use fallback
+      const userId = localStorage.getItem('userId') || 'single_user_12345';
       
       // Get all localStorage data
       const localStorageData = {};
@@ -32,7 +32,7 @@
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          userId: 'single_user_12345',
+          userId: userId,
           localStorageData: localStorageData
         })
       });

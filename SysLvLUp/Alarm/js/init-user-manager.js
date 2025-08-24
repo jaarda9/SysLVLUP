@@ -11,12 +11,28 @@ if (typeof window.userManager === 'undefined') {
     // Create a simple user manager if the full one isn't available
     window.userManager = {
         getUserId: function() {
-            return 'single_user_12345';
+            // Check if we already have a userId stored
+            let userId = localStorage.getItem('userId');
+            
+            if (!userId) {
+                // Generate a new userId with timestamp and random string
+                const timestamp = Date.now();
+                const randomString = Math.random().toString(36).substring(2, 10);
+                userId = `user_${timestamp}_${randomString}`;
+                
+                // Store the userId in localStorage
+                localStorage.setItem('userId', userId);
+                console.log('Generated new userId in simple manager:', userId);
+            } else {
+                console.log('Using existing userId in simple manager:', userId);
+            }
+            
+            return userId;
         },
         
         syncToDatabase: async function() {
             try {
-                const userId = 'single_user_12345';
+                const userId = this.getUserId();
                 const localStorageData = {};
                 
                 for (let i = 0; i < localStorage.length; i++) {

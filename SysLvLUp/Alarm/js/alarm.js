@@ -15,8 +15,8 @@
         return { success: true, message: 'No data to sync' };
       }
 
-      // Use fixed user ID
-      const userId = 'single_user_12345';
+      // Get userId from localStorage or use fallback
+      const userId = localStorage.getItem('userId') || 'single_user_12345';
 
       const response = await fetch('/api/sync', {
         method: 'POST',
@@ -24,7 +24,7 @@
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          userId: 'single_user_12345',
+          userId: userId,
           localStorageData: localStorageData
         })
       });

@@ -17,10 +17,26 @@ class LocalStorageSync {
   }
   
   /**
-   * Get fixed user ID
+   * Get existing user ID or create a new one
    */
   getUserId() {
-    return 'single_user_12345';
+    // Check if we already have a userId stored
+    let userId = localStorage.getItem('userId');
+    
+    if (!userId) {
+      // Generate a new userId with timestamp and random string
+      const timestamp = Date.now();
+      const randomString = Math.random().toString(36).substring(2, 10);
+      userId = `user_${timestamp}_${randomString}`;
+      
+      // Store the userId in localStorage
+      localStorage.setItem('userId', userId);
+      console.log('Generated new userId in sync:', userId);
+    } else {
+      console.log('Using existing userId in sync:', userId);
+    }
+    
+    return userId;
   }
 
   /**

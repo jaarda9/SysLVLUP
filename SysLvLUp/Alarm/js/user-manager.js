@@ -9,6 +9,13 @@ class UserManager {
     this.sync = null;
     this.initializeSync();
     this.isAuthenticated = localStorage.getItem('authToken') !== null;
+    
+    // Load user data immediately when user manager is created
+    this.loadUserData().then(result => {
+      console.log('Initial user data load result:', result);
+    }).catch(error => {
+      console.error('Error loading initial user data:', error);
+    });
   }
 
   /**
@@ -25,8 +32,23 @@ class UserManager {
       return authenticatedUserId;
     }
     
-    // Use fixed user ID
-    return 'single_user_12345';
+    // Check if we already have a userId stored
+    let userId = localStorage.getItem('userId');
+    
+    if (!userId) {
+      // Generate a new userId with timestamp and random string
+      const timestamp = Date.now();
+      const randomString = Math.random().toString(36).substring(2, 10);
+      userId = `user_${timestamp}_${randomString}`;
+      
+      // Store the userId in localStorage
+      localStorage.setItem('userId', userId);
+      console.log('Generated new userId:', userId);
+    } else {
+      console.log('Using existing userId:', userId);
+    }
+    
+    return userId;
   }
 
   /**
@@ -55,6 +77,7 @@ class UserManager {
    */
   async loadUserData() {
     try {
+      console.log('Loading user data for userId:', this.userId);
       const response = await fetch(`/api/user/${this.userId}`);
       
       if (response.status === 404) {
@@ -79,6 +102,14 @@ class UserManager {
           }
         });
         console.log('User data loaded from database successfully');
+        
+        // Trigger a page reload to update the UI with loaded data
+        if (window.location.pathname.includes('alarm.html') || 
+            window.location.pathname.includes('status.html') ||
+            window.location.pathname.includes('daily_quest.html')) {
+          console.log('Reloading page to update UI with loaded data');
+          window.location.reload();
+        }
       }
       
       return result;
