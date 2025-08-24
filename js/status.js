@@ -54,20 +54,31 @@ function showNameInputModal() {
             // Set the user ID (player name) in user manager and check if data exists
             const result = await userManager.setUserId(playerName);
             
+            console.log('Result from setUserId:', result);
+            
             if (result.dataFound) {
                 console.log('Loading existing player data for:', playerName);
                 // Player exists, load their data
                 const existingData = userManager.getData();
+                console.log('Existing data retrieved:', existingData);
                 loadPlayerData(existingData.gameData);
             } else {
                 console.log('Creating new player data for:', playerName);
-                // New player, create initial data
-                const initialData = userManager.createInitialData(playerName);
-                loadPlayerData(initialData.gameData);
                 
-                // Save to MongoDB
-                await userManager.saveUserData();
-                console.log('Initial data saved for new player');
+                // Double-check: if we have data in userManager, don't create new data
+                const currentData = userManager.getData();
+                if (currentData && currentData.gameData) {
+                    console.log('WARNING: Data exists in userManager but dataFound was false! Using existing data.');
+                    loadPlayerData(currentData.gameData);
+                } else {
+                    // New player, create initial data
+                    const initialData = userManager.createInitialData(playerName);
+                    loadPlayerData(initialData.gameData);
+                    
+                    // Save to MongoDB
+                    await userManager.saveUserData();
+                    console.log('Initial data saved for new player');
+                }
             }
             
             // Store player name locally
@@ -95,9 +106,12 @@ async function loadExistingPlayerData(playerName) {
         // Set the user ID in user manager and check if data exists
         const result = await userManager.setUserId(playerName);
         
+        console.log('Result from setUserId in loadExistingPlayerData:', result);
+        
         if (result.dataFound) {
             console.log('Existing data loaded for:', playerName);
             const existingData = userManager.getData();
+            console.log('Existing data retrieved in loadExistingPlayerData:', existingData);
             loadPlayerData(existingData.gameData);
             
             // Show status content
@@ -108,12 +122,20 @@ async function loadExistingPlayerData(playerName) {
             setupStatusPageListeners();
         } else {
             console.log('No existing data found, creating new data for:', playerName);
-            // Player name exists but no data, create new data
-            const initialData = userManager.createInitialData(playerName);
-            loadPlayerData(initialData.gameData);
             
-            // Save to MongoDB
-            await userManager.saveUserData();
+            // Double-check: if we have data in userManager, don't create new data
+            const currentData = userManager.getData();
+            if (currentData && currentData.gameData) {
+                console.log('WARNING: Data exists in userManager but dataFound was false! Using existing data.');
+                loadPlayerData(currentData.gameData);
+            } else {
+                // Player name exists but no data, create new data
+                const initialData = userManager.createInitialData(playerName);
+                loadPlayerData(initialData.gameData);
+                
+                // Save to MongoDB
+                await userManager.saveUserData();
+            }
             
             // Show status content
             document.getElementById('name-input-modal').classList.add('hidden');

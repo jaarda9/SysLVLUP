@@ -23,9 +23,17 @@ class UserManager {
     const loadResult = await this.loadUserData();
     
     // Return both the user ID and whether data was found
+    const dataFound = loadResult.success && this.data && this.data.gameData;
+    console.log('Data found check:', {
+      loadResultSuccess: loadResult.success,
+      hasData: !!this.data,
+      hasGameData: !!(this.data && this.data.gameData),
+      dataFound: dataFound
+    });
+    
     return {
       userId: this.userId,
-      dataFound: loadResult.success && this.data && this.data.gameData
+      dataFound: dataFound
     };
   }
 
