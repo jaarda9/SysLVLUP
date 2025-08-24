@@ -7,7 +7,7 @@
     <link rel="stylesheet" href="css/login.css">
     
     <!-- Web App Manifest -->
-    <link rel="manifest" href="/manifest.json">
+    <link rel="manifest" href="manifest.json">
     
     <!-- Theme Color -->
     <meta name="theme-color" content="#4a90e2">
@@ -19,7 +19,7 @@
     <meta name="apple-mobile-web-app-title" content="SysLVLUP">
     
     <!-- Microsoft -->
-    <meta name="msapplication-TileImage" content="/icons/icon-144x144.png">
+    <meta name="msapplication-TileImage" content="icons/icon-144x144.png">
     <meta name="msapplication-tap-highlight" content="no">
     
     <!-- Android Chrome -->
@@ -27,18 +27,18 @@
     <meta name="application-name" content="SysLVLUP">
     
     <!-- Icons -->
-    <link rel="apple-touch-icon" href="/icons/icon-192x192.png">
-    <link rel="apple-touch-icon" sizes="152x152" href="/icons/icon-152x152.png">
-    <link rel="apple-touch-icon" sizes="180x180" href="/icons/icon-192x192.png">
-    <link rel="apple-touch-icon" sizes="167x167" href="/icons/icon-152x152.png">
-    <link rel="icon" type="image/png" href="/icons/icon-192x192.png" sizes="192x192">
-    <link rel="icon" type="image/png" href="/icons/icon-512x512.png" sizes="512x512">
+    <link rel="apple-touch-icon" href="icons/icon-192x192.png">
+    <link rel="apple-touch-icon" sizes="152x152" href="icons/icon-152x152.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="icons/icon-192x192.png">
+    <link rel="apple-touch-icon" sizes="167x167" href="icons/icon-152x152.png">
+    <link rel="icon" type="image/png" href="icons/icon-192x192.png" sizes="192x192">
+    <link rel="icon" type="image/png" href="icons/icon-512x512.png" sizes="512x512">
     
     <!-- Service Worker Registration -->
     <script>
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', function() {
-                navigator.serviceWorker.register('/sw.js')
+                navigator.serviceWorker.register('sw.js')
                     .then(function(registration) {
                         console.log('ServiceWorker registration successful with scope: ', registration.scope);
                     })
@@ -47,6 +47,16 @@
                     });
             });
         }
+        
+        // PWA Installation Debug
+        window.addEventListener('beforeinstallprompt', (e) => {
+            console.log('PWA install prompt triggered!');
+            console.log('Install prompt event:', e);
+        });
+        
+        window.addEventListener('appinstalled', (evt) => {
+            console.log('PWA was installed!');
+        });
     </script>
 </head>
 <body>
