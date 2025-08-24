@@ -227,7 +227,9 @@ function loadPlayerData(gameData) {
         const hpFill = document.getElementById('hp-fill');
         if (hpFill) {
             hpFill.style.width = `${gameData.hp}%`;
-            const hpValue = hpFill.nextElementSibling;
+            // Find the stat value element within the same stat-bar container
+            const statBar = hpFill.closest('.stat-bar');
+            const hpValue = statBar ? statBar.querySelector('.stat-value') : null;
             if (hpValue) {
                 hpValue.textContent = gameData.hp;
             }
@@ -238,7 +240,9 @@ function loadPlayerData(gameData) {
         const mpFill = document.getElementById('mp-fill');
         if (mpFill) {
             mpFill.style.width = `${gameData.mp}%`;
-            const mpValue = mpFill.nextElementSibling;
+            // Find the stat value element within the same stat-bar container
+            const statBar = mpFill.closest('.stat-bar');
+            const mpValue = statBar ? statBar.querySelector('.stat-value') : null;
             if (mpValue) {
                 mpValue.textContent = gameData.mp;
             }
@@ -249,7 +253,9 @@ function loadPlayerData(gameData) {
         const stmFill = document.getElementById('stm-fill');
         if (stmFill) {
             stmFill.style.width = `${gameData.stm}%`;
-            const stmValue = stmFill.nextElementSibling;
+            // Find the stat value element within the same stat-bar container
+            const statBar = stmFill.closest('.stat-bar');
+            const stmValue = statBar ? statBar.querySelector('.stat-value') : null;
             if (stmValue) {
                 stmValue.textContent = gameData.stm;
             }
@@ -260,7 +266,9 @@ function loadPlayerData(gameData) {
         const expFill = document.getElementById('exp-fill');
         if (expFill) {
             expFill.style.width = `${gameData.exp}%`;
-            const expValue = expFill.nextElementSibling;
+            // Find the stat value element within the same stat-bar container
+            const statBar = expFill.closest('.stat-bar');
+            const expValue = statBar ? statBar.querySelector('.stat-value') : null;
             if (expValue) {
                 expValue.textContent = gameData.exp;
             }
