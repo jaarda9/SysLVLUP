@@ -22,20 +22,20 @@ document.addEventListener("DOMContentLoaded", function() {
   // Call the measurePing function with a URL to ping
   measurePing('https://sys-lvlup.vercel.app/status.html'); // Replace with your server URL
 });
-// Use centralized user manager for syncing
+// Use simple user manager for syncing
 async function syncToDatabase() {
-    if (window.userManager) {
+    if (window.simpleUser) {
         try {
-            await window.userManager.saveUserData();
-            console.log('Sync successful via user manager');
+            await window.simpleUser.saveUserData();
+            console.log('Sync successful via simple user manager');
             return { success: true, message: 'Data synced successfully' };
         } catch (error) {
             console.error('Error syncing to database:', error);
             throw error;
         }
     } else {
-        console.warn('User manager not available for syncing');
-        return { success: false, message: 'User manager not available' };
+        console.warn('Simple user manager not available for syncing');
+        return { success: false, message: 'Simple user manager not available' };
     }
 }
 

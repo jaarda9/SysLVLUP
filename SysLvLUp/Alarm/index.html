@@ -67,43 +67,30 @@
     </div>
 
     <!-- Load scripts in correct order -->
-    <script src="js/user-manager.js"></script>
-    <script src="js/sync.js"></script>
-    <script src="js/database.js"></script>
+    <script src="js/simple-user.js"></script>
     <script src="js/login.js"></script>
     
     <script>
-    // Initialize user manager and load data
+    // Initialize simple user manager and load data
     document.addEventListener('DOMContentLoaded', async function() {
         try {
             // Load user data from database
-            await window.userManager.loadUserData();
-            
-            // Initialize sync
-            const sync = window.userManager.initializeSync();
-            if (sync) {
-                sync.setupAutoSync({
-                    onLoad: false, // Already loaded above
-                    onUnload: true,
-                    interval: 30000
-                });
-            }
-            
-            console.log('User manager initialized successfully');
+            await window.simpleUser.loadUserData();
+            console.log('Simple user manager initialized successfully');
         } catch (error) {
-            console.error('Error initializing user manager:', error);
+            console.error('Error initializing simple user manager:', error);
         }
     });
     
     // Save data when page is unloaded
     window.addEventListener('beforeunload', function() {
-        window.userManager.saveUserData().catch(console.error);
+        window.simpleUser.saveUserData().catch(console.error);
     });
     
     // Also save data when page becomes hidden (for mobile devices)
     document.addEventListener('visibilitychange', function() {
         if (document.visibilityState === 'hidden') {
-            window.userManager.saveUserData().catch(console.error);
+            window.simpleUser.saveUserData().catch(console.error);
         }
     });
     </script>
