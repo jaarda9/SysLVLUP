@@ -7,6 +7,24 @@ document.addEventListener('DOMContentLoaded', () => {
     initializeStatusPage();
 });
 
+// Reload fresh data when page becomes visible (user returns from other pages)
+document.addEventListener('visibilitychange', async () => {
+    if (document.visibilityState === 'visible' && userManager && userManager.hasUserId()) {
+        console.log('Page became visible, reloading fresh data...');
+        try {
+            // Force reload fresh data from database
+            await userManager.loadUserData();
+            const freshData = userManager.getData();
+            if (freshData && freshData.gameData) {
+                console.log('Fresh data loaded:', freshData.gameData);
+                loadPlayerData(freshData.gameData);
+            }
+        } catch (error) {
+            console.error('Error reloading fresh data:', error);
+        }
+    }
+});
+
 // Initialize the status page
 function initializeStatusPage() {
     // Create user manager instance
