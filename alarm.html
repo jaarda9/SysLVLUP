@@ -52,21 +52,8 @@
       </div>
     </div>
 
-    <script src="js/auth-check.js"></script>
-    <script src="js/user-manager.js"></script>
+    <!-- Only load the alarm.js script since this page just handles redirects -->
     <script src="js/alarm.js"></script>
-    
-    <!-- Initialize user manager -->
-    <script>
-      document.addEventListener('DOMContentLoaded', function() {
-        // Ensure user manager is loaded
-        if (window.userManager) {
-          console.log('User manager initialized with userId:', window.userManager.getUserId());
-        } else {
-          console.warn('User manager not available');
-        }
-      });
-    </script>
     
     <!-- Service Worker Registration -->
     <script>
