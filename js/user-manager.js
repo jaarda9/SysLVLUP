@@ -8,11 +8,52 @@ class UserManager {
     this.data = null;
     this.isLoading = false;
     
-    // Load data immediately when user manager is created
+    // Initialize with basic data structure immediately
+    this.data = {
+      gameData: {
+        level: 1,
+        hp: 100,
+        mp: 100,
+        stm: 100,
+        exp: 0,
+        fatigue: 0,
+        name: "Your Name",
+        ping: "60",
+        guild: "Reaper",
+        race: "Hunter",
+        title: "None",
+        region: "TN",
+        location: "Hospital",
+        physicalQuests: "[0/4]",
+        mentalQuests: "[0/3]",
+        spiritualQuests: "[0/2]",
+        Attributes: {
+          STR: 10,
+          VIT: 10,
+          AGI: 10,
+          INT: 10,
+          PER: 10,
+          WIS: 10,
+        },
+        stackedAttributes: {
+          STR: 0,
+          VIT: 0,
+          AGI: 0,
+          INT: 0,
+          PER: 0,
+          WIS: 0,
+        },
+      },
+      lastResetDate: new Date().toLocaleDateString(),
+      STS: 0
+    };
+    
+    // Try to load data from MongoDB if available
     this.loadUserData().then(result => {
       console.log('Initial user data load result:', result);
     }).catch(error => {
-      console.error('Error loading initial user data:', error);
+      console.log('MongoDB not available, using local data:', error.message);
+      // Data is already initialized above, so we're good
     });
   }
 
@@ -78,7 +119,7 @@ class UserManager {
       
       if (response.status === 404) {
         console.log('No existing data found for user, starting fresh');
-        this.data = {};
+        // Keep the default data we already set
         return { success: true, message: 'No existing data' };
       }
 
@@ -88,8 +129,10 @@ class UserManager {
 
       const result = await response.json();
       
-      // Store data in memory instead of localStorage
-      this.data = result.localStorage || {};
+      // Merge with existing data instead of replacing
+      if (result.localStorage) {
+        this.data = { ...this.data, ...result.localStorage };
+      }
       
       console.log('User data loaded directly from MongoDB:', this.data);
       
@@ -100,7 +143,7 @@ class UserManager {
 
     } catch (error) {
       console.error('Error loading user data:', error);
-      this.data = {};
+      // Keep the default data we already set
       return { success: false, error: error.message };
     } finally {
       this.isLoading = false;

@@ -6,22 +6,26 @@ const typingSpeed = 100;
 
 // Initialize dynamic key when page loads
 document.addEventListener('DOMContentLoaded', function() {
-    initializeDynamicKey();
+    console.log('DOM loaded, initializing login system...');
+    
+    // Start typing animation immediately
     startTypingAnimation();
+    
+    // Try to initialize key with user manager
+    initializeKeyWithUserManager();
+    
+    // Fallback: if no key after 2 seconds, generate one
+    setTimeout(() => {
+        if (!currentKey) {
+            console.log('Fallback: Generating key without user manager');
+            currentKey = generateKey();
+        }
+    }, 2000);
 });
 
-function generateKey() {
-    const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
-    let result = '';
-    for (let i = 0; i < 8; i++) {
-        result += chars.charAt(Math.floor(Math.random() * chars.length));
-    }
-    return result;
-}
-
-function initializeDynamicKey() {
-    // Check if we have a user manager
+function initializeKeyWithUserManager() {
     if (window.userManager) {
+        console.log('User manager found, initializing key...');
         let sessionKey = window.userManager.getData('sessionKey');
         
         if (!sessionKey) {
@@ -34,12 +38,26 @@ function initializeDynamicKey() {
         
         currentKey = sessionKey;
     } else {
-        console.warn('User manager not available, using fallback');
-        currentKey = generateKey();
+        console.log('User manager not found, will use fallback');
     }
 }
 
+function generateKey() {
+    const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+    let result = '';
+    for (let i = 0; i < 8; i++) {
+        result += chars.charAt(Math.floor(Math.random() * chars.length));
+    }
+    return result;
+}
+
 function showKey() {
+    // Make sure we have a key
+    if (!currentKey) {
+        currentKey = generateKey();
+        console.log('Generated key for display:', currentKey);
+    }
+    
     console.log('Showing dynamic key:', currentKey);
     
     const keyDisplay = document.createElement('div');
@@ -52,50 +70,33 @@ function showKey() {
         </div>
     `;
     
-    // Add inline styles to avoid CSS loading issues
-    keyDisplay.style.cssText = `
-        position: fixed;
-        top: 50%;
-        left: 50%;
-        transform: translate(-50%, -50%);
-        background: rgba(0, 0, 0, 0.9);
-        color: #00ff00;
-        padding: 20px;
-        border-radius: 10px;
-        border: 2px solid #00ff00;
-        text-align: center;
-        z-index: 1000;
-        font-family: 'Courier New', monospace;
-        animation: fadeIn 0.5s ease-in;
-    `;
-    
-    // Add fadeIn animation if not already present
-    if (!document.querySelector('#fadeIn-style')) {
-        const style = document.createElement('style');
-        style.id = 'fadeIn-style';
-        style.textContent = `
-            @keyframes fadeIn {
-                from { opacity: 0; transform: translate(-50%, -50%) scale(0.8); }
-                to { opacity: 1; transform: translate(-50%, -50%) scale(1); }
-            }
-        `;
-        document.head.appendChild(style);
-    }
-    
     // Add click handler to generate new key
     keyDisplay.addEventListener('click', function() {
         generateNewKey();
         keyDisplay.remove();
     });
     
-    document.body.appendChild(keyDisplay);
+    // Add the key display to the login container instead of body
+    const loginContainer = document.querySelector('.login-container');
+    if (loginContainer) {
+        // Insert before the password input
+        const passwordInput = document.getElementById('password');
+        if (passwordInput) {
+            loginContainer.insertBefore(keyDisplay, passwordInput);
+        } else {
+            loginContainer.appendChild(keyDisplay);
+        }
+    } else {
+        // Fallback to body if login container not found
+        document.body.appendChild(keyDisplay);
+    }
     
-    // Remove key display after 5 seconds
+    // Remove key display after 10 seconds (longer for testing)
     setTimeout(() => {
         if (keyDisplay.parentNode) {
             keyDisplay.remove();
         }
-    }, 5000);
+    }, 10000);
 }
 
 function generateNewKey() {
@@ -112,7 +113,10 @@ function generateNewKey() {
 
 function startTypingAnimation() {
     const ascendText = document.getElementById('ascend-text');
-    if (!ascendText) return;
+    if (!ascendText) {
+        console.error('ascend-text element not found');
+        return;
+    }
     
     function typeNextChar() {
         if (typingIndex < text.length) {
@@ -129,7 +133,7 @@ function startTypingAnimation() {
 }
 
 // Password input handling
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener("DOMContentLoaded", function() {
     const passwordInput = document.getElementById('password');
     const messageElement = document.getElementById('message');
     
