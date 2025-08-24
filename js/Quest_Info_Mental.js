@@ -435,6 +435,7 @@ async function completeMentalQuest(taskName) {
             const result = await userManager.saveUserData();
             if (result.success) {
                 console.log('Quest completion saved successfully');
+                console.log('Final saved data:', JSON.stringify(userManager.getData(), null, 2));
                 showNotification(`✅ Quest completed! +5 EXP, +2 INT, +1 PER`, 'success');
             } else {
                 console.error('Error saving quest completion:', result.error);

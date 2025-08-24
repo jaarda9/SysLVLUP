@@ -12,13 +12,16 @@ document.addEventListener('visibilitychange', async () => {
     if (document.visibilityState === 'visible' && userManager && userManager.hasUserId()) {
         console.log('Page became visible, reloading fresh data...');
         try {
-            // Force reload fresh data from database
-            await userManager.loadUserData();
-            const freshData = userManager.getData();
-            if (freshData && freshData.gameData) {
-                console.log('Fresh data loaded:', freshData.gameData);
-                loadPlayerData(freshData.gameData);
-            }
+            // Wait a bit to avoid conflicts with daily reset check
+            setTimeout(async () => {
+                // Force reload fresh data from database
+                await userManager.loadUserData();
+                const freshData = userManager.getData();
+                if (freshData && freshData.gameData) {
+                    console.log('Fresh data loaded:', freshData.gameData);
+                    loadPlayerData(freshData.gameData);
+                }
+            }, 2000); // Wait 2 seconds to avoid conflicts
         } catch (error) {
             console.error('Error reloading fresh data:', error);
         }

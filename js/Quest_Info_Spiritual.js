@@ -431,7 +431,8 @@ async function completeSpiritualQuest(taskName) {
             const result = await userManager.saveUserData();
             if (result.success) {
                 console.log('Quest completion saved successfully');
-                showNotification(`✅ Quest completed! +25 EXP, +3 WIS, +1 INT`, 'success');
+                console.log('Final saved data:', JSON.stringify(userManager.getData(), null, 2));
+                showNotification(`✅ Quest completed! +5 EXP, +3 WIS, +1 INT`, 'success');
             } else {
                 console.error('Error saving quest completion:', result.error);
                 showNotification('❌ Error saving quest completion', 'error');
