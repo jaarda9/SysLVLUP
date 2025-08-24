@@ -13,7 +13,7 @@
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          userId: 'your-user-id',
+          userId: 'single_user_12345',
           localStorageData: localStorageData
         })
       });
