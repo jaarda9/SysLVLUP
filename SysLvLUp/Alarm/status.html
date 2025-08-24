@@ -275,31 +275,13 @@
   </div>
 </div>
     <!-- Load scripts in correct order -->
-    <script src="js/simple-user.js"></script>
     <script src="js/status.js"></script>
-    
     <script>
-    // Initialize simple user manager and load data
-    document.addEventListener('DOMContentLoaded', async function() {
-        try {
-            // Load user data from database
-            await window.simpleUser.loadUserData();
-            console.log('Simple user manager initialized successfully');
-        } catch (error) {
-            console.error('Error initializing simple user manager:', error);
-        }
-    });
-    
-    // Save data when page is unloaded
-    window.addEventListener('beforeunload', function() {
-        window.simpleUser.saveUserData().catch(console.error);
-    });
-    
-    // Also save data when page becomes hidden (for mobile devices)
-    document.addEventListener('visibilitychange', function() {
-        if (document.visibilityState === 'hidden') {
-            window.simpleUser.saveUserData().catch(console.error);
-        }
+    // Example: Call the functions when the page loads
+    document.addEventListener('DOMContentLoaded', () => {
+        loadDataFromMongoDB();
+        // Save data when the user closes the page
+        window.addEventListener('beforeunload', saveDataToMongoDB);
     });
     </script>
 </script>
