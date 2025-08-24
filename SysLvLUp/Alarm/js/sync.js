@@ -17,15 +17,10 @@ class LocalStorageSync {
   }
   
   /**
-   * Get or generate user ID
+   * Get fixed user ID
    */
   getUserId() {
-    let userId = localStorage.getItem('userId');
-    if (!userId) {
-      userId = 'user_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
-      localStorage.setItem('userId', userId);
-    }
-    return userId;
+    return 'single_user_12345';
   }
 
   /**

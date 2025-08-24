@@ -25,17 +25,8 @@ class UserManager {
       return authenticatedUserId;
     }
     
-    // Check for existing anonymous user ID
-    let userId = localStorage.getItem('userId');
-    if (!userId) {
-      userId = 'anonymous_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
-      localStorage.setItem('userId', userId);
-      localStorage.setItem('isAnonymous', 'true');
-      console.log('New anonymous user ID created:', userId);
-    } else {
-      console.log('Existing user ID found:', userId);
-    }
-    return userId;
+    // Use fixed user ID
+    return 'single_user_12345';
   }
 
   /**

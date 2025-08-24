@@ -7,12 +7,8 @@
         return { success: true, message: 'Data synced successfully' };
       }
       
-      // Fallback to original logic if user manager not available
-      let userId = localStorage.getItem('userId');
-      if (!userId) {
-        userId = 'user_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
-        localStorage.setItem('userId', userId);
-      }
+      // Use fixed user ID
+      const userId = 'single_user_12345';
       
       // Get all localStorage data
       const localStorageData = {};
@@ -36,7 +32,7 @@
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          userId: userId,
+          userId: 'single_user_12345',
           localStorageData: localStorageData
         })
       });

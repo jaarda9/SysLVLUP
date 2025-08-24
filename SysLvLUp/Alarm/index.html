@@ -67,34 +67,83 @@
     </div>
 
     <!-- Load scripts in correct order -->
-    <script src="js/auth-manager.js"></script>
-    <script src="js/user-manager.js"></script>
-    <script src="js/multi-device-setup.js"></script>
     <script src="js/login.js"></script>
     <script>
-    // Use centralized user manager for data synchronization
+    // Simple data sync functions with fixed user ID
     async function loadDataFromMongoDB() {
       try {
-        if (window.userManager) {
-          const result = await window.userManager.loadUserData();
-          console.log('Data loaded using centralized user manager:', result.success ? 'Success' : 'No data found');
-        } else {
-          console.warn('User manager not available, using local data only');
+        const isProduction = window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1';
+        const apiEndpoint = isProduction ? '/api/user' : 'http://localhost:3000/api/user';
+        
+        const response = await fetch(`${apiEndpoint}?userId=single_user_12345`);
+        
+        if (response.status === 404) {
+          console.log('User data not found. Starting fresh.');
+          return;
+        }
+        
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        
+        const result = await response.json();
+        
+        if (result.localStorageData && Object.keys(result.localStorageData).length > 0) {
+          // Load data into localStorage
+          Object.keys(result.localStorageData).forEach(key => {
+            const value = result.localStorageData[key];
+            if (typeof value === 'object') {
+              localStorage.setItem(key, JSON.stringify(value));
+            } else {
+              localStorage.setItem(key, value);
+            }
+          });
+          console.log('Data loaded successfully.');
         }
       } catch (error) {
         console.error('Error loading data from MongoDB:', error);
       }
     }
     
-    // Save data using centralized user manager
+    // Save data to MongoDB
     async function saveDataToMongoDB() {
       try {
-        if (window.userManager) {
-          await window.userManager.saveUserData();
-          console.log('Data saved using centralized user manager');
-        } else {
-          console.warn('User manager not available, data not saved');
+        const isProduction = window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1';
+        const apiEndpoint = isProduction ? '/api/sync' : 'http://localhost:3000/api/sync';
+        
+        // Get all localStorage data
+        const localStorageData = {};
+        for (let i = 0; i < localStorage.length; i++) {
+          const key = localStorage.key(i);
+          try {
+            localStorageData[key] = JSON.parse(localStorage.getItem(key));
+          } catch (e) {
+            localStorageData[key] = localStorage.getItem(key);
+          }
         }
+        
+        if (Object.keys(localStorageData).length === 0) {
+          console.log('No data to save');
+          return;
+        }
+        
+        const response = await fetch(apiEndpoint, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            userId: 'single_user_12345',
+            localStorageData: localStorageData
+          })
+        });
+        
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        
+        const result = await response.json();
+        console.log('Data saved successfully.');
       } catch (error) {
         console.error('Error saving data:', error);
       }

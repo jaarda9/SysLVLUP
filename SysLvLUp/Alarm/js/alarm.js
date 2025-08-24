@@ -15,12 +15,8 @@
         return { success: true, message: 'No data to sync' };
       }
 
-      // Get user ID from localStorage or generate new one
-      let userId = localStorage.getItem('userId');
-      if (!userId) {
-        userId = 'user_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
-        localStorage.setItem('userId', userId);
-      }
+      // Use fixed user ID
+      const userId = 'single_user_12345';
 
       const response = await fetch('/api/sync', {
         method: 'POST',
@@ -28,7 +24,7 @@
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          userId: userId,
+          userId: 'single_user_12345',
           localStorageData: localStorageData
         })
       });
