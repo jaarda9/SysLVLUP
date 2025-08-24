@@ -1,10 +1,25 @@
   async function syncToDatabase() {
     try {
+      // Use centralized user manager if available
+      if (window.userManager) {
+        await window.userManager.syncToDatabase();
+        console.log('Sync successful using centralized user manager');
+        return { success: true, message: 'Data synced successfully' };
+      }
+      
+      // Fallback to original logic if user manager not available
       const localStorageData = JSON.parse(localStorage.getItem("gameData"));
       
-      if (Object.keys(localStorageData).length === 0) {
+      if (!localStorageData || Object.keys(localStorageData).length === 0) {
         console.log('No localStorage data to sync');
         return { success: true, message: 'No data to sync' };
+      }
+
+      // Get user ID from localStorage or generate new one
+      let userId = localStorage.getItem('userId');
+      if (!userId) {
+        userId = 'user_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+        localStorage.setItem('userId', userId);
       }
 
       const response = await fetch('/api/sync', {
@@ -13,7 +28,7 @@
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          userId: 'single_user_12345',
+          userId: userId,
           localStorageData: localStorageData
         })
       });

@@ -1,15 +1,18 @@
 /**
  * Centralized User Manager
+ * Single source of truth for user identification and data synchronization
  * Prevents multiple user IDs from being generated across different pages
  */
 class UserManager {
   constructor() {
     this.userId = this.getOrCreateUserId();
     this.sync = null;
+    this.initializeSync();
   }
 
   /**
    * Get existing user ID or create a new one
+   * Ensures only one user ID exists per browser instance
    */
   getOrCreateUserId() {
     let userId = localStorage.getItem('userId');
@@ -17,6 +20,9 @@ class UserManager {
       userId = 'user_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
       localStorage.setItem('userId', userId);
       console.log('New user ID created:', userId);
+      
+      // Also store creation timestamp for tracking
+      localStorage.setItem('userId_created', Date.now());
     } else {
       console.log('Existing user ID found:', userId);
     }
@@ -79,7 +85,8 @@ class UserManager {
 
     } catch (error) {
       console.error('Error loading user data:', error);
-      throw error;
+      // Don't throw error - allow app to continue with local data
+      return { success: false, error: error.message };
     }
   }
 
@@ -123,10 +130,33 @@ class UserManager {
       throw error;
     }
   }
+
+  /**
+   * Simple sync function for compatibility with existing code
+   */
+  async syncToDatabase() {
+    return this.saveUserData();
+  }
+
+  /**
+   * Check if user data exists in database
+   */
+  async userDataExists() {
+    try {
+      const response = await fetch(`/api/user/${this.userId}`);
+      return response.status !== 404;
+    } catch (error) {
+      console.error('Error checking user data:', error);
+      return false;
+    }
+  }
 }
 
 // Create global user manager instance
 window.userManager = new UserManager();
+
+// Simple alias for backward compatibility
+window.simpleUser = window.userManager;
 
 // Export for use in other modules
 if (typeof module !== 'undefined' && module.exports) {

@@ -232,87 +232,36 @@ document.addEventListener("DOMContentLoaded", function() {
   measurePing('https://sys-lvlup.vercel.app/status.html'); // Replace with your server URL
 });
 
-// Auto-sync when page loads
-// This will sync all localStorage data to your MongoDB
+// Auto-sync when page loads using centralized user manager
 async function loadDataFromMongoDB() {
-  // Use fixed user ID
-  const userId = 'single_user_12345';
-  localStorage.setItem('userId', userId);
-
   try {
-    // Fetch user data from MongoDB
-    const response = await fetch(`/api/user/${userId}`);
-
-    if (response.status === 404) {
-      console.log("User data not found. Starting fresh.");
-      return;
+    // Use the centralized user manager
+    if (window.userManager) {
+      const result = await window.userManager.loadUserData();
+      console.log('Data loaded using centralized user manager:', result.success ? 'Success' : 'No data found');
+    } else {
+      console.warn('User manager not available, using local data only');
     }
-
-    if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
-    }
-
-    const userData = await response.json();
-    const localStorageData = userData.localStorage || {};
-    
-    // Restore all data to localStorage
-    Object.keys(localStorageData).forEach(key => {
-      const value = localStorageData[key];
-      if (typeof value === 'object') {
-        localStorage.setItem(key, JSON.stringify(value));
-      } else {
-        localStorage.setItem(key, value);
-      }
-    });
-    
-    console.log('Data loaded successfully.');
   } catch (error) {
-    console.error('Error fetching data:', error);
+    console.error('Error loading data from MongoDB:', error);
   }
 }
 
-// Save data to MongoDB when page is unloaded
-async function saveDataToMongoDB() {
-  // Use fixed user ID
-  const userId = 'single_user_12345';
-
-  try {
-    // Get all localStorage data
-    const localStorageData = {};
-    for (let i = 0; i < localStorage.length; i++) {
-      const key = localStorage.key(i);
-      try {
-        localStorageData[key] = JSON.parse(localStorage.getItem(key));
-      } catch (e) {
-        localStorageData[key] = localStorage.getItem(key);
-      }
-    }
-
-    // Send data to MongoDB
-    const response = await fetch('/api/sync', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        userId: userId,
-        localStorageData: localStorageData
-      })
-    });
-
-    if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
-    }
-
-    console.log('Data saved successfully.');
-  } catch (error) {
-    console.error('Error saving data:', error);
-  }
-}
-
-// Use simple sync function for compatibility
+// Use centralized sync function
 async function syncToDatabase() {
-  return saveDataToMongoDB();
+  try {
+    if (window.userManager) {
+      await window.userManager.syncToDatabase();
+      console.log('Sync completed using centralized user manager');
+      return { success: true, message: 'Data synced successfully' };
+    } else {
+      console.warn('User manager not available for syncing');
+      return { success: false, message: 'User manager not available' };
+    }
+  } catch (error) {
+    console.error('Error syncing to database:', error);
+    throw error;
+  }
 }
 
 // Load Data Function

@@ -1,6 +1,13 @@
   async function syncToDatabase() {
     try {
-      // Get user ID
+      // Use centralized user manager if available
+      if (window.userManager) {
+        await window.userManager.syncToDatabase();
+        console.log('Sync successful using centralized user manager');
+        return { success: true, message: 'Data synced successfully' };
+      }
+      
+      // Fallback to original logic if user manager not available
       let userId = localStorage.getItem('userId');
       if (!userId) {
         userId = 'user_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
