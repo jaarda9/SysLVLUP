@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quest Info</title>
+    <link rel="stylesheet" href="css/Quest_Info_Physical.css">
+    
+    <!-- Web App Manifest -->
+    <link rel="manifest" href="/manifest.json">
+    
+    <!-- Theme Color -->
+    <meta name="theme-color" content="#4a90e2">
+    
+    <!-- iOS Safari -->
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="SysLVLUP">
+    
+    <!-- Microsoft -->
+    <meta name="msapplication-TileImage" content="/icons/icon-144x144.png">
+    <meta name="msapplication-TileColor" content="#4a90e2">
+    <meta name="msapplication-tap-highlight" content="no">
+    
+    <!-- Icons -->
+    <link rel="apple-touch-icon" href="/icons/icon-192x192.png">
+    <link rel="apple-touch-icon" sizes="152x152" href="/icons/icon-152x152.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="/icons/icon-192x192.png">
+    <link rel="apple-touch-icon" sizes="167x167" href="/icons/icon-152x152.png">
+    <link rel="icon" type="image/png" href="/icons/icon-192x192.png" sizes="192x192">
+</head>
+<body>
+    <div class="quest-box">
+        <div class="quest-header">
+            <span>ⓘ QUEST INFO</span>
+        </div>
+        <div class="quest-details">
+            <p>[Daily Quest: Physical Training has arrived.]</p>
+        </div>
+        <div class="goal-section">
+            <h2>GOAL</h2>
+            <div id="goal-items">
+                <!-- Exercises will be dynamically loaded here -->
+            </div>
+        </div>
+        <div class="warning-section">
+            <p>WARNING: Failure to complete the daily quest will result in an appropriate <span class="penalty">penalty</span></p>
+        </div>
+        <div class="complete-section">
+    <input type="checkbox" id="complete" disabled>
+    <label for="complete"></label>
+</div>
+
+    </div>
+
+    <script src="js/Quest_Info_Physical.js"></script>
+    
+    <!-- Service Worker Registration -->
+    <script>
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+          navigator.serviceWorker.register('/sw.js')
+            .then(registration => {
+              console.log('SW registered: ', registration);
+            })
+            .catch(registrationError => {
+              console.log('SW registration failed: ', registrationError);
+            });
+        });
+      }
+    </script>
+
+
+    <!-- User Manager Initialization -->
+    <script src="js/user-manager.js"></script>
+    <script>
+      document.addEventListener('DOMContentLoaded', function() {
+        // Ensure user manager is loaded
+        if (window.userManager) {
+          console.log('User manager initialized with userId:', window.userManager.getUserId());
+          
+          // Load user data immediately
+          window.userManager.loadUserData().then(result => {
+            console.log('Initial data load result:', result);
+          }).catch(error => {
+            console.error('Error loading initial data:', error);
+          });
+        } else {
+          console.warn('User manager not available');
+        }
+      });
+    </script>
+</body>
+</html>

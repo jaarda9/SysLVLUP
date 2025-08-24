@@ -1,0 +1,187 @@
+body {
+    margin: 0;
+    padding: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    background-color: #0A1B2E; /* Dark blue background */
+    font-family: monospace;
+    color: #ffffff;
+    text-shadow: 0 0 5px #e0e6f6;
+
+}
+
+.intro-text {
+    font-size: 17px;
+    margin-bottom: 20px;
+    line-height: 1.5;
+    display: block;
+    white-space: pre-line;
+    
+    color: #ffffff;
+    font-weight: 400;
+    text-shadow: 0 0 5px #e0e6f61a;
+    letter-spacing: 0.5px;
+    text-align: left;
+}
+
+.initiation-container {
+    text-align: center;
+    background-color: #0A1B2E;
+    padding: 30px;
+    border: 2px solid rgba(255, 255, 255, 0.5); /* White semi-transparent borders */
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.7); /* Stronger shadow for depth */
+    border-radius: 5px;
+    animation: dropDown 2s ease forwards; /* Extended duration for smoothness */
+    transition: max-height 2s ease-out; /* Extended transition time */
+    max-height: 1000px; /* Adjust as needed */
+    width: 100%;
+    max-width: 800px;
+}
+@keyframes dropDown {
+    0% {
+        max-height: 0;
+        opacity: 0;
+        overflow: hidden;
+    }
+    100% {
+        max-height: 1000px; /* Adjust as needed */
+        opacity: 1;
+    }
+}
+
+
+.hidden {
+    display: none;
+}
+
+.ritual-container {
+    display: block;
+}
+
+.mystery-text {
+    font-style: italic;
+    margin: 20px 0;
+    color: #ffffff; /* Lighter color for mystery */
+}
+
+.message {
+    font-size: 17px;
+    opacity: 1;
+    margin: 20px 0;
+    min-height: 150px;
+    letter-spacing: 0.5px;
+    font-weight: 400;
+    text-shadow: 0 0 5px #e0e6f61a;
+}
+@keyframes fadeIn {
+    0% {
+        opacity: 0; /* Start fully transparent */
+        transform: translateY(-20px); /* Start slightly above */
+    }
+    100% {
+        opacity: 1; /* End fully opaque */
+        transform: translateY(0); /* End in original position */
+    }
+}
+
+
+
+
+h1 {
+    font-size: 1.8em;
+        margin-bottom: 10px;
+        text-align: center;
+        color: #ffffff;
+        text-shadow: 0 0 2px #fcfcfc;
+        border-radius: 3px;
+        padding: 5px;
+        border: 1px solid #e0e6f6;
+        box-shadow: 0 0 5px #e0e6f6;
+    
+    opacity: 0; /* Ensure it starts invisible */
+    animation: dropDown 2s ease forwards; /* Extended duration for smoothness */
+    transition: max-height 2s ease-out; /* Extended transition time */
+}
+
+h2 {
+    font-size: 1.8em;
+        margin-bottom: 10px;
+        text-align: center;
+        color: #e0e6f6;
+        text-shadow: 0 0 2px #fcfcfc;
+        border-radius: 3px;
+        padding: 5px;
+        border: 1px solid #e0e6f6;
+        box-shadow: 0 0 5px #e0e6f6;
+    animation: fadeIn 3s ease forwards; /* Apply fade-in animation */
+    opacity: 0; /* Ensure it starts invisible */
+    animation-delay: 13s; /* Delay before the animation starts */
+}
+
+/* Button Styles */
+.quest-buttons {
+    margin-top: 20px; /* Space above buttons */
+}
+
+.quest-button {
+    background-color: #0A1B2E; /* Dark button background */
+    border: 2px solid rgba(255, 255, 255, 0.8); /* White border */
+    color: #E0E6F6; /* Light gray text */
+    padding: 10px 20px; /* Padding for buttons */
+    border-radius: 5px; /* Rounded corners */
+    cursor: pointer; /* Pointer cursor */
+    transition: background-color 0.3s, color 0.3s; /* Smooth transition */
+    font-size: 1em; /* Standard size */
+    margin: 0 10px; /* Space between buttons */
+    animation: dropDown 2s ease forwards; /* Extended duration for smoothness */
+    transition: max-height 2s ease-out; /* Extended transition time */
+    animation-delay: 14.5s; /* Delay before the animation starts */
+    opacity: 0; /* Ensure it starts invisible */
+}
+
+.quest-button:hover {
+    background-color: rgba(255, 255, 255, 0.116);
+    color: #ffffff; /* Dark text on hover */
+}
+
+.notification {
+    animation: dropDown 0.5s ease forwards; /* Extended duration for smoothness */
+    transition: max-height 0.5s ease-out; /* Extended transition time */
+    position: fixed; /* Fixed position */
+    top: 50%; /* Center vertically */
+    left: 50%; /* Center horizontally */
+    transform: translate(-50%, -50%) scale(0); /* Start off-screen and scaled down */
+    background-color: #28a745; /* Green background */
+    color: white; /* White text */
+    padding: 20px 30px; /* Increased padding for a larger button */
+    border-radius: 10px; /* Rounded corners */
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3); /* Shadow effect */
+    transition: opacity 0.1s ease, transform 0.1s ease; /* Smooth transition */
+    opacity: 0; /* Start hidden */
+    z-index: 1000; /* Ensure it appears above other elements */
+    font-size: 1.5rem; /* Larger text size */
+    text-shadow: 0 0 10px rgba(255, 255, 255, 0.8); /* Text shadow */
+}
+
+.notification.show {
+    opacity: 1; /* Fully visible */
+    transform: translate(-50%, -50%) scale(1); /* Move into place and scale up */
+}
+
+/* Animation Keyframes */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-20px); /* Start slightly above */
+    }
+    to {
+        opacity: 1; /* End fully opaque */
+        transform: translateY(0); /* End in original position */
+    }
+}
+
+.hidden {
+    display: none; /* or visibility: hidden; */
+}

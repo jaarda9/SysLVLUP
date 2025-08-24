@@ -1,0 +1,414 @@
+body {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    background-color: #0A1B2E; /* Dark blue background */
+    font-family: 'Monospace';
+    
+}
+
+.login-container {
+    background-color: rgba(10, 27, 46, 0.85); /* Semi-transparent dark blue */
+    padding: 20px;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.7); /* Stronger shadow for depth */
+    border-radius: 10px;
+    border: 1px solid #e0e6f6;
+    text-align: center;
+    color: #fff; /* White text color */
+    animation: dropDown 3s ease forwards; /* Extended duration for smoothness */
+    transition: max-height 3s ease-out; /* Extended transition time */
+}
+
+input[type="password"] {
+    width: 80%;
+    padding: 10px;
+    margin: 10px 0;
+    border: 2px solid rgba(255, 255, 255, 0.5); /* White semi-transparent border */
+    border-radius: 5px;
+    background-color: rgba(255, 255, 255, 0.1); /* Slightly transparent background */
+    color: #fff; /* White text color */
+    animation: dropDown 2s ease forwards; /* Extended duration for smoothness */
+    transition: max-height 2s ease-out; /* Extended transition time */
+    opacity: 0; /* Ensure it starts invisible */
+    animation-delay: 3s; /* Delay before the animation starts */
+}
+
+input[type="password"]::placeholder {
+    color: rgba(255, 255, 255, 0.7); /* Light placeholder text */
+    animation: dropDown 2s ease forwards; /* Extended duration for smoothness */
+    transition: max-height 2s ease-out; /* Extended transition time */
+    opacity: 1; /* Ensure it starts invisible */
+    animation-delay: 3s; /* Delay before the animation starts */
+}
+
+.hidden {
+    display: none;
+}
+
+.message {
+    color: red;
+}
+
+@keyframes dropDown {
+    0% {
+        max-height: 0;
+        opacity: 0;
+        overflow: hidden;
+    }
+    100% {
+        max-height: 1000px; /* Adjust as needed */
+        opacity: 1;
+    }
+  }
+
+  @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&display=swap');
+
+  #ascend-text {
+    font-size: 2rem; /* Adjust size as needed */
+    color: #fff; /* White text color */
+    text-align: center; /* Center the text */
+    margin-bottom: 20px; /* Space below the text */
+    text-shadow: 0 0 8px rgba(255, 255, 255, 0.8); /* Glowing effect for alert header */
+    font-family: 'Cinzel', serif;
+    letter-spacing: 1px; /* Adds some space between letters */
+}
+
+
+@keyframes fadeIn {
+    0% {
+        opacity: 0; /* Start fully transparent */
+        transform: translateY(-20px); /* Start slightly above */
+    }
+    100% {
+        opacity: 1; /* End fully opaque */
+        transform: translateY(0); /* End in original position */
+    }
+}
+
+body {
+    overflow: hidden; /* Prevent scrolling */
+}
+
+/* Add authentication styles to existing login.css */
+
+/* Authentication Container */
+.auth-container {
+  margin: 20px 0;
+  padding: 20px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  backdrop-filter: blur(10px);
+}
+
+/* Auth Tabs */
+.auth-tabs {
+  display: flex;
+  margin-bottom: 20px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.auth-tab {
+  flex: 1;
+  padding: 12px;
+  background: none;
+  border: none;
+  color: #ccc;
+  cursor: pointer;
+  border-bottom: 2px solid transparent;
+  transition: all 0.3s ease;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.auth-tab:hover {
+  color: #4a90e2;
+  background: rgba(74, 144, 226, 0.1);
+}
+
+.auth-tab.active {
+  color: #4a90e2;
+  border-bottom-color: #4a90e2;
+  background: rgba(74, 144, 226, 0.1);
+}
+
+/* Auth Forms */
+.auth-form {
+  display: none;
+  animation: fadeIn 0.3s ease;
+}
+
+.auth-form.active {
+  display: block;
+}
+
+.auth-form h3 {
+  margin: 0 0 20px 0;
+  color: #fff;
+  text-align: center;
+  font-size: 18px;
+  font-weight: 600;
+}
+
+.auth-form input {
+  width: 100%;
+  padding: 12px;
+  margin: 8px 0;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: 6px;
+  background: rgba(255, 255, 255, 0.1);
+  color: white;
+  font-size: 14px;
+  transition: all 0.3s ease;
+}
+
+.auth-form input:focus {
+  outline: none;
+  border-color: #4a90e2;
+  background: rgba(255, 255, 255, 0.15);
+  box-shadow: 0 0 0 2px rgba(74, 144, 226, 0.2);
+}
+
+.auth-form input::placeholder {
+  color: rgba(255, 255, 255, 0.6);
+}
+
+/* Auth Buttons */
+.auth-btn {
+  width: 100%;
+  padding: 12px;
+  margin: 15px 0 10px 0;
+  background: linear-gradient(135deg, #4a90e2, #357abd);
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 600;
+  transition: all 0.3s ease;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.auth-btn:hover {
+  background: linear-gradient(135deg, #357abd, #2c5aa0);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(74, 144, 226, 0.3);
+}
+
+.auth-btn:active {
+  transform: translateY(0);
+}
+
+/* Auth Messages */
+.auth-message {
+  padding: 10px;
+  border-radius: 6px;
+  margin: 10px 0;
+  text-align: center;
+  font-size: 14px;
+  display: none;
+  animation: slideIn 0.3s ease;
+}
+
+.auth-message.success {
+  background: rgba(76, 175, 80, 0.2);
+  color: #4CAF50;
+  border: 1px solid #4CAF50;
+}
+
+.auth-message.error {
+  background: rgba(244, 67, 54, 0.2);
+  color: #F44336;
+  border: 1px solid #F44336;
+}
+
+/* QR Code Section */
+.qr-section {
+  text-align: center;
+  margin: 20px 0;
+  padding: 20px;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 8px;
+}
+
+.qr-code-display {
+  margin: 15px 0;
+}
+
+.qr-code-text {
+  font-family: 'Courier New', monospace;
+  background: rgba(255, 255, 255, 0.1);
+  padding: 15px;
+  border-radius: 6px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: #4a90e2;
+  font-size: 12px;
+  word-break: break-all;
+  margin: 10px 0;
+}
+
+.manual-link {
+  margin-top: 20px;
+}
+
+.manual-link input {
+  margin-bottom: 10px;
+}
+
+/* Device Link Button */
+.device-link-btn {
+  position: fixed;
+  top: 10px;
+  right: 10px;
+  z-index: 1000;
+  padding: 8px 12px;
+  background: linear-gradient(135deg, #4a90e2, #357abd);
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 12px;
+  font-weight: 500;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+
+.device-link-btn:hover {
+  background: linear-gradient(135deg, #357abd, #2c5aa0);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+/* Device Link Modal */
+.device-link-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.8);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10000;
+  backdrop-filter: blur(5px);
+}
+
+.modal-content {
+  background: linear-gradient(135deg, #2c3e50, #34495e);
+  padding: 30px;
+  border-radius: 12px;
+  max-width: 400px;
+  width: 90%;
+  position: relative;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.modal-content h3 {
+  margin: 0 0 20px 0;
+  color: white;
+  text-align: center;
+  font-size: 20px;
+  font-weight: 600;
+}
+
+.modal-close {
+  position: absolute;
+  top: 15px;
+  right: 15px;
+  background: none;
+  border: none;
+  color: rgba(255, 255, 255, 0.6);
+  font-size: 20px;
+  cursor: pointer;
+  transition: color 0.3s ease;
+}
+
+.modal-close:hover {
+  color: white;
+}
+
+.modal-content input {
+  width: 100%;
+  padding: 12px;
+  margin: 8px 0;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: 6px;
+  background: rgba(255, 255, 255, 0.1);
+  color: white;
+  font-size: 14px;
+}
+
+.modal-content button {
+  width: 100%;
+  padding: 12px;
+  margin: 15px 0 10px 0;
+  background: linear-gradient(135deg, #4a90e2, #357abd);
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 600;
+  transition: all 0.3s ease;
+}
+
+.modal-content button:hover {
+  background: linear-gradient(135deg, #357abd, #2c5aa0);
+  transform: translateY(-1px);
+}
+
+/* Animations */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateX(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .auth-container {
+    margin: 15px 0;
+    padding: 15px;
+  }
+  
+  .auth-tabs {
+    flex-direction: column;
+  }
+  
+  .auth-tab {
+    margin-bottom: 5px;
+  }
+  
+  .modal-content {
+    margin: 20px;
+    padding: 20px;
+  }
+  
+  .device-link-btn {
+    top: 5px;
+    right: 5px;
+    padding: 6px 10px;
+    font-size: 11px;
+  }
+}
+

@@ -1,0 +1,391 @@
+/* styles.css */
+body {
+    margin: 0;
+    padding: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    background-color: #0A1B2E; /* Dark blue space background */
+    font-family: Monospace ;
+}
+
+
+.completed:hover{
+    cursor: default;
+    background-color: #0A1B2E;
+    display: block !important;;
+    height: 100%;
+    width: 100%;
+}
+/* Normal button styles */
+
+/* Hover effect for normal buttons */
+
+/* Completed button styles */
+
+.quest-box {
+    background-color: rgba(10, 27, 46, 0.85); /* Semi-transparent dark blue */
+    border: 2px solid rgba(255, 255, 255, 0.5); /* White semi-transparent border */
+    width: 400px;
+    padding: 30px;
+    text-align: center;
+    color: #fff;
+    position: relative;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.7); /* Stronger shadow for depth */
+    border-radius: 2px;
+    font-size: 1rem;
+    animation: dropDown 2s ease forwards; /* Extended duration for smoothness */
+    transition: max-height 2s ease-out; /* Extended transition time */
+    max-height: 1000px; /* Adjust as needed */
+}
+
+@keyframes dropDown {
+    0% {
+        max-height: 0;
+        opacity: 0;
+        overflow: hidden;
+    }
+    100% {
+        max-height: 1000px; /* Adjust as needed */
+        opacity: 1;
+    }
+}
+
+@keyframes shake {
+    0%, 100% { transform: translate(0); }
+    25% { transform: translate(-3px, 0); }
+    50% { transform: translate(3px, 0); }
+    75% { transform: translate(-3px, 0); }
+}
+
+/* Header */
+.quest-header {
+    font-size: 1.5rem;
+    padding-bottom: 10px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.3);
+    margin-bottom: 10px;
+    text-shadow: 0 0 8px rgba(255, 255, 255, 0.8);
+    font-weight: bold;
+}
+
+/* Quest description */
+.quest-details {
+    margin-bottom: 20px;
+    font-style: italic;
+    text-shadow: 0 0 6px rgba(255, 255, 255, 0.6);
+}
+
+/* Goal section */
+.goal-section h2 {
+    font-size: 1.2rem;
+    text-decoration: underline;
+    margin-bottom: 10px;
+    text-shadow: 0 0 8px rgba(255, 255, 255, 0.8);
+}
+
+.goal-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 5px 0;
+}
+
+/* Task type on the left */
+.task-name {
+    flex: 1;
+    text-align: left;
+}
+
+
+
+.task-right:hover{
+    background-color: rgba(255, 255, 255, 0.116); /* Slightly transparent on hover */
+}
+
+
+/* Count near the checkbox */
+.task-right span {
+    margin-right: 1px; 
+    cursor: pointer;
+}
+
+.task-right input[type="checkbox"] {
+    transform: scale(1.2);
+}
+
+
+.goal-item input[type="checkbox"] {
+    transform: scale(1.2);
+}
+
+/* Warning Section */
+.warning-section {
+    margin-top: 20px;
+    font-size: 0.9rem;
+}
+
+.warning-section .penalty {
+    color: #d21216; /* Magenta for penalty */
+    text-shadow: 0 0 6px rgba(210, 18, 22, 1), 0 0 10px rgba(210, 18, 22, 1);
+}
+
+/* Complete checkbox - Updated */
+.complete-section {
+    margin-top: 20px;
+    display: flex;
+    justify-content: center;
+}
+
+.complete-section input[type="checkbox"] {
+    display: none; /* Hide default checkbox */
+}
+
+.complete-section label {
+    
+    width: 40px; /* Adjusted size for the box */
+    height: 40px; /* Adjusted size for the box */
+    background-color: #0A1B2E;
+    border: 2px solid rgba(255, 255, 255, 0.8); /* Whiteish outline */
+    box-shadow: 0 0 8px rgba(255, 255, 255, 0.8); /* White glow effect */
+    border-radius: 5px;
+    position: relative;
+}
+
+
+
+
+@keyframes shake {
+    0%, 100% { transform: translate(0); }
+    25% { transform: translate(-3px, 0); }
+    50% { transform: translate(3px, 0); }
+    75% { transform: translate(-3px, 0); }
+}
+
+.animatedd {
+    animation: shake 1s ease;
+}
+
+
+
+.complete-section input[type="checkbox"]:checked + label::after {
+    content: '✔'; /*Green checkmark*/
+    font-size: 30px; /*Adjust size of the checkmark*/
+    color: #00FF00; /*Green color*/
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -54%); /*Center the checkmark*/
+    animation: fadeIn 0.5s ease; /*Apply fade-in animation*/
+    
+}
+
+/* Modal styles */
+.modal {
+    display: none; /* Hidden by default */
+    position: fixed; /* Stay in place */
+    z-index: 1000; /* Sit on top */
+    left: 50%; /* Center horizontally */
+    top: 50%; /* Center vertically */
+    transform: translate(-50%, -50%); /* Adjust position to center */
+    width: 100%; /* Full width */
+    height: 100%; /* Full height */
+    background-color: rgba(0, 0, 0, 0.8); /* Black w/ opacity */
+    text-shadow: 0 0 6px rgba(255, 255, 255, 0.6);
+    box-shadow: 0 0 10px rgba(0, 255, 255, 0.5); /* Outer glowing border */
+    
+}
+
+.modal-content {
+    background-color: #0e1a2b; /* White background for modal */
+    font-family: monospace;
+    color: #fff;
+    margin: 15% auto; /* Center modal */
+    padding: 20px;
+    border: 1px solid #ffffff; /* Border color matching the theme */
+    width: 300px; /* Fixed width for modal */
+    text-align: center;
+    border-radius: 3.5px; /* Rounded corners */
+    box-shadow: 0 0 10px rgba(0, 255, 255, 0.5); /* Outer glowing border */
+    font-size: 1.5em; /* Adjust the font size as needed */
+    animation: dropDown 1s ease forwards; /* Extended duration for smoothness */
+    transition: max-height 1s ease-out; /* Extended transition time */
+}
+
+.close {
+    color: #d5eff8; /* Close button color matching the theme */
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+}
+
+.close:hover,
+.close:focus {
+    color: #ff5858; /* Darker color on hover */
+    text-decoration: none;
+    cursor: pointer;
+}
+
+#timer-display {
+    font-size: 80px; /* Larger font for timer display */
+    margin: 20px 0;
+    padding-top: 60px;
+    color: #ffffff; /* Dark color for readability */
+    padding-bottom: 100px;
+    text-shadow: 0 0 4px rgb(255, 253, 253);
+}
+
+button {
+    
+    background-color: #324f6ea8; /* Button color matching the theme */
+    color: white; /* White text for buttons */
+    border: none;
+    padding: 10px 15px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+    border-radius: 5px; /* Rounded corners */
+    cursor: pointer;
+    transition: background-color 0.3s; /* Smooth background transition */
+    font-family: monospace;
+    box-shadow: 0 0 3px rgb(218, 254, 255); /* Outer glowing border */
+}
+
+button:hover {
+    background-color: #aaf0c5da; /* Slightly darker blue on hover */
+}
+
+button:focus {
+    outline: none; /* Remove outline on focus */
+}
+
+.navigation {
+    position: absolute; /* Position the container absolutely */
+    top: 20px; /* Distance from the top */
+    left: 20px; /* Distance from the left */
+    z-index: 1000; /* Ensure it stays above other content */
+}
+
+.back-link {
+    color: #ffffff17; /* Light blue color */
+    text-decoration: none; /* Remove underline */
+    font-size: 16px; /* Font size */
+    padding: 10px; /* Padding */
+    border-radius: 5px; /* Rounded corners */
+    transition: background-color 0.3s, color 0.3s; /* Smooth transition */
+}
+
+.back-link:hover {
+    background-color: #e0f7fa25; /* Light background on hover */
+    
+}
+
+
+
+
+
+
+
+.task-checkbox {
+    margin-left: 10px;
+}
+
+.start-button {
+    margin-left: 10px;
+    background-color: #1a2a3b; 
+    color: white;
+    border: none;
+    padding: 5px 10px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 12px;
+    font-family: monospace;
+    border-radius: 5px; /* Rounded corners */
+    cursor: pointer;
+}
+
+.start-button:hover {
+    background-color: #89d1a1; /* Darker green */
+}
+
+.add-session {
+    display: flex;
+    align-items: center; /* Center items vertically */
+    margin-top: 20px; /* Space above the input section */
+    gap: 5px; /* Space between input and button */
+}
+
+.add-session input[type="text"] {
+    padding: 5px; /* Reduced padding inside the input */
+    border: 1px solid #e0e6f6; /* Light border color */
+    border-radius: 5px; /* Rounded corners */
+    background-color: #1a2a3b; /* Dark background for input */
+    color: #fff; /* White text color */
+    font-size: 14px; /* Reduced font size */
+    width: 150px; /* Fixed width for the input */
+    transition: border-color 0.3s ease; /* Smooth border color transition */
+}
+
+.add-session input[type="text"]:focus {
+    outline: none; /* Remove default outline */
+    border-color: #56ccf2; /* Change border color on focus */
+}
+
+.add-session button {
+    padding: 3px 5px; /* Adjusted padding */
+    border: none; /* Remove default border */
+    
+    border-radius: 5px; /* Rounded corners */
+    background-color: #1a2a3b; /* Button background color */
+    color: #ffffff; /* Change text color to white */
+    font-size: 17px; /* Increased font size for better visibility */
+    cursor: pointer; /* Pointer cursor on hover */
+    transition: background-color 0.3s ease; /* Smooth background color transition */
+    box-shadow: 0 0 5px rgba(255, 255, 255, 0.5); /* Subtle glow effect */
+}
+
+.add-session button:hover {
+    background-color: #3c5060; /* Change background color on hover */
+}
+
+
+.notification {
+    position: fixed;
+    top: 50%; /* Center vertically */
+    left: 50%; /* Center horizontally */
+    transform: translate(-50%, -50%) scale(0); /* Start off-screen and scaled down */
+    background-color: #28a745; /* Green background */
+    color: white; /* White text */
+    padding: 20px 30px; /* Increased padding for a larger button */
+    border-radius: 10px; /* Rounded corners */
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3); /* Shadow effect */
+    transition: opacity 0.5s ease, transform 0.5s ease; /* Smooth transition */
+    opacity: 0; /* Start hidden */
+    z-index: 1000; /* Ensure it appears above other elements */
+    font-size: 1.5rem; /* Larger text size */
+    text-shadow: 0 0 10px rgba(255, 255, 255, 0.8); /* Text shadow */
+}
+
+.notification.show {
+    opacity: 1; /* Fully visible */
+    transform: translate(-50%, -50%) scale(1); /* Move into place and scale up */
+    animation: fadeIn 0.5s ease forwards; /* Fade-in animation */
+}
+
+/* Animation Keyframes */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translate(-50%, -50%) scale(0.8); /* Start smaller */
+    }
+    to {
+        opacity: 1;
+        transform: translate(-50%, -50%) scale(1); /* End at normal size */
+    }
+}
+
+.hidden {
+    display: none; /* or visibility: hidden; */
+}

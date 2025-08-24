@@ -1,0 +1,172 @@
+/* styles.css */
+body {
+    margin: 0;
+    padding: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    background-color: #0A1B2E; /* Dark blue space background */
+    font-family: Monospace ;
+}
+
+.quest-box {
+    background-color: rgba(10, 27, 46, 0.85); /* Semi-transparent dark blue */
+    border: 2px solid rgba(255, 255, 255, 0.5); /* White semi-transparent border */
+    width: 400px;
+    padding: 30px;
+    text-align: center;
+    color: #fff;
+    position: relative;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.7); /* Stronger shadow for depth */
+    border-radius: 2px;
+    font-size: 1rem;
+    animation: dropDown 2s ease forwards; /* Extended duration for smoothness */
+    transition: max-height 2s ease-out; /* Extended transition time */
+    max-height: 1000px; /* Adjust as needed */
+}
+
+@keyframes dropDown {
+    0% {
+        max-height: 0;
+        opacity: 0;
+        overflow: hidden;
+    }
+    100% {
+        max-height: 1000px; /* Adjust as needed */
+        opacity: 1;
+    }
+}
+
+/* Header */
+.quest-header {
+    font-size: 1.5rem;
+    padding-bottom: 10px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.3);
+    margin-bottom: 10px;
+    text-shadow: 0 0 8px rgba(255, 255, 255, 0.8);
+    font-weight: bold;
+}
+
+/* Quest description */
+.quest-details {
+    margin-bottom: 20px;
+    font-style: italic;
+    text-shadow: 0 0 6px rgba(255, 255, 255, 0.6);
+}
+
+/* Goal section */
+.goal-section h2 {
+    font-size: 1.2rem;
+    text-decoration: underline;
+    margin-bottom: 10px;
+    text-shadow: 0 0 8px rgba(255, 255, 255, 0.8);
+}
+
+.goal-item {
+    display: flex;
+    justify-content: space-between;
+    padding: 5px 0;
+}
+
+.goal-item input[type="checkbox"] {
+    transform: scale(1.2);
+}
+
+/* Warning Section */
+.warning-section {
+    margin-top: 20px;
+    font-size: 0.9rem;
+}
+
+.warning-section .penalty {
+    color: #d21216; /* Magenta for penalty */
+    text-shadow: 0 0 6px rgba(210, 18, 22, 1), 0 0 10px rgba(210, 18, 22, 1);
+}
+
+/* Complete checkbox - Updated */
+.complete-section {
+    margin-top: 20px;
+    display: flex;
+    justify-content: center;
+}
+
+.complete-section input[type="checkbox"] {
+    display: none; /* Hide default checkbox */
+}
+
+.complete-section label {
+    display: block;
+    width: 40px; /* Adjusted size for the box */
+    height: 40px; /* Adjusted size for the box */
+    background-color: #0A1B2E;
+    border: 2px solid rgba(255, 255, 255, 0.8); /* Whiteish outline */
+    box-shadow: 0 0 8px rgba(255, 255, 255, 0.8); /* White glow effect */
+    border-radius: 5px;
+    position: relative;
+}
+
+.complete-section input[type="checkbox"]:checked + label::after {
+    content: '✔'; /* Green checkmark */
+    font-size: 30px ; /* Adjust size of the checkmark */
+    color: #00FF00; /* Green color */
+    filter: drop-shadow(0 0 2px #028c02);
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -54%); /* Center the checkmark */
+}
+
+.goal-item {
+    display: flex;
+    justify-content: space-between;
+    padding: 5px 0;
+    align-items: center; /* Aligns content vertically */
+}
+
+.goal-item span {
+    flex: 5; /* Ensures the text spans take up the available space */
+}
+
+.goal-item .task-name {
+    text-align: left;
+}
+
+.goal-item .task-reps {
+    margin-right: -70px; /* Adjust the spacing between the reps and checkbox */
+}
+
+/*Add this to your existing styles.css*/
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+/*Add your existing styles here*/
+
+@keyframes shake {
+    0%, 100% { transform: translate(0); }
+    25% { transform: translate(-2px, 0); }
+    50% { transform: translate(2px, 0); }
+    75% { transform: translate(-2px, 0); }
+}
+
+.animate {
+    animation: shake 0.5s ease;
+}
+
+.complete-section input[type="checkbox"]:checked + label::after {
+    content: '✔'; /*Green checkmark*/
+    font-size: 30px; /*Adjust size of the checkmark*/
+    color: #00FF00; /*Green color*/
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -54%); /*Center the checkmark*/
+    animation: fadeIn 0.5s ease; /*Apply fade-in animation*/
+}
+

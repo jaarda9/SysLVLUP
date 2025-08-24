@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Status Screen</title>
+    <link rel="stylesheet" href="css/status.css" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    
+    <!-- Web App Manifest -->
+    <link rel="manifest" href="manifest.json">
+    
+    <!-- Theme Color -->
+    <meta name="theme-color" content="#4a90e2">
+    
+    <!-- iOS Safari -->
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="SysLVLUP">
+    
+    <!-- Microsoft -->
+    <meta name="msapplication-TileImage" content="icons/icon-144x144.png">
+    <meta name="msapplication-TileColor" content="#4a90e2">
+    <meta name="msapplication-tap-highlight" content="no">
+    
+    <!-- Icons -->
+    <link rel="apple-touch-icon" href="icons/icon-192x192.png">
+    <link rel="apple-touch-icon" sizes="152x152" href="icons/icon-152x152.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="icons/icon-192x192.png">
+    <link rel="apple-touch-icon" sizes="167x167" href="icons/icon-152x152.png">
+    <link rel="icon" type="image/png" href="icons/icon-192x192.png" sizes="192x192">
+    
+    <!-- Service Worker Registration -->
+    <script>
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+          navigator.serviceWorker.register('sw.js')
+            .then(registration => {
+              console.log('SW registered: ', registration);
+            })
+            .catch(registrationError => {
+              console.log('SW registration failed: ', registrationError);
+            });
+        });
+      }
+    </script>
+  </head>
+  <body>
+    <div class="status-container">
+      <div class="status-title">STATUS</div>
+      <div class="level-section">
+        <div class="level-info">
+          <div class="level-number" id="lvlValue">1</div>
+          <div>LEVEL</div>
+          <!--<button id="reset-button">Reset</button>-->
+        </div>
+        <div class="details">
+          <p>
+            <strong>Name:</strong>
+            <span class="detail-text" id="job-text">Fedy</span>
+            <input
+              type="text"
+              class="detail-input"
+              id="job-input"
+              placeholder="Enter name"
+              style="display: none"
+            />
+          </p>
+          <p>
+            <strong>PING:</strong>
+            <span class="detail-text" id="ping-text">60</span>
+            <input
+              type="text"
+              class="detail-input"
+              id="ping-input"
+              placeholder="Enter ping"
+              style="display: none"
+            />
+          </p>
+          <p>
+            <strong>Guild:</strong>
+            <span class="detail-text" id="guild-text">Reaper</span>
+            <input
+              type="text"
+              class="detail-input"
+              id="guild-input"
+              placeholder="Enter guild"
+              style="display: none"
+            />
+          </p>
+          <p>
+            <strong>Race:</strong>
+            <span class="detail-text" id="race-text">Hunter</span>
+            <input
+              type="text"
+              class="detail-input"
+              id="race-input"
+              placeholder="Enter race"
+              style="display: none"
+            />
+          </p>
+          <p>
+            <strong>TITLE:</strong>
+            <span class="detail-text" id="title-text">None</span>
+            <input
+              type="text"
+              class="detail-input"
+              id="title-input"
+              placeholder="Enter title"
+              style="display: none"
+            />
+          </p>
+          <p>
+            <strong>Region:</strong>
+            <span class="detail-text" id="region-text">TN</span>
+            <input
+              type="text"
+              class="detail-input"
+              id="region-input"
+              placeholder="Enter region"
+              style="display: none"
+            />
+          </p>
+          <p>
+            <strong>Location:</strong>
+            <span class="detail-text" id="location-text">Hospital</span>
+            <input
+              type="text"
+              class="detail-input"
+              id="location-input"
+              placeholder="Enter location"
+              style="display: none"
+            />
+          </p>
+          <p>
+            <strong>Rank:</strong>
+            <span class="detail-textx" id="rank-text">E-Rank</span>
+            <input
+              type="text"
+              class="detail-input"
+              id="rank-input"
+              placeholder="Enter rank"
+              readonly
+              style="display: none"
+            />
+          </p>
+        </div>
+      </div>
+
+      <div class="mid-section">
+        <div class="status-bars">
+          <div class="status-bar">
+            <span class="emoji"><i class="fa-solid fa-heart"> </i></span>
+            <span class="HP">HP&nbsp;</span>
+            <div class="bar">
+              <div class="fill" id="hp-fill" style="width: 100%"></div>
+            </div>
+            <span id="HPvalue">100/100</span>
+          </div>
+          <div class="status-bar">
+            <span class="emoji"><i class="fa-solid fa-flask"></i></span>
+            <span class="MP">MP&nbsp;</span>
+            <div class="bar">
+              <div class="fill" id="mp-fill" style="width: 100%"></div>
+            </div>
+            <span id="MPvalue">100/100</span>
+          </div>
+          <div class="status-bar">
+            <span class="emoji"
+              ><i class="fa-solid fa-bolt"></i></span>
+            <span class="STM">STM</span>
+            <div class="bar">
+              <div class="fill" id="stm-fill" style="width: 100%"></div>
+            </div>
+            <span id="STMvalue">100/100</span>
+          </div>
+          <div class="status-bar">
+            <span class="emoji"><i class="fa-solid fa-star"></i></span>
+            <span>EXP</span>
+            <div class="bar">
+              <div class="fill" id="exp-fill" style="width: 100%"></div>
+            </div>
+            <span id="XPvalue">0/100</span>
+          </div>
+        </div>
+        <div class="fatigue-section">
+          <div class="fatigue-ring">
+            <svg class="progress-ring" width="80" height="80">
+              <circle
+                class="progress-ring__circle"
+                id="fatringprogg"
+                stroke="#56ccf2"
+                stroke-width="8"
+                fill="transparent"
+                r="34"
+                cx="40"
+                cy="40"
+              />
+            </svg>
+            <div class="fatigue-label">
+              Fatigue: <span class="fatigue-value" id="Fatvalue">0</span>%
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="attributes">
+        <div>
+          <i class="fas fa-dumbbell stat-icon"></i>
+          <span id="str">STR: 10</span>
+        </div>
+        <div>
+          <i class="fas fa-heart stat-icon"></i>
+          <span id="vit">VIT: 10</span>
+        </div>
+        <div>
+          <i class="fas fa-running stat-icon"></i>
+          <span id="agi">AGI: 10</span>
+        </div>
+        <div>
+          <i class="fas fa-brain stat-icon"></i>
+          <span id="int">INT: 10</span>
+        </div>
+        <div>
+          <i class="fas fa-eye stat-icon"></i>
+          <span id="per">PER: 10</span>
+        </div>
+        <div>
+          <i class="fa-solid fa-yin-yang stat-icon"></i>
+          <span id="wis">WIS: 10</span>
+        </div>
+      </div>
+
+      <div class="quests">
+        <h2>[Active Quests]</h2>
+        <div class="quest">
+          <span>Grunt Work</span> <span class="status_done">Done</span>
+        </div>
+        <div class="quest" id="goToDailyQuests">
+          <span>[MAIN] Power</span>
+          <a href="daily_quest.html" class="status" id="status"
+            >Lv.1</a
+          >
+        </div>
+        <div class="quest">
+          <span>[SIDE] New World</span> <span class="status_danger">Lv.5</span>
+        </div>
+         <div class="quest-actions">
+            <button class="gemini-button" id="generate-quest-btn">Generate New Quest ✨</button>
+          </div>
+          <div id="gemini-status"></div>
+          <div id="generated-quest" style="display:none; margin-top: 20px;">
+            <div class="quest-item">
+                <span id="new-quest-title"></span>
+                <button id="tts-btn" class="gemini-button" style="padding: 5px 10px; font-size: 0.8em;"><i class="fas fa-volume-up"></i></button>
+            </div>
+            <p id="new-quest-description" style="margin-top: 10px; font-size: 0.9em;"></p>
+          </div>
+        <div class="quest">
+          <span>[MAIN] Learning Pathways</span>
+<span class="status dental-emoji">
+    <a href="dental-study.html" class="status-link">📖</a>
+</span>
+        </div>
+     
+<!-- Name Input Popup -->
+<div id="name-popup" class="popup hidden">
+  <div class="popup-content">
+    <h2>Reveal Your Name 📜</h2>
+    <input type="text" id="name-input" placeholder="Speak your name, and the path shall be unveiled" />
+    <button id="submit-name">Submit</button>
+  </div>
+</div>
+    <!-- Load scripts in correct order -->
+    <script src="js/status.js"></script>
+    <script>
+    // Example: Call the functions when the page loads
+    document.addEventListener('DOMContentLoaded', () => {
+        loadDataFromMongoDB();
+        // Save data when the user closes the page
+        window.addEventListener('beforeunload', saveDataToMongoDB);
+    });
+    </script>
+</script>
+
+  
+    <!-- User Manager Initialization -->
+    <script src="js/user-manager.js"></script>
+    <script>
+      document.addEventListener('DOMContentLoaded', function() {
+        // Ensure user manager is loaded
+        if (window.userManager) {
+          console.log('User manager initialized with userId:', window.userManager.getUserId());
+          
+          // Load user data immediately
+          window.userManager.loadUserData().then(result => {
+            console.log('Initial data load result:', result);
+          }).catch(error => {
+            console.error('Error loading initial data:', error);
+          });
+        } else {
+          console.warn('User manager not available');
+        }
+      });
+    </script>
+</body>
+</html>

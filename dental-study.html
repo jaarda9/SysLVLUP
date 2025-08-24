@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Study Quests</title>
+    <link rel="stylesheet" href="css/dental-study.css" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    
+    <!-- Web App Manifest -->
+    <link rel="manifest" href="/manifest.json">
+    
+    <!-- Theme Color -->
+    <meta name="theme-color" content="#4a90e2">
+    
+    <!-- iOS Safari -->
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="SysLVLUP">
+    
+    <!-- Microsoft -->
+    <meta name="msapplication-TileImage" content="/icons/icon-144x144.png">
+    <meta name="msapplication-TileColor" content="#4a90e2">
+    <meta name="msapplication-tap-highlight" content="no">
+    
+    <!-- Icons -->
+    <link rel="apple-touch-icon" href="/icons/icon-192x192.png">
+    <link rel="apple-touch-icon" sizes="152x152" href="/icons/icon-152x152.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="/icons/icon-192x192.png">
+    <link rel="apple-touch-icon" sizes="167x167" href="/icons/icon-152x152.png">
+    <link rel="icon" type="image/png" href="/icons/icon-192x192.png" sizes="192x192">
+</head>
+<body>
+    <div class="navigation">
+        <a href="status.html" class="back-link">Back to Status</a>
+    </div>
+    <div class="quest-box" id="quest-box">
+        <div class="quest-header">
+           <span>ⓘ Scholarly Endeavors</span>
+        </div>
+        <div class="quest-details">
+            <p>[Daily Quest: Academic Pursuits Training has arrived.]</p>
+        </div>
+        <div class="goal-section" id="goal-section">
+            <h2>GOAL</h2>
+            <div class="goal-item">
+                <span class="task-name">Comprehensive Study Session</span>
+                <button class="start-button" onclick="openPomodoro('Comprehensive Study Session', 'anatomy-checkbox')"><i class="fa-solid fa-play"></i></button>
+                <input type="checkbox" id="anatomy-checkbox" class="task-checkbox" disabled />
+            </div>
+            <div class="goal-item">
+                <span class="task-name"> Study and Review</span>
+                <button class="start-button" onclick="openPomodoro('Study and Review', 'hygiene-checkbox')"><i class="fa-solid fa-play"></i></button>
+                <input type="checkbox" id="hygiene-checkbox" class="task-checkbox" disabled />
+            </div>
+            <div class="goal-item">
+                <span class="task-name">Prepare for Exam</span>
+                <button class="start-button" onclick="openPomodoro('Prepare for Exam', 'exam-checkbox')"><i class="fa-solid fa-play"></i></button>
+                <input type="checkbox" id="exam-checkbox" class="task-checkbox" disabled />
+               
+            </div>
+            
+        </div>
+        <div class="add-session">
+            <input type="text" id="new-session-input" placeholder="New Session " />
+            <button id="add-session-button" onclick="addNewSession()"><i class="fa-solid fa-plus"></i></button>
+        </div>
+        <div class="warning-section">
+            <p>
+                WARNING: Failure to complete the daily study quest will result in an
+                appropriate <span class="penalty">penalty</span>
+            </p>
+        </div>
+
+        <div class="complete-section" id="complete-section">
+            <input type="checkbox" id="complete" disabled />
+            <label for="complete"></label>
+        </div>
+    </div>
+
+    <!-- Pomodoro Timer Modal -->
+    <div id="pomodoro-modal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closePomodoro()">&times;</span>
+            <h2 id="task-title">Pomodoro Timer</h2>  
+            <i class="fa-regular fa-clock"  style="font-size: 24px;"></i> <i class="fa-solid fa-pencil" style="font-size: 24px;"></i> <i class="fa-solid fa-book-open" style="font-size: 24px;"></i>         
+            <div id="timer-display">50:00</div>
+            <button id="start-button" onclick="startTimer()">Start</button>
+            <button id="reset-button" onclick="resetTimer()">Reset</button>
+        </div>
+    </div>
+      <div id="notification" class="notification hidden">
+        <p>Time's up! Great job on your study session!</p>
+    </div>
+
+    <script src="js/dental-study.js"></script>
+    
+    <!-- Service Worker Registration -->
+    <script>
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+          navigator.serviceWorker.register('/sw.js')
+            .then(registration => {
+              console.log('SW registered: ', registration);
+            })
+            .catch(registrationError => {
+              console.log('SW registration failed: ', registrationError);
+            });
+        });
+      }
+    </script>
+
+    <!-- User Manager Initialization -->
+    <script src="js/user-manager.js"></script>
+    <script>
+      document.addEventListener('DOMContentLoaded', function() {
+        // Ensure user manager is loaded
+        if (window.userManager) {
+          console.log('User manager initialized with userId:', window.userManager.getUserId());
+          
+          // Load user data immediately
+          window.userManager.loadUserData().then(result => {
+            console.log('Initial data load result:', result);
+          }).catch(error => {
+            console.error('Error loading initial data:', error);
+          });
+        } else {
+          console.warn('User manager not available');
+        }
+      });
+    </script>
+</body>
+</html>

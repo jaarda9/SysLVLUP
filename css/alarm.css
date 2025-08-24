@@ -1,0 +1,84 @@
+/* styles.css */
+body {
+    margin: 0;
+    padding: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    background-color: #0A1B2E; /* Dark blue background */
+    font-family: Georgia , Serif;
+}
+
+.alert-box {
+    background-color: rgba(10, 27, 46, 0.8); /* Slightly transparent dark blue */
+    border: 2px solid rgba(255, 255, 255, 0.5); /* White semi-transparent borders */
+    padding: 20px;
+    text-align: center;
+    width: 500px;
+    position: relative;
+    color: #fff;
+     box-shadow: 0 0 20px rgba(0, 0, 0, 0.7); /* Stronger shadow for depth */
+    border-radius: 10px;
+    font-size: 1.2rem;
+    animation: dropDown 4s ease forwards; /* Extended duration for smoothness */
+    transition: max-height 4s ease-out; /* Extended transition time */
+    max-height: 1000px; /* Adjust as needed */
+}
+
+@keyframes dropDown {
+    0% {
+        max-height: 0;
+        opacity: 0;
+        overflow: hidden;
+    }
+    100% {
+        max-height: 1000px; /* Adjust as needed */
+        opacity: 1;
+    }
+}
+.alert-header {
+    font-size: 1.5rem;
+    padding: 10px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.3);
+    margin-bottom: 20px;
+    color: #ffffff;
+    font-weight: bold;
+    text-shadow: 0 0 8px rgba(255, 255, 255, 0.8); /* Glowing effect for alert header */
+}
+
+.alert-message {
+    font-size: 1.3rem;
+    font-style: italic;
+    text-shadow: 0 0 8px rgba(255, 255, 255, 1); /* General glowing effect for message */
+}
+
+.welcome-text {
+    color: #ffffff; /* Neon green color for 'Welcome,' */
+    text-shadow: 0 0 10px rgba(255, 255, 255, 1), /* Strong green glow */
+                 0 0 20px rgba(255, 255, 255, 1); /* Soft outer glow */
+}
+
+.player-text {
+    color: #00FF00; /* Yellow color for 'player.' */
+    text-shadow: 0 0 10px rgba(183,242,189,255), /* Strong yellow glow */
+                 0 0 20px rgba(183,242,189,255); /* Soft outer glow */
+    cursor: pointer;
+}
+
+#fullscreen-btn {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    padding: 10px 20px;
+    font-size: 1rem;
+    background-color: #fff;
+    border: none;
+    cursor: pointer;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+    border-radius: 5px;
+}
+
+#fullscreen-btn:hover {
+    background-color: #ccc;
+}

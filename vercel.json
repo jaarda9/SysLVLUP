@@ -1,9 +1,3 @@
 {
-  "version": 2,
-  "routes": [
-    {
-      "src": "/(.*)",
-      "dest": "/SysLvLUp/Alarm/$1"
-    }
-  ]
+  "version": 2
 }
