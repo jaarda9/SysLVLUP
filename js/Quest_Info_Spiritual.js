@@ -243,14 +243,18 @@ function renderSpiritualTasks() {
 }
 
 // Function to toggle the completion state of a spiritual task
-function completeSpiritualTask(taskName) {
+async function completeSpiritualTask(taskName) {
     const task = spiritualTasks.find(t => t.name === taskName);
-    if (task) {
-        task.completed = !task.completed;
-        console.log(`Task ${taskName} ${task.completed ? 'completed' : 'uncompleted'}`);
+    if (task && !task.completed) {
+        // Call the fixed quest completion function
+        await completeSpiritualQuest(taskName);
+    } else if (task && task.completed) {
+        // Uncomplete the task (for debugging/testing)
+        task.completed = false;
+        console.log(`Task ${taskName} uncompleted`);
+        renderSpiritualTasks();
+        updateCompleteCheckbox();
     }
-    renderSpiritualTasks(); // Re-render the tasks to reflect changes
-    updateCompleteCheckbox(); // Update the overall completion status
 }
 
 // Modified updateCompleteCheckbox function

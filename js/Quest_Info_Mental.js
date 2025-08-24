@@ -244,14 +244,18 @@ function renderMentalTasks() {
 }
 
 // Function to toggle the completion state of a mental task
-function completeMentalTask(taskName) {
+async function completeMentalTask(taskName) {
     const task = mentalTasks.find(t => t.name === taskName);
-    if (task) {
-        task.completed = !task.completed;
-        console.log(`Task ${taskName} ${task.completed ? 'completed' : 'uncompleted'}`);
+    if (task && !task.completed) {
+        // Call the fixed quest completion function
+        await completeMentalQuest(taskName);
+    } else if (task && task.completed) {
+        // Uncomplete the task (for debugging/testing)
+        task.completed = false;
+        console.log(`Task ${taskName} uncompleted`);
+        renderMentalTasks();
+        updateCompleteCheckbox();
     }
-    renderMentalTasks(); // Re-render the tasks to reflect changes
-    updateCompleteCheckbox(); // Update the overall completion status
 }
 
 // Modified updateCompleteCheckbox function

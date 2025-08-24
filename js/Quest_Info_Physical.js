@@ -245,14 +245,18 @@ function renderPhysicalTasks() {
 }
 
 // Function to toggle the completion state of a physical task
-function completePhysicalTask(taskName) {
+async function completePhysicalTask(taskName) {
     const task = physicalTasks.find(t => t.name === taskName);
-    if (task) {
-        task.completed = !task.completed;
-        console.log(`Task ${taskName} ${task.completed ? 'completed' : 'uncompleted'}`);
+    if (task && !task.completed) {
+        // Call the fixed quest completion function
+        await completePhysicalQuest(taskName);
+    } else if (task && task.completed) {
+        // Uncomplete the task (for debugging/testing)
+        task.completed = false;
+        console.log(`Task ${taskName} uncompleted`);
+        renderPhysicalTasks();
+        updateCompleteCheckbox();
     }
-    renderPhysicalTasks(); // Re-render the tasks to reflect changes
-    updateCompleteCheckbox(); // Update the overall completion status
 }
 
 // Modified updateCompleteCheckbox function
