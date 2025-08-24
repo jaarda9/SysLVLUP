@@ -70,7 +70,7 @@ function typeNextChar() {
     // Handle line breaks
     if (char === '\n') {
       introTextElement.innerHTML += '<br>';
-    } else {
+            } else {
       introTextElement.textContent += char;
     }
     
@@ -198,8 +198,8 @@ function acceptQuest() {
 function denyQuest() {
   // Show a message and redirect back to alarm
   showNotification('Quest denied. Returning to alarm...', 'warning');
-  
-  setTimeout(() => {
+          
+          setTimeout(() => {
     window.location.href = 'alarm.html';
   }, 2000);
 }
@@ -215,7 +215,7 @@ function showNotification(message, type = 'info') {
     notification.className = `notification ${type}`;
     
     // Hide after 3 seconds
-    setTimeout(() => {
+          setTimeout(() => {
       notification.classList.add('hidden');
     }, 3000);
   }
@@ -228,7 +228,7 @@ async function syncToDatabase() {
             await window.userManager.saveUserData();
             console.log('Sync successful via user manager');
             return { success: true, message: 'Data synced successfully' };
-        } catch (error) {
+      } catch (error) {
             console.error('Error syncing to database:', error);
             throw error;
         }

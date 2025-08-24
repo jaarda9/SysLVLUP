@@ -13,10 +13,32 @@ function waitForUserManager() {
     loadQuestData();
     setupEventListeners();
     checkForNewDay();
+    
+    // Set up periodic refresh to stay in sync with other pages
+    setupPeriodicRefresh();
   } else {
     console.log('Waiting for user manager...');
     setTimeout(waitForUserManager, 100);
   }
+}
+
+// Setup periodic refresh to stay in sync with progress from other pages
+function setupPeriodicRefresh() {
+  // Refresh quest data every 2 seconds to stay in sync
+  setInterval(() => {
+    if (window.userManager && window.userManager.data !== null) {
+      console.log('Refreshing quest data to stay in sync...');
+      loadQuestData();
+    }
+  }, 2000);
+  
+  // Also refresh when the page becomes visible (user returns from other pages)
+  document.addEventListener('visibilitychange', function() {
+    if (!document.hidden && window.userManager && window.userManager.data !== null) {
+      console.log('Page became visible, refreshing quest data...');
+      loadQuestData();
+    }
+  });
 }
 
 // Load quest data from user manager
@@ -41,18 +63,21 @@ function updateQuestDisplay(gameData) {
   const physicalQuestsElement = document.getElementById('physicalQuests');
   if (physicalQuestsElement) {
     physicalQuestsElement.textContent = gameData.physicalQuests || '[0/4]';
+    console.log('Physical quests display updated:', gameData.physicalQuests);
   }
   
   // Update mental quests
   const mentalQuestsElement = document.getElementById('mentalQuests');
   if (mentalQuestsElement) {
     mentalQuestsElement.textContent = gameData.mentalQuests || '[0/3]';
+    console.log('Mental quests display updated:', gameData.mentalQuests);
   }
   
   // Update spiritual quests
   const spiritualQuestsElement = document.getElementById('spiritualQuests');
   if (spiritualQuestsElement) {
     spiritualQuestsElement.textContent = gameData.spiritualQuests || '[0/2]';
+    console.log('Spiritual quests display updated:', gameData.spiritualQuests);
   }
 }
 
@@ -190,6 +215,50 @@ function setupEventListeners() {
         handleDailyQuestCompletion();
       }
     });
+  }
+  
+  // Setup quest counter navigation listeners
+  setupQuestNavigationListeners();
+}
+
+// Setup quest counter navigation listeners
+function setupQuestNavigationListeners() {
+  console.log('Setting up quest navigation listeners...');
+  
+  // Physical quest counter - navigate to physical quests page
+  const physicalQuestsElement = document.getElementById('physicalQuests');
+  if (physicalQuestsElement) {
+    physicalQuestsElement.style.cursor = 'pointer';
+    physicalQuestsElement.title = 'Click to go to Physical Quests page';
+    physicalQuestsElement.addEventListener('click', function() {
+      console.log('Navigating to Physical Quests page...');
+      window.location.href = 'Quest_Info_Physical.html';
+    });
+    console.log('Physical quest navigation listener added');
+  }
+  
+  // Mental quest counter - navigate to mental quests page
+  const mentalQuestsElement = document.getElementById('mentalQuests');
+  if (mentalQuestsElement) {
+    mentalQuestsElement.style.cursor = 'pointer';
+    mentalQuestsElement.title = 'Click to go to Mental Quests page';
+    mentalQuestsElement.addEventListener('click', function() {
+      console.log('Navigating to Mental Quests page...');
+      window.location.href = 'Quest_Info_Mental.html';
+    });
+    console.log('Mental quest navigation listener added');
+  }
+  
+  // Spiritual quest counter - navigate to spiritual quests page
+  const spiritualQuestsElement = document.getElementById('spiritualQuests');
+  if (spiritualQuestsElement) {
+    spiritualQuestsElement.style.cursor = 'pointer';
+    spiritualQuestsElement.title = 'Click to go to Spiritual Quests page';
+    spiritualQuestsElement.addEventListener('click', function() {
+      console.log('Navigating to Spiritual Quests page...');
+      window.location.href = 'Quest_Info_Spiritual.html';
+    });
+    console.log('Spiritual quest navigation listener added');
   }
 }
 

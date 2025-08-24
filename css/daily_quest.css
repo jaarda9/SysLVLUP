@@ -220,3 +220,48 @@ input[type="checkbox"]:checked + label {
         transform: translate(-50%, -50%) scale(1);
     }
 }
+
+/* Quest counter display styles */
+/* Quest counter navigation button styles */
+#physicalQuests,
+#mentalQuests,
+#spiritualQuests {
+    cursor: pointer;
+    padding: 5px 10px;
+    border-radius: 5px;
+    background-color: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    display: inline-block;
+    min-width: 50px;
+    text-align: center;
+    font-weight: bold;
+    color: #ffffff;
+    text-shadow: 0 0 5px rgba(255, 255, 255, 0.5);
+    transition: all 0.3s ease;
+    user-select: none;
+}
+
+#physicalQuests:hover,
+#mentalQuests:hover,
+#spiritualQuests:hover {
+    background-color: rgba(255, 255, 255, 0.2);
+    border-color: rgba(255, 255, 255, 0.6);
+    transform: scale(1.05);
+    box-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
+    cursor: pointer;
+}
+
+#physicalQuests:active,
+#mentalQuests:active,
+#spiritualQuests:active {
+    transform: scale(0.95);
+    background-color: rgba(255, 255, 255, 0.3);
+}
+
+/* Task right section styling */
+.task-right {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 80px;
+}
