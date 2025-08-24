@@ -22,55 +22,22 @@ document.addEventListener("DOMContentLoaded", function() {
   // Call the measurePing function with a URL to ping
   measurePing('https://sys-lvlup.vercel.app/status.html'); // Replace with your server URL
 });
+// Use centralized user manager for syncing
 async function syncToDatabase() {
-    try {
-      // Get user ID
-      let userId = localStorage.getItem('userId');
-      if (!userId) {
-        userId = 'user_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
-        localStorage.setItem('userId', userId);
-      }
-      
-      // Get all localStorage data
-      const localStorageData = {};
-      for (let i = 0; i < localStorage.length; i++) {
-        const key = localStorage.key(i);
+    if (window.userManager) {
         try {
-          localStorageData[key] = JSON.parse(localStorage.getItem(key));
-        } catch (e) {
-          localStorageData[key] = localStorage.getItem(key);
+            await window.userManager.saveUserData();
+            console.log('Sync successful via user manager');
+            return { success: true, message: 'Data synced successfully' };
+        } catch (error) {
+            console.error('Error syncing to database:', error);
+            throw error;
         }
-      }
-      
-      if (Object.keys(localStorageData).length === 0) {
-        console.log('No localStorage data to sync');
-        return { success: true, message: 'No data to sync' };
-      }
-
-      const response = await fetch('/api/sync', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          userId: userId,
-          localStorageData: localStorageData
-        })
-      });
-
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-
-      const result = await response.json();
-      console.log('Sync successful:', result);
-      return result;
-
-    } catch (error) {
-      console.error('Error syncing to database:', error);
-      throw error;
+    } else {
+        console.warn('User manager not available for syncing');
+        return { success: false, message: 'User manager not available' };
     }
-  }
+}
 
 // Constants
 const ranks = ["E-Rank", "D-Rank", "C-Rank", "B-Rank", "A-Rank", "S-Rank"];
@@ -828,9 +795,6 @@ const playQuestAudio = async () => {
 
 // Main event listener for DOM content loaded
 document.addEventListener('DOMContentLoaded', () => {
-  // Call the function to load data from MongoDB on page load
-  loadDataFromMongoDB();
-  
   // Load existing game data
   loadData();
   updateFatigueProgress();
