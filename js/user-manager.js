@@ -6,6 +6,7 @@ class UserManager {
     this.userId = null;
     this.data = null;
     this.isLoading = false;
+    this.lastLoadTime = 0;
   }
 
   /**
@@ -23,7 +24,7 @@ class UserManager {
     const loadResult = await this.loadUserData();
     
     // Return both the user ID and whether data was found
-    const dataFound = loadResult.success && this.data && this.data.gameData;
+    const dataFound = !!(loadResult.success && this.data && this.data.gameData);
     console.log('Data found check:', {
       loadResultSuccess: loadResult.success,
       hasData: !!this.data,
@@ -81,6 +82,7 @@ class UserManager {
         const result = await response.json();
         if (result.localStorageData) {
           this.data = result.localStorageData;
+          this.lastLoadTime = Date.now();
           console.log('Data loaded successfully from API:', this.data);
           return { success: true, data: this.data };
         } else {
@@ -131,6 +133,13 @@ class UserManager {
 
     if (!this.data) {
       throw new Error('No data to save');
+    }
+
+    // Prevent saving immediately after loading (within 5 seconds)
+    const timeSinceLoad = Date.now() - this.lastLoadTime;
+    if (timeSinceLoad < 5000) {
+      console.log('Skipping save - data was loaded recently (', timeSinceLoad, 'ms ago)');
+      return { success: true, message: 'Save skipped - data loaded recently' };
     }
 
     console.log('Saving user data for:', this.userId);
