@@ -1,6 +1,7 @@
 // Daily Quest System
 let userManager = null;
 let currentUserData = null;
+let hasRedirectedAfterCompletion = false;
 
 document.addEventListener("DOMContentLoaded", function() {
   console.log('Daily quest page DOM loaded');
@@ -405,6 +406,14 @@ function checkAllQuestsCompleted(gameData) {
     if (allCompleted) {
       console.log('All daily quests completed!');
       showNotification('🎉 All daily quests completed!', 'success');
+
+      // Auto-redirect back to status page after a short delay
+      if (!hasRedirectedAfterCompletion) {
+        hasRedirectedAfterCompletion = true;
+        setTimeout(() => {
+          window.location.href = 'status.html';
+        }, 2000);
+      }
     }
   }
 }
