@@ -421,6 +421,12 @@ function setupStatusPageListeners() {
         dailyResetBtn.addEventListener('click', manualDailyReset);
     }
     
+    // Force daily reset check button (for debugging)
+    const forceResetCheckBtn = document.getElementById('force-reset-check-btn');
+    if (forceResetCheckBtn) {
+        forceResetCheckBtn.addEventListener('click', forceDailyResetCheck);
+    }
+    
     // Reset button
     const resetBtn = document.getElementById('reset-btn');
     if (resetBtn) {
@@ -569,6 +575,18 @@ async function manualDailyReset() {
     }
 }
 
+// Force daily reset check (for debugging)
+async function forceDailyResetCheck() {
+    try {
+        console.log('Force daily reset check requested');
+        await checkAndPerformDailyReset();
+        alert('Daily reset check completed! Check console for details.');
+    } catch (error) {
+        console.error('Error during forced daily reset check:', error);
+        alert('Error during daily reset check. Please try again.');
+    }
+}
+
 // Logout
 function logout() {
     if (!confirm('Are you sure you want to logout?')) {
@@ -642,13 +660,40 @@ async function checkAndPerformDailyReset() {
             return;
         }
         
-        const today = new Date().toLocaleDateString();
-        const lastResetDate = currentData.lastResetDate;
+        // Use a more reliable date comparison method
+        const today = new Date();
+        const todayString = today.toISOString().split('T')[0]; // YYYY-MM-DD format
         
-        console.log('Daily reset check - Today:', today, 'Last reset:', lastResetDate);
+        // Parse the last reset date more reliably
+        let lastResetDate = currentData.lastResetDate;
+        let lastResetDateObj = null;
+        
+        // Try to parse the last reset date
+        if (lastResetDate) {
+            // If it's already in YYYY-MM-DD format
+            if (lastResetDate.includes('-')) {
+                lastResetDateObj = new Date(lastResetDate);
+            } else {
+                // If it's in DD/MM/YYYY format, convert it
+                const parts = lastResetDate.split('/');
+                if (parts.length === 3) {
+                    // Assuming DD/MM/YYYY format
+                    lastResetDateObj = new Date(parts[2], parts[1] - 1, parts[0]);
+                }
+            }
+        }
+        
+        const lastResetString = lastResetDateObj ? lastResetDateObj.toISOString().split('T')[0] : null;
+        
+        console.log('Daily reset check details:');
+        console.log('  Today (Date object):', today);
+        console.log('  Today (YYYY-MM-DD):', todayString);
+        console.log('  Last reset (original):', lastResetDate);
+        console.log('  Last reset (parsed):', lastResetString);
+        console.log('  Date comparison:', lastResetString !== todayString);
         
         // If it's a new day, perform the reset
-        if (lastResetDate !== today) {
+        if (lastResetString !== todayString) {
             console.log('New day detected, performing daily reset...');
             await performDailyReset();
         } else {
@@ -679,8 +724,8 @@ async function performDailyReset() {
         gameData.mentalQuests = "[0/3]";
         gameData.spiritualQuests = "[0/2]";
         
-        // Update the last reset date
-        currentData.lastResetDate = new Date().toLocaleDateString();
+        // Update the last reset date using reliable YYYY-MM-DD format
+        currentData.lastResetDate = new Date().toISOString().split('T')[0];
         
         // Update the UI to reflect the reset
         loadPlayerData(gameData);
