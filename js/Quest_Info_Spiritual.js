@@ -272,8 +272,9 @@ function updateCompleteCheckbox() {
             }
         } catch (_) {}
 
+        // Always non-interactive; we control it programmatically
+        completeCheckbox.disabled = true;
         completeCheckbox.checked = allCompleted || alreadyCompleted;
-        completeCheckbox.disabled = allCompleted || alreadyCompleted;
         const label = completeCheckbox?.nextElementSibling;
         if (completeCheckbox.disabled && label) {
             label.style.opacity = '0.6';
@@ -301,8 +302,21 @@ function updateCompleteCheckbox() {
             setTimeout(function() {
                 window.location.href = 'Quest_Rewards.html?data=spiritual';
             }, 1000);
+
+            // After completion, lock all task checkboxes
+            disableAllSpiritualTaskCheckboxes();
         }
     }
+}
+
+// Disable all task checkboxes (make them untickable after completion)
+function disableAllSpiritualTaskCheckboxes() {
+    try {
+        const goalItemsDiv = document.getElementById("goal-items");
+        if (!goalItemsDiv) return;
+        const inputs = goalItemsDiv.querySelectorAll('input[type="checkbox"]');
+        inputs.forEach(input => { input.disabled = true; });
+    } catch (_) {}
 }
 
 // Update spiritual quest progress in user data (FULL QUEST COMPLETION)
