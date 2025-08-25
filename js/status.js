@@ -723,6 +723,9 @@ async function performDailyReset() {
         gameData.physicalQuests = "[0/4]";
         gameData.mentalQuests = "[0/3]";
         gameData.spiritualQuests = "[0/2]";
+
+        // Reset quest cost application flags so costs can apply again today
+        gameData.questCostsApplied = { physical: false, mental: false, spiritual: false };
         
         // Update the last reset date using reliable YYYY-MM-DD format
         currentData.lastResetDate = new Date().toISOString().split('T')[0];
