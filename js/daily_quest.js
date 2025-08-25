@@ -338,15 +338,12 @@ function checkQuestCompletion(gameData) {
     const physicalCount = parseInt(physicalQuests.match(/\d+/)[0]);
     const physicalMax = parseInt(physicalQuests.match(/\/(\d+)/)[1]);
     
-    if (physicalCount >= physicalMax) {
-      physicalCheckbox.disabled = false;
-      physicalCheckbox.checked = true;
-      console.log('Physical quests completed');
-    } else {
-      physicalCheckbox.disabled = true;
-      physicalCheckbox.checked = false;
-      console.log('Physical quests not completed yet');
-    }
+    const completed = physicalCount >= physicalMax;
+    physicalCheckbox.checked = completed;
+    physicalCheckbox.disabled = completed; // make untickable when done
+    physicalCheckbox.title = completed ? 'Already completed today' : '';
+    physicalCheckbox.style.opacity = completed ? '0.7' : '';
+    console.log(completed ? 'Physical quests completed' : 'Physical quests not completed yet');
   }
   
   // Mental quests (0/3)
@@ -356,15 +353,12 @@ function checkQuestCompletion(gameData) {
     const mentalCount = parseInt(mentalQuests.match(/\d+/)[0]);
     const mentalMax = parseInt(mentalQuests.match(/\/(\d+)/)[1]);
     
-    if (mentalCount >= mentalMax) {
-      mentalCheckbox.disabled = false;
-      mentalCheckbox.checked = true;
-      console.log('Mental quests completed');
-    } else {
-      mentalCheckbox.disabled = true;
-      mentalCheckbox.checked = false;
-      console.log('Mental quests not completed yet');
-    }
+    const completed = mentalCount >= mentalMax;
+    mentalCheckbox.checked = completed;
+    mentalCheckbox.disabled = completed;
+    mentalCheckbox.title = completed ? 'Already completed today' : '';
+    mentalCheckbox.style.opacity = completed ? '0.7' : '';
+    console.log(completed ? 'Mental quests completed' : 'Mental quests not completed yet');
   }
   
   // Spiritual quests (0/2)
@@ -374,15 +368,12 @@ function checkQuestCompletion(gameData) {
     const spiritualCount = parseInt(spiritualQuests.match(/\d+/)[0]);
     const spiritualMax = parseInt(spiritualQuests.match(/\/(\d+)/)[1]);
     
-    if (spiritualCount >= spiritualMax) {
-      spiritualCheckbox.disabled = false;
-      spiritualCheckbox.checked = true;
-      console.log('Spiritual quests completed');
-    } else {
-      spiritualCheckbox.disabled = true;
-      spiritualCheckbox.checked = false;
-      console.log('Spiritual quests not completed yet');
-    }
+    const completed = spiritualCount >= spiritualMax;
+    spiritualCheckbox.checked = completed;
+    spiritualCheckbox.disabled = completed;
+    spiritualCheckbox.title = completed ? 'Already completed today' : '';
+    spiritualCheckbox.style.opacity = completed ? '0.7' : '';
+    console.log(completed ? 'Spiritual quests completed' : 'Spiritual quests not completed yet');
   }
   
   // Check if all quests are completed
