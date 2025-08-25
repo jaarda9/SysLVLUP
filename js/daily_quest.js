@@ -90,7 +90,26 @@ async function checkAndPerformDailyReset() {
 
     const lastResetString = lastResetDateObj ? lastResetDateObj.toISOString().split('T')[0] : null;
 
+    // Debounce within this browser session
+    const sessionKey = `dailyResetChecked:${currentData.userId || localStorage.getItem('playerName') || 'anonymous'}`;
+    const sessionChecked = sessionStorage.getItem(sessionKey);
+    if (sessionChecked === todayString) {
+      console.log('Daily reset already checked this session for today. Skipping.');
+      return;
+    }
+
     console.log('Daily reset check (daily_quest.js):', { todayString, lastResetDate, lastResetString });
+
+    // Initialize missing lastResetDate to today without resetting stats
+    if (!lastResetString) {
+      console.log('No lastResetDate found. Initializing to today without resetting stats.');
+      currentData.lastResetDate = todayString;
+      userManager.setData('lastResetDate', todayString);
+      userManager.lastLoadTime = 0;
+      await userManager.saveUserData();
+      sessionStorage.setItem(sessionKey, todayString);
+      return;
+    }
 
     // If it's a new day, perform the reset
     if (lastResetString !== todayString) {
@@ -99,6 +118,9 @@ async function checkAndPerformDailyReset() {
     } else {
       console.log('Same day, no reset needed');
     }
+
+    // Mark as checked for today in this session
+    sessionStorage.setItem(sessionKey, todayString);
     
   } catch (error) {
     console.error('Error during daily reset check:', error);
