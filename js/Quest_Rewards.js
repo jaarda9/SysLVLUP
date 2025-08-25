@@ -34,9 +34,79 @@ async function initializeUserManager() {
     await userManager.setUserId(localStorage.getItem('playerName'));
     
     console.log('User manager initialized for rewards page');
+    // Apply final quest costs/progress on rewards page load
+    await applyQuestCompletionEffects();
     
   } catch (error) {
     console.error('Error initializing user manager:', error);
+  }
+}
+
+// Apply quest completion costs and finalize progress once
+async function applyQuestCompletionEffects() {
+  try {
+    if (!userManager) return;
+    const userData = userManager.getData();
+    if (!userData || !userData.gameData) return;
+    const gameData = userData.gameData;
+
+    if (!questType) {
+      console.warn('No questType provided. Skipping cost application.');
+      return;
+    }
+
+    if (questType === 'physical') {
+      if (gameData.physicalQuests === '[4/4]') {
+        console.log('Physical quests already finalized. Skipping costs.');
+      } else {
+        const startHP = Math.max(0, parseInt(gameData.hp) || 100);
+        const startSTM = Math.max(0, parseInt(gameData.stm) || 100);
+        const startFatigue = parseInt(gameData.fatigue) || 0;
+        gameData.hp = Math.max(0, startHP - 20);
+        gameData.stm = Math.max(0, startSTM - 20);
+        gameData.fatigue = startFatigue + 20;
+        gameData.physicalQuests = '[4/4]';
+        console.log(`Applied Physical costs: HP ${startHP}->${gameData.hp}, STM ${startSTM}->${gameData.stm}, Fatigue ${startFatigue}->${gameData.fatigue}`);
+      }
+    } else if (questType === 'mental') {
+      if (gameData.mentalQuests === '[3/3]') {
+        console.log('Mental quests already finalized. Skipping costs.');
+      } else {
+        const startMP = Math.max(0, parseInt(gameData.mp) || 100);
+        const startSTM = Math.max(0, parseInt(gameData.stm) || 100);
+        const startFatigue = parseInt(gameData.fatigue) || 0;
+        gameData.mp = Math.max(0, startMP - 20);
+        gameData.stm = Math.max(0, startSTM - 10);
+        gameData.fatigue = startFatigue + 20;
+        gameData.mentalQuests = '[3/3]';
+        console.log(`Applied Mental costs: MP ${startMP}->${gameData.mp}, STM ${startSTM}->${gameData.stm}, Fatigue ${startFatigue}->${gameData.fatigue}`);
+      }
+    } else if (questType === 'spiritual') {
+      if (gameData.spiritualQuests === '[2/2]') {
+        console.log('Spiritual quests already finalized. Skipping costs.');
+      } else {
+        const startMP = Math.max(0, parseInt(gameData.mp) || 100);
+        const startSTM = Math.max(0, parseInt(gameData.stm) || 100);
+        const startFatigue = parseInt(gameData.fatigue) || 0;
+        gameData.mp = Math.max(0, startMP - 20);
+        gameData.stm = Math.max(0, startSTM - 10);
+        gameData.fatigue = startFatigue + 20;
+        gameData.spiritualQuests = '[2/2]';
+        console.log(`Applied Spiritual costs: MP ${startMP}->${gameData.mp}, STM ${startSTM}->${gameData.stm}, Fatigue ${startFatigue}->${gameData.fatigue}`);
+      }
+    }
+
+    // Save only if we changed something
+    userManager.setData('gameData', userData.gameData);
+    userManager.lastLoadTime = 0; // force immediate save
+    const result = await userManager.saveUserData();
+    if (result && result.success) {
+      console.log('Quest completion effects saved.');
+    } else {
+      console.warn('Quest completion effects save skipped or failed.', result);
+    }
+  } catch (e) {
+    console.error('Error applying quest completion effects:', e);
   }
 }
 

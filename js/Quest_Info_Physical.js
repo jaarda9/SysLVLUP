@@ -271,8 +271,7 @@ function updateCompleteCheckbox() {
         if (allCompleted) {
             console.log('All physical tasks completed!');
             
-            // Update the physical quest progress in user data
-            updatePhysicalQuestProgress();
+            // Costs and final progress will be applied on the Rewards page load
             
             // Trigger completion animation and redirect
             const label = completeCheckbox.nextElementSibling;

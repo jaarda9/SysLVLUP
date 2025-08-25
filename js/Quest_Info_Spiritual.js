@@ -269,8 +269,7 @@ function updateCompleteCheckbox() {
         if (allCompleted) {
             console.log('All spiritual tasks completed!');
             
-            // Update the spiritual quest progress in user data
-            updateSpiritualQuestProgress();
+            // Costs and final progress will be applied on the Rewards page load
             
             // Trigger completion animation and redirect
             const label = completeCheckbox.nextElementSibling;

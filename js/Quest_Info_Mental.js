@@ -270,8 +270,7 @@ function updateCompleteCheckbox() {
         if (allCompleted) {
             console.log('All mental tasks completed!');
             
-            // Update the mental quest progress in user data
-            updateMentalQuestProgress();
+            // Costs and final progress will be applied on the Rewards page load
             
             // Trigger completion animation and redirect
             const label = completeCheckbox.nextElementSibling;
