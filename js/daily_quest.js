@@ -256,6 +256,24 @@ function updateQuestDisplay(gameData) {
   if (physicalQuestsElement) {
     physicalQuestsElement.textContent = gameData.physicalQuests || '[0/4]';
     console.log('Physical quests display updated:', gameData.physicalQuests);
+
+    // Disable navigation when completed [4/4]
+    try {
+      const count = parseInt((gameData.physicalQuests || '[0/4]').match(/\d+/)[0]);
+      const max = parseInt((gameData.physicalQuests || '[0/4]').match(/\/(\d+)/)[1]);
+      const completed = count >= max;
+      if (completed) {
+        physicalQuestsElement.setAttribute('aria-disabled', 'true');
+        physicalQuestsElement.style.pointerEvents = 'none';
+        physicalQuestsElement.style.opacity = '0.6';
+        physicalQuestsElement.title = 'Already completed today';
+      } else {
+        physicalQuestsElement.removeAttribute('aria-disabled');
+        physicalQuestsElement.style.pointerEvents = '';
+        physicalQuestsElement.style.opacity = '';
+        physicalQuestsElement.removeAttribute('title');
+      }
+    } catch (e) { /* noop */ }
   }
   
   // Update mental quests
@@ -263,6 +281,24 @@ function updateQuestDisplay(gameData) {
   if (mentalQuestsElement) {
     mentalQuestsElement.textContent = gameData.mentalQuests || '[0/3]';
     console.log('Mental quests display updated:', gameData.mentalQuests);
+
+    // Disable navigation when completed [3/3]
+    try {
+      const count = parseInt((gameData.mentalQuests || '[0/3]').match(/\d+/)[0]);
+      const max = parseInt((gameData.mentalQuests || '[0/3]').match(/\/(\d+)/)[1]);
+      const completed = count >= max;
+      if (completed) {
+        mentalQuestsElement.setAttribute('aria-disabled', 'true');
+        mentalQuestsElement.style.pointerEvents = 'none';
+        mentalQuestsElement.style.opacity = '0.6';
+        mentalQuestsElement.title = 'Already completed today';
+      } else {
+        mentalQuestsElement.removeAttribute('aria-disabled');
+        mentalQuestsElement.style.pointerEvents = '';
+        mentalQuestsElement.style.opacity = '';
+        mentalQuestsElement.removeAttribute('title');
+      }
+    } catch (e) { /* noop */ }
   }
   
   // Update spiritual quests
@@ -270,6 +306,24 @@ function updateQuestDisplay(gameData) {
   if (spiritualQuestsElement) {
     spiritualQuestsElement.textContent = gameData.spiritualQuests || '[0/2]';
     console.log('Spiritual quests display updated:', gameData.spiritualQuests);
+
+    // Disable navigation when completed [2/2]
+    try {
+      const count = parseInt((gameData.spiritualQuests || '[0/2]').match(/\d+/)[0]);
+      const max = parseInt((gameData.spiritualQuests || '[0/2]').match(/\/(\d+)/)[1]);
+      const completed = count >= max;
+      if (completed) {
+        spiritualQuestsElement.setAttribute('aria-disabled', 'true');
+        spiritualQuestsElement.style.pointerEvents = 'none';
+        spiritualQuestsElement.style.opacity = '0.6';
+        spiritualQuestsElement.title = 'Already completed today';
+      } else {
+        spiritualQuestsElement.removeAttribute('aria-disabled');
+        spiritualQuestsElement.style.pointerEvents = '';
+        spiritualQuestsElement.style.opacity = '';
+        spiritualQuestsElement.removeAttribute('title');
+      }
+    } catch (e) { /* noop */ }
   }
 }
 

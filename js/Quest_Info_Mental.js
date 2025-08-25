@@ -264,10 +264,28 @@ function updateCompleteCheckbox() {
     const completeCheckbox = document.getElementById("complete");
 
     if (completeCheckbox) {
-        completeCheckbox.checked = allCompleted;
+        // Also honor persisted completion from saved data
+        let alreadyCompleted = false;
+        try {
+            if (window.userManager) {
+                const gd = userManager.getData()?.gameData || {};
+                alreadyCompleted = gd.mentalQuests === "[3/3]";
+            }
+        } catch (_) {}
+
+        completeCheckbox.checked = allCompleted || alreadyCompleted;
+        completeCheckbox.disabled = allCompleted || alreadyCompleted;
+        const label = completeCheckbox?.nextElementSibling;
+        if (completeCheckbox.disabled && label) {
+            label.style.opacity = '0.6';
+            label.title = 'Already completed today';
+        } else if (label) {
+            label.style.opacity = '';
+            label.removeAttribute('title');
+        }
 
         // If all tasks are completed, trigger completion
-        if (allCompleted) {
+        if (allCompleted && !alreadyCompleted) {
             console.log('All mental tasks completed!');
             
             // Costs and final progress will be applied on the Rewards page load
