@@ -55,9 +55,14 @@ async function applyQuestCompletionEffects() {
       return;
     }
 
+    // Initialize idempotency flags
+    if (!gameData.questCostsApplied) {
+      gameData.questCostsApplied = { physical: false, mental: false, spiritual: false };
+    }
+
     if (questType === 'physical') {
-      if (gameData.physicalQuests === '[4/4]') {
-        console.log('Physical quests already finalized. Skipping costs.');
+      if (gameData.questCostsApplied.physical) {
+        console.log('Physical costs already applied. Skipping.');
       } else {
         const startHP = Math.max(0, parseInt(gameData.hp) || 100);
         const startSTM = Math.max(0, parseInt(gameData.stm) || 100);
@@ -66,11 +71,12 @@ async function applyQuestCompletionEffects() {
         gameData.stm = Math.max(0, startSTM - 20);
         gameData.fatigue = startFatigue + 20;
         gameData.physicalQuests = '[4/4]';
+        gameData.questCostsApplied.physical = true;
         console.log(`Applied Physical costs: HP ${startHP}->${gameData.hp}, STM ${startSTM}->${gameData.stm}, Fatigue ${startFatigue}->${gameData.fatigue}`);
       }
     } else if (questType === 'mental') {
-      if (gameData.mentalQuests === '[3/3]') {
-        console.log('Mental quests already finalized. Skipping costs.');
+      if (gameData.questCostsApplied.mental) {
+        console.log('Mental costs already applied. Skipping.');
       } else {
         const startMP = Math.max(0, parseInt(gameData.mp) || 100);
         const startSTM = Math.max(0, parseInt(gameData.stm) || 100);
@@ -79,11 +85,12 @@ async function applyQuestCompletionEffects() {
         gameData.stm = Math.max(0, startSTM - 10);
         gameData.fatigue = startFatigue + 20;
         gameData.mentalQuests = '[3/3]';
+        gameData.questCostsApplied.mental = true;
         console.log(`Applied Mental costs: MP ${startMP}->${gameData.mp}, STM ${startSTM}->${gameData.stm}, Fatigue ${startFatigue}->${gameData.fatigue}`);
       }
     } else if (questType === 'spiritual') {
-      if (gameData.spiritualQuests === '[2/2]') {
-        console.log('Spiritual quests already finalized. Skipping costs.');
+      if (gameData.questCostsApplied.spiritual) {
+        console.log('Spiritual costs already applied. Skipping.');
       } else {
         const startMP = Math.max(0, parseInt(gameData.mp) || 100);
         const startSTM = Math.max(0, parseInt(gameData.stm) || 100);
@@ -92,6 +99,7 @@ async function applyQuestCompletionEffects() {
         gameData.stm = Math.max(0, startSTM - 10);
         gameData.fatigue = startFatigue + 20;
         gameData.spiritualQuests = '[2/2]';
+        gameData.questCostsApplied.spiritual = true;
         console.log(`Applied Spiritual costs: MP ${startMP}->${gameData.mp}, STM ${startSTM}->${gameData.stm}, Fatigue ${startFatigue}->${gameData.fatigue}`);
       }
     }
