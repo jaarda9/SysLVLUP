@@ -113,7 +113,13 @@ async function performDailyReset() {
     const currentData = userManager.getData();
     const gameData = currentData.gameData;
     
-    // Reset daily quests only (leave HP/MP/STM/Fatigue unchanged)
+    // Reset HP, MP, stamina, and fatigue to full
+    gameData.hp = 100;
+    gameData.mp = 100;
+    gameData.stm = 100;
+    gameData.fatigue = 0;
+
+    // Reset daily quests
     gameData.physicalQuests = "[0/4]";
     gameData.mentalQuests = "[0/3]";
     gameData.spiritualQuests = "[0/2]";
