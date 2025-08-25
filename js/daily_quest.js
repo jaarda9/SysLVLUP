@@ -70,13 +70,30 @@ async function checkAndPerformDailyReset() {
       return;
     }
     
-    const today = new Date().toLocaleDateString();
-    const lastResetDate = currentData.lastResetDate;
-    
-    console.log('Daily reset check - Today:', today, 'Last reset:', lastResetDate);
-    
+    // Use reliable YYYY-MM-DD comparison (match status.js)
+    const today = new Date();
+    const todayString = today.toISOString().split('T')[0];
+
+    let lastResetDate = currentData.lastResetDate;
+    let lastResetDateObj = null;
+
+    if (lastResetDate) {
+      if (lastResetDate.includes('-')) {
+        lastResetDateObj = new Date(lastResetDate);
+      } else {
+        const parts = lastResetDate.split('/');
+        if (parts.length === 3) {
+          lastResetDateObj = new Date(parts[2], parts[1] - 1, parts[0]);
+        }
+      }
+    }
+
+    const lastResetString = lastResetDateObj ? lastResetDateObj.toISOString().split('T')[0] : null;
+
+    console.log('Daily reset check (daily_quest.js):', { todayString, lastResetDate, lastResetString });
+
     // If it's a new day, perform the reset
-    if (lastResetDate !== today) {
+    if (lastResetString !== todayString) {
       console.log('New day detected, performing daily reset...');
       await performDailyReset();
     } else {
@@ -107,8 +124,8 @@ async function performDailyReset() {
     gameData.mentalQuests = "[0/3]";
     gameData.spiritualQuests = "[0/2]";
     
-    // Update the last reset date
-    currentData.lastResetDate = new Date().toLocaleDateString();
+    // Update the last reset date (YYYY-MM-DD)
+    currentData.lastResetDate = new Date().toISOString().split('T')[0];
     
     // Save the reset data to the database
     await userManager.saveUserData();
