@@ -373,11 +373,9 @@ async function handleLevelUp(gameData) {
         console.log('Stacked attributes reset to 0');
     }
     
-    // Restore HP, MP, and STM to full on level up
-    gameData.hp = 100;
-    gameData.mp = 100;
-    gameData.stm = 100;
-    console.log('HP, MP, and STM restored to full on level up');
+    // Note: HP, MP, and STM are NOT automatically restored on level up
+    // They should only be reset by daily reset system
+    console.log('Level up complete - HP/MP/STM values preserved');
 }
 
 // Function to complete a quest and gain XP
