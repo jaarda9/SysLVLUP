@@ -341,7 +341,8 @@ function checkQuestCompletion(gameData) {
     
     const completed = physicalCount >= physicalMax;
     physicalCheckbox.checked = completed;
-    physicalCheckbox.disabled = completed; // make untickable when done
+    // Always non-interactive; reflects state only
+    physicalCheckbox.disabled = true;
     physicalCheckbox.title = completed ? 'Already completed today' : '';
     physicalCheckbox.style.opacity = completed ? '0.7' : '';
     console.log(completed ? 'Physical quests completed' : 'Physical quests not completed yet');
@@ -356,7 +357,8 @@ function checkQuestCompletion(gameData) {
     
     const completed = mentalCount >= mentalMax;
     mentalCheckbox.checked = completed;
-    mentalCheckbox.disabled = completed;
+    // Always non-interactive; reflects state only
+    mentalCheckbox.disabled = true;
     mentalCheckbox.title = completed ? 'Already completed today' : '';
     mentalCheckbox.style.opacity = completed ? '0.7' : '';
     console.log(completed ? 'Mental quests completed' : 'Mental quests not completed yet');
@@ -371,7 +373,8 @@ function checkQuestCompletion(gameData) {
     
     const completed = spiritualCount >= spiritualMax;
     spiritualCheckbox.checked = completed;
-    spiritualCheckbox.disabled = completed;
+    // Always non-interactive; reflects state only
+    spiritualCheckbox.disabled = true;
     spiritualCheckbox.title = completed ? 'Already completed today' : '';
     spiritualCheckbox.style.opacity = completed ? '0.7' : '';
     console.log(completed ? 'Spiritual quests completed' : 'Spiritual quests not completed yet');
