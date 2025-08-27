@@ -337,32 +337,36 @@ function loadPlayerData(gameData) {
         if (fatigueValue) {
             fatigueValue.textContent = gameData.fatigue;
         }
+        const fatigueRing = document.querySelector('.fatigue-ring');
+        if (fatigueRing) {
+            fatigueRing.style.setProperty('--fatigue', String(gameData.fatigue));
+        }
     }
     
     // Update attributes
     if (gameData.Attributes) {
         const attrs = gameData.Attributes;
-        if (attrs.STR) {
+        if (attrs.STR !== undefined) {
             const strValue = document.getElementById('str-value');
             if (strValue) strValue.textContent = attrs.STR;
         }
-        if (attrs.VIT) {
+        if (attrs.VIT !== undefined) {
             const vitValue = document.getElementById('vit-value');
             if (vitValue) vitValue.textContent = attrs.VIT;
         }
-        if (attrs.AGI) {
+        if (attrs.AGI !== undefined) {
             const agiValue = document.getElementById('agi-value');
             if (agiValue) agiValue.textContent = attrs.AGI;
         }
-        if (attrs.INT) {
+        if (attrs.INT !== undefined) {
             const intValue = document.getElementById('int-value');
             if (intValue) intValue.textContent = attrs.INT;
         }
-        if (attrs.PER) {
+        if (attrs.PER !== undefined) {
             const perValue = document.getElementById('per-value');
             if (perValue) perValue.textContent = attrs.PER;
         }
-        if (attrs.WIS) {
+        if (attrs.WIS !== undefined) {
             const wisValue = document.getElementById('wis-value');
             if (wisValue) wisValue.textContent = attrs.WIS;
         }
@@ -370,27 +374,27 @@ function loadPlayerData(gameData) {
     
     if (gameData.stackedAttributes) {
         const stacked = gameData.stackedAttributes;
-        if (stacked.STR) {
+        if (stacked.STR !== undefined) {
             const strStacked = document.getElementById('str-stacked');
             if (strStacked) strStacked.textContent = `+${stacked.STR}`;
         }
-        if (stacked.VIT) {
+        if (stacked.VIT !== undefined) {
             const vitStacked = document.getElementById('vit-stacked');
             if (vitStacked) vitStacked.textContent = `+${stacked.VIT}`;
         }
-        if (stacked.AGI) {
+        if (stacked.AGI !== undefined) {
             const agiStacked = document.getElementById('agi-stacked');
             if (agiStacked) agiStacked.textContent = `+${stacked.AGI}`;
         }
-        if (stacked.INT) {
+        if (stacked.INT !== undefined) {
             const intStacked = document.getElementById('int-stacked');
             if (intStacked) intStacked.textContent = `+${stacked.INT}`;
         }
-        if (stacked.PER) {
+        if (stacked.PER !== undefined) {
             const perStacked = document.getElementById('per-stacked');
             if (perStacked) perStacked.textContent = `+${stacked.PER}`;
         }
-        if (stacked.WIS) {
+        if (stacked.WIS !== undefined) {
             const wisStacked = document.getElementById('wis-stacked');
             if (wisStacked) wisStacked.textContent = `+${stacked.WIS}`;
         }
