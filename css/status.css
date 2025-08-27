@@ -395,7 +395,9 @@ body {
 .quests-mini-title { padding: 10px; font-size: 11px; letter-spacing: 2px; color: var(--muted); font-weight: 800; text-align: center; }
 .quests-mini-list { list-style: none; margin: 0; padding: 0 10px; display: grid; gap: 6px; max-height: 0; opacity: 0; transform: translateY(-6px); transition: max-height .35s cubic-bezier(.22,.61,.36,1), opacity .25s ease, transform .35s cubic-bezier(.22,.61,.36,1); will-change: max-height, transform, opacity; }
 .quests-mini:hover .quests-mini-list { max-height: 240px; opacity: 1; transform: translateY(0); padding-bottom: 10px; }
-.quests-mini-list li { display: flex; align-items: center; justify-content: space-between; font-weight: 700; padding: 6px 8px; background: var(--surface-2); border: 1px solid var(--glass-2); border-radius: 8px; }
+.quests-mini-list li { display: flex; align-items: center; justify-content: space-between; font-weight: 700; padding: 6px 8px; background: var(--surface-2); border: 1px solid var(--glass-2); border-radius: 8px; transition: background .25s ease, border-color .25s ease, box-shadow .25s ease, transform .2s ease; }
+.quests-mini-list li:hover { background: rgba(255,255,255,0.04); border-color: rgba(168,85,247,0.35); box-shadow: 0 0 0 2px rgba(139,92,246,0.15) inset; transform: translateY(-1px); animation: pulseGlow 2.2s ease-in-out infinite; }
+.quests-mini-list li a { display:flex; align-items:center; justify-content:space-between; gap:8px; width:100%; color: inherit; text-decoration: none; }
 .dot { width: 8px; height: 8px; border-radius: 999px; background: var(--muted); margin-right: 8px; display: inline-block; box-shadow: 0 0 6px rgba(168,85,247,0.5); }
 .dot.done { background: var(--good); }
 .dot.danger { background: var(--bad); }

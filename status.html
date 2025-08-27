@@ -64,7 +64,12 @@
                         <div class="quests-mini-title">ACTIVE QUESTS</div>
                         <ul class="quests-mini-list">
                             <li><span class="dot done"></span> Grunt Work</li>
-                            <li><span class="dot"></span> [MAIN] Power <span class="pill">Lv.1</span></li>
+                            <li>
+                                <a href="daily_quest.html" aria-label="Go to Daily Quests">
+                                    <span style="display:inline-flex; align-items:center; gap:8px;"><span class="dot"></span> [MAIN] Power</span>
+                                    <span class="pill"><span class="pill-prefix">Lv.</span><span id="player-level-pill">1</span></span>
+                                </a>
+                            </li>
                             <li><span class="dot danger"></span> [SIDE] New World <span class="pill danger">Lv.5</span></li>
                         </ul>
                     </div>
@@ -157,6 +162,31 @@
     <!-- Scripts -->
     <script src="js/user-manager.js"></script>
     <script src="js/status.js"></script>
+    <script>
+        // Sync the small level pill with the main level number
+        document.addEventListener('DOMContentLoaded', function () {
+            var levelEl = document.querySelector('.level-number');
+            var pillEl = document.getElementById('player-level-pill');
+            if (!levelEl || !pillEl) return;
+
+            function syncPill() {
+                pillEl.textContent = (levelEl.textContent || '').trim();
+            }
+
+            // Initial sync
+            syncPill();
+
+            // Observe changes to the level element's text
+            var observer = new MutationObserver(syncPill);
+            observer.observe(levelEl, { characterData: true, childList: true, subtree: true });
+
+            // Also resync on visibility/focus just in case
+            document.addEventListener('visibilitychange', function () {
+                if (document.visibilityState === 'visible') syncPill();
+            });
+            window.addEventListener('focus', syncPill);
+        });
+    </script>
     
     <!-- Service Worker Registration -->
     <script>
