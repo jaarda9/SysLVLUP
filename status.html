@@ -12,12 +12,62 @@
     <!-- Name Input Modal (shown for new players) -->
     <div id="name-input-modal" class="modal hidden">
         <div class="modal-content">
-            <h2>🎮 Welcome to SysLvLUp!</h2>
-            <p>Please enter your character name to begin your journey:</p>
-            <form id="name-form">
-                <input type="text" id="player-name-input" placeholder="Enter your name..." maxlength="20" required>
-                <button type="submit" id="start-game-btn">Start Game</button>
-            </form>
+            <!-- Portal/Gate Visual Elements -->
+            <div class="portal-frame">
+                <div class="portal-rings">
+                    <div class="ring ring-1"></div>
+                    <div class="ring ring-2"></div>
+                    <div class="ring ring-3"></div>
+                </div>
+                <div class="portal-core">
+                    <div class="gate-symbols">
+                        <span class="symbol">⚔️</span>
+                        <span class="symbol">🛡️</span>
+                        <span class="symbol">⚡</span>
+                        <span class="symbol">🔥</span>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Content Container -->
+            <div class="content-container">
+                <div class="title-section">
+                    <h2 class="portal-title">🎮 GATE OF AWAKENING</h2>
+                    <div class="subtitle">Enter the realm of the Shadow Monarch</div>
+                </div>
+                
+                <div class="description-section">
+                    <p class="portal-description">
+                        <span class="highlight">Choose your destiny.</span><br>
+                        Your name will echo through the dungeons and define your path as a hunter.
+                    </p>
+                </div>
+                
+                <form id="name-form" class="portal-form">
+                    <div class="input-container">
+                        <div class="input-glow"></div>
+                        <input 
+                            type="text" 
+                            id="player-name-input" 
+                            placeholder="Enter your hunter name..." 
+                            maxlength="20" 
+                            required
+                            autocomplete="off"
+                        >
+                        <div class="input-border"></div>
+                    </div>
+                    
+                    <button type="submit" id="start-game-btn" class="portal-button">
+                        <span class="button-text">CROSS THE GATE</span>
+                        <div class="button-glow"></div>
+                        <div class="button-particles"></div>
+                    </button>
+                </form>
+                
+                <div class="portal-footer">
+                    <div class="warning-text">⚠️ Once chosen, your path cannot be altered</div>
+                </div>
+            </div>
         </div>
     </div>
 

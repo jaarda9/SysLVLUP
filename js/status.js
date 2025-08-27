@@ -70,10 +70,23 @@ function showNameInputModal() {
     const nameForm = document.getElementById('name-form');
     const nameInput = document.getElementById('player-name-input');
     
-    modal.classList.remove('hidden');
+    console.log('showNameInputModal called');
+    console.log('Modal element:', modal);
+    console.log('Modal classes before:', modal ? modal.className : 'null');
+    
+    // Hide loading ring when showing modal for new players
+    hideLoadingRing();
+    
+    if (modal) {
+        modal.classList.remove('hidden');
+        console.log('Modal classes after removing hidden:', modal.className);
+        console.log('Modal display style:', window.getComputedStyle(modal).display);
+    }
     
     // Focus on name input
-    nameInput.focus();
+    if (nameInput) {
+        nameInput.focus();
+    }
     
     // Handle form submission
     nameForm.addEventListener('submit', async (e) => {
