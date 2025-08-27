@@ -804,5 +804,159 @@ body {
     }
 }
 
+/* Phone-specific optimizations */
+@media (max-width: 1000px) {
+    /* Optimize for mobile performance */
+    * {
+        -webkit-tap-highlight-color: transparent;
+        -webkit-touch-callout: none;
+        -webkit-user-select: none;
+        user-select: none;
+    }
+    
+    /* Allow text selection where needed */
+    .stat-value, .level-number, .chip-label, .attr-code {
+        -webkit-user-select: text;
+        user-select: text;
+    }
+    
+    /* Optimize animations for mobile */
+    .stat-chip, .attribute-item, .quests-mini-list li {
+        will-change: transform;
+        transform: translateZ(0);
+        backface-visibility: hidden;
+    }
+    
+    /* Touch interactions for mobile - simulate hover effects */
+    .stat-chip:active, .attribute-item:active, .quests-mini-list li:active,
+    .meta-trigger:active, .nav-btn:active {
+        background: rgba(255,255,255,0.08) !important;
+        border-color: rgba(168,85,247,0.5) !important;
+        transform: translateY(-2px) translateZ(0);
+        transition: all 0.1s ease;
+    }
+    
+    /* Touch feedback for buttons */
+    .phone-mode button:active,
+    .phone-mode .meta-trigger:active {
+        background: rgba(139,92,246,0.4) !important;
+        border-color: rgba(139,92,246,0.7) !important;
+        transform: scale(0.98);
+    }
+    
+    /* Touch feedback for interactive elements */
+    .phone-mode .stat-chip:active,
+    .phone-mode .attribute-item:active,
+    .phone-mode .quests-mini-list li:active {
+        background: rgba(255,255,255,0.06) !important;
+        border-color: rgba(168,85,247,0.4) !important;
+        box-shadow: 0 4px 12px rgba(139,92,246,0.3);
+    }
+    
+    /* Disable hover effects on mobile - use touch instead */
+    .phone-mode .stat-chip:hover,
+    .phone-mode .attribute-item:hover,
+    .phone-mode .quests-mini-list li:hover,
+    .phone-mode .meta-trigger:hover,
+    .phone-mode .nav-btn:hover {
+        transform: none;
+        background: inherit;
+        border-color: inherit;
+        box-shadow: inherit;
+    }
+    
+    /* Optimize scrolling */
+    .panel-glass {
+        -webkit-overflow-scrolling: touch;
+        overscroll-behavior: contain;
+    }
+    
+    /* Reduce repaints */
+    .neon-frame {
+        contain: layout style paint;
+    }
+    
+    /* Optimize background for mobile */
+    body {
+        background-attachment: scroll;
+        background-size: 100% 100%;
+    }
+    
+    /* Phone mode specific optimizations */
+    .phone-mode .stat-chip,
+    .phone-mode .attribute-item,
+    .phone-mode .quests-mini-list li {
+        transition: background-color 0.1s ease, border-color 0.1s ease, transform 0.1s ease, box-shadow 0.1s ease;
+        cursor: pointer;
+    }
+    
+    /* Touch ripple effect for better feedback */
+    .phone-mode .stat-chip,
+    .phone-mode .attribute-item,
+    .phone-mode .quests-mini-list li,
+    .phone-mode .meta-trigger {
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .phone-mode .stat-chip::after,
+    .phone-mode .attribute-item::after,
+    .phone-mode .quests-mini-list li::after,
+    .phone-mode .meta-trigger::after {
+        content: '';
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        width: 0;
+        height: 0;
+        background: rgba(139,92,246,0.3);
+        border-radius: 50%;
+        transform: translate(-50%, -50%);
+        transition: width 0.3s ease, height 0.3s ease;
+        pointer-events: none;
+    }
+    
+    .phone-mode .stat-chip:active::after,
+    .phone-mode .attribute-item:active::after,
+    .phone-mode .quests-mini-list li:active::after,
+    .phone-mode .meta-trigger:active::after {
+        width: 200px;
+        height: 200px;
+    }
+    
+    /* Reduced motion mode */
+    .reduced-motion * {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+    }
+    
+    /* Touch-friendly interactions */
+    .phone-mode button,
+    .phone-mode .meta-trigger,
+    .phone-mode .quests-mini-list li {
+        min-height: 44px;
+        touch-action: manipulation;
+    }
+    
+    /* Optimize loading ring for mobile */
+    .phone-mode .loading-ring {
+        transition: opacity 0.15s ease;
+    }
+    
+    /* Reduce backdrop-filter on mobile for better performance */
+    .phone-mode .panel-glass {
+        backdrop-filter: blur(4px);
+    }
+    
+    /* Optimize shadows for mobile */
+    .phone-mode .panel-glass {
+        box-shadow:
+            0 0 0 2px rgba(139,92,246,0.15) inset,
+            0 0 20px rgba(139,92,246,0.25),
+            0 0 40px rgba(232,121,249,0.15);
+    }
+}
+
 
 

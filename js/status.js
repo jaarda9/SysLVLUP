@@ -1,11 +1,37 @@
 // Global variables
 let userManager = null;
+let isPhone = false;
+let performanceMode = false;
 
 // Initialize when DOM is loaded
 document.addEventListener('DOMContentLoaded', () => {
     console.log('Status page loaded, initializing...');
+    
+    // Detect phone and set performance mode
+    detectDeviceAndSetPerformance();
+    
     initializeStatusPage();
 });
+
+// Detect device and set performance optimizations
+function detectDeviceAndSetPerformance() {
+    const userAgent = navigator.userAgent.toLowerCase();
+    const isMobile = /android|webos|iphone|ipad|ipod|blackberry|iemobile|opera mini/i.test(userAgent);
+    const isTouch = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
+    
+    isPhone = isMobile || isTouch;
+    performanceMode = isPhone;
+    
+    if (performanceMode) {
+        console.log('Phone detected - enabling performance mode');
+        document.body.classList.add('phone-mode');
+        
+        // Reduce motion for better performance
+        if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+            document.body.classList.add('reduced-motion');
+        }
+    }
+}
 
 // Hide loading ring when content is ready
 function hideLoadingRing() {
