@@ -401,8 +401,10 @@ body {
 .dot { width: 8px; height: 8px; border-radius: 999px; background: var(--muted); margin-right: 8px; display: inline-block; box-shadow: 0 0 6px rgba(168,85,247,0.5); }
 .dot.done { background: var(--good); }
 .dot.danger { background: var(--bad); }
+.dot.success { background: rgba(41, 196, 124, 0.514); box-shadow: 0 0 6px rgba(41, 196, 124, 0.45); }
 .pill { border-radius: 999px; padding: 2px 8px; border: 1px solid rgba(168,85,247,0.4); background: rgba(168,85,247,0.15); font-size: 11px; }
 .pill.danger { border-color: rgba(239,68,68,0.4); background: rgba(239,68,68,0.15); }
+.pill.muted { border-color: rgba(41, 196, 124, 0.514); background: rgba(41, 196, 124, 0.514); color: var(--muted); }
 
 /* Responsive layout */
 @media (max-width: 900px) {

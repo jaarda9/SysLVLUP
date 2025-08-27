@@ -216,13 +216,18 @@ function loadPlayerData(gameData) {
         }
     }
     
-    if (gameData.level) {
+    if (gameData.level !== undefined) {
         const levelNumber = document.querySelector('.level-number');
         if (levelNumber) {
             levelNumber.textContent = gameData.level;
         } else {
             console.warn('level-number element not found');
         }
+        // Sync any level pills if present
+        const levelPill1 = document.getElementById('player-level-pill');
+        if (levelPill1) levelPill1.textContent = String(gameData.level);
+        const levelPill2 = document.getElementById('player-level-pill-2');
+        if (levelPill2) levelPill2.textContent = String(gameData.level);
     }
     
     if (gameData.guild) {
