@@ -499,7 +499,7 @@ body {
 	.fatigue-ring { width: 80px; height: 80px; }
 }
 
-@media (max-width: 720px) {
+@media (max-width: 1000px) {
 	.status-main { padding: 0 12px; }
 	.panel-glass { padding: 20px; }
 	.panel-columns { grid-template-columns: 1fr; }
@@ -578,284 +578,180 @@ body {
 }
 
 /* Mobile Responsive Design - iPhone 11 & Mobile Optimized */
-/* Perfect Scaling for 1792 x 828 Screen (6.1-inch) */
-@media (max-width: 1000px) {
-    /* Proportional scaling based on 720x1000 -> 1792x828 ratio */
-    /* Width ratio: 1792/720 = 2.49, Height ratio: 828/1000 = 0.828 */
-    
+@media (max-width: 100px) {
+    /* Mobile-first adjustments */
     .neon-frame {
-        padding: 20px;
+        padding: 12px;
         min-height: 100vh;
-        display: flex;
-        align-items: center;
-        justify-content: center;
     }
     
     .panel-glass {
         width: 95vw;
-        max-width: 1700px; /* Scaled from 720px */
-        height: 95vh;
-        max-height: 750px; /* Scaled from 1000px */
-        padding: 32px 40px; /* Scaled padding */
-        margin: 0 auto;
-        border-radius: 20px; /* Scaled border radius */
-        position: relative;
-        overflow: hidden;
+        max-width: 360px;
+        padding: 16px 20px;
+        margin: 8px auto;
+        border-radius: 12px;
     }
     
-    /* Panel title - centered at top */
-    .panel-title {
-        position: absolute;
-        top: 20px;
-        left: 50%;
-        transform: translateX(-50%);
-        z-index: 10;
-        font-size: 1.1rem; /* Scaled font */
-        padding: 8px 20px; /* Scaled padding */
-    }
-    
-    /* Logout button - top right */
-    #logout-btn {
-        position: absolute;
-        top: 20px;
-        right: 24px;
-        z-index: 10;
-        width: 32px; /* Scaled size */
-        height: 32px;
-    }
-    
-    /* Main content area - maintain exact proportions */
-    .panel-columns {
-        display: flex;
-        gap: 40px; /* Scaled gap */
-        margin-top: 80px; /* Space for header */
-        height: calc(100% - 80px);
-        overflow: hidden;
-    }
-    
-    /* Left column - Level, Details, Quests */
-    .col-left {
-        flex: 0 0 400px; /* Scaled from original width */
-        display: flex;
+    /* Mobile-optimized character header */
+    .character-header {
         flex-direction: column;
-        gap: 24px; /* Scaled gap */
+        gap: 16px;
+        align-items: flex-start;
     }
     
-    /* Right column - Stats, Attributes, Job/Title */
-    .col-right {
-        flex: 1;
-        display: flex;
-        flex-direction: column;
-        gap: 24px; /* Scaled gap */
-    }
-    
-    /* Level block - scaled proportionally */
     .level-block {
-        margin: 0;
-        width: 4ch; /* Scaled width */
-        align-self: flex-start;
+        margin: 8px 0 0 12px;
+        width: 2.5ch;
     }
     
     .level-number {
-        font-size: 4rem; /* Scaled font */
+        font-size: 2.5rem;
         width: 100%;
     }
     
-    .level-label {
-        font-size: 1.1rem; /* Scaled font */
-    }
-    
-    /* Meta drop - Details button */
-    .meta-drop {
-        flex-shrink: 0;
-    }
-    
-    .meta-trigger {
-        padding: 16px 24px; /* Scaled padding */
-        font-size: 1rem; /* Scaled font */
-        border-radius: 10px; /* Scaled border radius */
-        min-height: 48px; /* Scaled height */
+    /* Mobile navigation buttons */
+    .nav-buttons {
         display: flex;
-        align-items: center;
-        justify-content: center;
-        background: rgba(255,255,255,0.05);
-        border: 1px solid rgba(168,85,247,0.3);
-        cursor: pointer;
+        gap: 12px;
+        width: 100%;
     }
     
-    /* Quests mini section */
-    .quests-mini {
+    .nav-buttons button {
         flex: 1;
-        min-height: 0;
-        display: flex;
-        flex-direction: column;
+        min-height: 44px;
+        padding: 12px 16px;
+        font-size: 0.9rem;
+        border-radius: 8px;
     }
     
-    .quests-mini-title {
-        font-size: 1rem; /* Scaled font */
-        margin-bottom: 16px; /* Scaled margin */
-        color: var(--accent);
-        font-weight: 600;
-    }
-    
-    .quests-mini-list {
-        flex: 1;
-        display: flex;
-        flex-direction: column;
-        gap: 12px; /* Scaled gap */
-    }
-    
-    .quests-mini-list li {
-        padding: 14px 16px; /* Scaled padding */
-        margin: 0;
-        border-radius: 10px; /* Scaled border radius */
-        flex-shrink: 0;
-        background: rgba(255,255,255,0.02);
-        border: 1px solid rgba(168,85,247,0.2);
-    }
-    
-    .quests-mini-list a {
-        padding: 14px 16px; /* Scaled padding */
-        display: block;
-        min-height: 48px; /* Scaled height */
-        text-decoration: none;
-        color: inherit;
-    }
-    
-    /* Job title section */
-    .job-title {
-        flex-shrink: 0;
-        padding: 20px; /* Scaled padding */
-        background: rgba(255,255,255,0.02);
-        border: 1px solid rgba(168,85,247,0.2);
-        border-radius: 14px; /* Scaled border radius */
-    }
-    
-    .job-title .row {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        margin-bottom: 12px; /* Scaled margin */
-        font-size: 1rem; /* Scaled font */
-    }
-    
-    .job-title .row:last-child {
-        margin-bottom: 0;
-    }
-    
-    /* Stats section - maintain exact layout */
-    .stats-grid {
-        display: flex;
-        flex-direction: column;
-        gap: 16px; /* Scaled gap */
-        flex-shrink: 0;
-    }
-    
-    .stat-row {
-        display: flex;
-        gap: 16px; /* Scaled gap */
+    /* Mobile-optimized stats */
+    .stats-section {
+        padding: 16px 14px;
+        margin: 16px 0;
     }
     
     .stat-chip {
-        flex: 1;
-        grid-template-columns: auto 1fr auto;
-        gap: 12px; /* Scaled gap */
-        padding: 14px 16px; /* Scaled padding */
-        margin: 0;
-        background: rgba(255,255,255,0.02);
-        border: 1px solid rgba(168,85,247,0.2);
-        border-radius: 12px; /* Scaled border radius */
+        grid-template-columns: 1fr;
+        gap: 8px;
+        padding: 12px;
+        margin-bottom: 12px;
     }
     
     .stat-bar {
-        display: grid;
-        grid-template-columns: 1fr auto;
+        display: flex;
         align-items: center;
-        gap: 10px; /* Scaled gap */
+        gap: 8px;
+        width: 100%;
     }
     
     .chip-bar {
-        min-height: 10px; /* Scaled height */
+        flex: 1;
+        min-height: 8px;
     }
     
     .stat-value {
-        min-width: 4ch; /* Scaled width */
+        min-width: 3ch;
         text-align: right;
-        font-size: 1rem; /* Scaled font */
-        font-weight: 700;
+        font-size: 0.9rem;
     }
     
-    .chip-label {
-        font-size: 1rem; /* Scaled font */
+    /* Mobile-optimized attributes */
+    .attributes-section {
+        padding: 16px 14px;
+        margin: 16px 0;
     }
     
-    /* Attributes section - maintain 2-column grid */
     .attributes-grid {
-        grid-template-columns: repeat(2, 1fr);
-        gap: 16px; /* Scaled gap */
-        flex: 1;
-        min-height: 0;
-        display: grid;
+        grid-template-columns: 1fr;
+        gap: 12px;
     }
     
     .attribute-item {
-        padding: 14px 16px; /* Scaled padding */
-        border-radius: 12px; /* Scaled border radius */
-        display: flex;
-        align-items: center;
-        gap: 10px; /* Scaled gap */
-        background: rgba(255,255,255,0.02);
-        border: 1px solid rgba(168,85,247,0.2);
+        padding: 12px;
+        border-radius: 10px;
     }
     
-    .attr-code {
-        font-size: 1rem; /* Scaled font */
+    /* Mobile-optimized quests */
+    .quests-mini {
+        padding: 16px 14px;
+        margin: 16px 0;
     }
     
-    /* Pills - scaled proportionally */
+    .quests-mini-list li {
+        padding: 12px;
+        margin-bottom: 8px;
+        border-radius: 8px;
+    }
+    
+    .quests-mini-list a {
+        padding: 12px;
+        display: block;
+        min-height: 44px;
+    }
+    
+    /* Mobile-optimized pills */
     .pill {
-        font-size: 0.9rem; /* Scaled font */
-        padding: 6px 10px; /* Scaled padding */
-        border-radius: 8px; /* Scaled border radius */
+        font-size: 0.8rem;
+        padding: 4px 8px;
+        border-radius: 6px;
     }
     
-    /* Fatigue ring - positioned absolutely */
+    /* Mobile-optimized fatigue ring */
     .fatigue-ring {
-        width: 64px; /* Scaled size */
-        height: 64px;
-        margin: 0;
-        position: absolute;
-        top: 24px;
-        right: 24px;
-        z-index: 5;
+        width: 60px;
+        height: 60px;
+        margin: 16px auto;
     }
     
     .fatigue-ring .fat-fg {
-        stroke-width: 4; /* Scaled stroke */
+        stroke-width: 4;
     }
     
-    .fat-label {
-        font-size: 0.9rem; /* Scaled font */
+    /* Mobile-optimized modal */
+    .modal {
+        padding: 16px;
     }
     
-    /* Touch optimizations */
-    button, a, input, .stat-chip, .attribute-item, .meta-trigger, .quests-mini-list li {
+    .modal-content {
+        width: 95vw;
+        max-width: 340px;
+        padding: 20px;
+        border-radius: 12px;
+    }
+    
+    .portal-title {
+        font-size: 1.5rem;
+    }
+    
+    .portal-description {
+        font-size: 0.9rem;
+        line-height: 1.4;
+    }
+    
+    #player-name-input {
+        min-height: 48px;
+        font-size: 1rem;
+        padding: 12px 16px;
+    }
+    
+    #start-game-btn {
+        min-height: 48px;
+        padding: 14px 20px;
+        font-size: 1rem;
+    }
+    
+    /* Mobile touch optimizations */
+    button, a, input, .stat-chip, .attribute-item {
         -webkit-tap-highlight-color: transparent;
         touch-action: manipulation;
-        cursor: pointer;
     }
     
-    /* No scrolling - everything fits perfectly */
-    .panel-glass, .panel-columns, .col-left, .col-right {
-        overflow: hidden;
-    }
-    
-    /* Hover effects for interactive elements */
-    .stat-chip:hover, .attribute-item:hover, .meta-trigger:hover, .quests-mini-list li:hover {
-        background: rgba(255,255,255,0.04);
-        border-color: rgba(168,85,247,0.3);
-        transform: translateY(-1px);
-        transition: all 0.2s ease;
+    /* Mobile scroll optimization */
+    .panel-glass {
+        -webkit-overflow-scrolling: touch;
+        overflow-y: auto;
+        max-height: 90vh;
     }
 }
 

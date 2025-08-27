@@ -446,6 +446,9 @@ function loadPlayerData(gameData) {
     }
     
     console.log('Player data loaded into UI successfully');
+    
+    // Hide loading ring after data is loaded
+    hideLoadingRing();
 }
 
 // Set up event listeners for the status page
