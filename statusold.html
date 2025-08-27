@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Status - SysLvLUp</title>
+    <link rel="stylesheet" href="css/status.css">
+    <link rel="manifest" href="manifest.json">
+    <link rel="icon" type="image/png" href="icons/icon-192x192.png">
+</head>
+<body>
+    <!-- Name Input Modal (shown for new players) -->
+    <div id="name-input-modal" class="modal">
+        <div class="modal-content">
+            <h2>🎮 Welcome to SysLvLUp!</h2>
+            <p>Please enter your character name to begin your journey:</p>
+            <form id="name-form">
+                <input type="text" id="player-name-input" placeholder="Enter your name..." maxlength="20" required>
+                <button type="submit" id="start-game-btn">Start Game</button>
+            </form>
+        </div>
+    </div>
+<div class="neon-frame">
+    <!-- Main Status Content (hidden until name is set) -->
+    <div class="neon-frame">
+    <div id="status-content" class="hidden panel-glass">
+        <div class="panel-title">STATUS</div>
+        <button id="logout-btn" class="icon-btn" aria-label="Logout" title="Logout">
+            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <line x1="12" y1="2" x2="12" y2="12" />
+                <path d="M18.36 6.64a9 9 0 1 1-12.73 0" />
+            </svg>
+        </button>
+        <!-- No visible header; controls remain hidden elsewhere -->
+
+        <!-- Main Status Display -->
+        <main class="status-main">
+            <!-- Character Info Section (preview layout) -->
+            <section class="character-info">
+                <div class="panel-columns">
+                    <div class="col-left">
+                        <div class="level-block">
+                            <div class="level-number" style="display:inline-block"><span id="level-number">1</span></div>
+                            <div class="level-label">LEVEL</div>
+                        </div>
+                        
+                        <div class="meta-drop">
+                            <div class="meta-trigger">DETAILS</div>
+                            <div class="meta-content">
+                                <div class="meta-row"><span class="muted">NAME</span><span id="name-text">Your Name</span></div>
+                                <div class="meta-row"><span class="muted">GUILD</span><span id="guild-text">Reaper</span></div>
+                                <div class="meta-row"><span class="muted">RACE</span><span id="race-text">Hunter</span></div>
+                                <div class="meta-row"><span class="muted">REGION</span><span id="region-text">TN</span></div>
+                                <div class="meta-row"><span class="muted">LOCATION</span><span id="location-text">Hospital</span></div>
+                                <div class="meta-row"><span class="muted">PING</span><span id="ping-text">60 ms</span></div>
+                            </div>
+                        </div>
+                        <div class="quests-mini">
+                            <div class="quests-mini-title">ACTIVE QUESTS</div>
+                            <ul class="quests-mini-list">
+                                <li><span class="dot done"></span> Grunt Work</li>
+                                <li><span class="dot"></span> [MAIN] Power <span class="pill">Lv.1</span></li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="col-right">
+                        <div class="job-title">
+                            <div class="row"><span class="muted">JOB</span><span id="job-text">Your Job</span></div>
+                            <div class="row"><span class="muted">TITLE</span><span id="title-text">Your Title</span></div>
+                        </div>
+                        <div class="module">
+                            <div class="stats-grid">
+                                <div class="stat-row">
+                                    <div class="stat-chip"><span class="chip-label"><span class="icon">❤️</span>HP</span><div class="chip-bar"><div id="hp-fill" class="chip-fill hp-fill" style="width: 100%"></div></div><span class="stat-value">100</span></div>
+                                    <div class="stat-chip"><span class="chip-label"><span class="icon">✨</span>MP</span><div class="chip-bar"><div id="mp-fill" class="chip-fill mp-fill" style="width: 100%"></div></div><span class="stat-value">100</span></div>
+                                </div>
+                                <div class="stat-row">
+                                    <div class="stat-chip"><span class="chip-label"><span class="icon">🏃</span>STM</span><div class="chip-bar"><div id="stm-fill" class="chip-fill stm-fill" style="width: 100%"></div></div><span class="stat-value">100</span></div>
+                                    <div class="stat-chip"><span class="chip-label"><span class="icon">⭐</span>EXP</span><div class="chip-bar"><div id="exp-fill" class="chip-fill exp-fill" style="width: 0%"></div></div><span class="stat-value">0</span></div>
+                                </div>
+                                <div class="fatigue-ring" style="--fatigue:0">
+                                    <svg viewBox="0 0 80 80" width="80" height="80" aria-hidden="true">
+                                        <defs>
+                                            <linearGradient id="fatigueGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                                                <stop offset="0%" stop-color="#9ca3af">
+                                                    <animate attributeName="stop-color" values="#9ca3af;#6b7280;#4b5563;#6b7280;#9ca3af" dur="3s" repeatCount="indefinite"/>
+                                                </stop>
+                                                <stop offset="25%" stop-color="#6b7280">
+                                                    <animate attributeName="stop-color" values="#6b7280;#4b5563;#9ca3af;#4b5563;#6b7280" dur="3s" repeatCount="indefinite"/>
+                                                </stop>
+                                                <stop offset="50%" stop-color="#4b5563">
+                                                    <animate attributeName="stop-color" values="#4b5563;#9ca3af;#6b7280;#9ca3af;#4b5563" dur="3s" repeatCount="indefinite"/>
+                                                </stop>
+                                                <stop offset="75%" stop-color="#6b7280">
+                                                    <animate attributeName="stop-color" values="#6b7280;#4b5563;#9ca3af;#4b5563;#6b7280" dur="3s" repeatCount="indefinite"/>
+                                                </stop>
+                                                <stop offset="100%" stop-color="#9ca3af">
+                                                    <animate attributeName="stop-color" values="#9ca3af;#6b7280;#4b5563;#6b7280;#9ca3af" dur="3s" repeatCount="indefinite"/>
+                                                </stop>
+                                            </linearGradient>
+                                        </defs>
+                                        <circle class="fat-bg" cx="40" cy="40" r="32" />
+                                        <circle class="fat-fg" cx="40" cy="40" r="32" />
+                                    </svg>
+                                    <div class="fat-label"><span><span class="icon">😴</span>FAT</span><strong class="fatigue-value">0</strong></div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="attributes-grid neon">
+                            <div class="attribute-item"><span class="attr-code"><span class="icon">💪</span>STR</span><span id="str-value">10</span><span class="green" id="str-stacked">(+0)</span></div>
+                            <div class="attribute-item"><span class="attr-code"><span class="icon">🛡️</span>VIT</span><span id="vit-value">10</span><span class="green" id="vit-stacked">(+0)</span></div>
+                            <div class="attribute-item"><span class="attr-code"><span class="icon">🏃</span>AGI</span><span id="agi-value">10</span><span class="green" id="agi-stacked">(+0)</span></div>
+                            <div class="attribute-item"><span class="attr-code"><span class="icon">🧠</span>INT</span><span id="int-value">10</span><span class="green" id="int-stacked">(+0)</span></div>
+                            <div class="attribute-item"><span class="attr-code"><span class="icon">👁️</span>PER</span><span id="per-value">10</span><span class="green" id="per-stacked">(+0)</span></div>
+                            <div class="attribute-item"><span class="attr-code"><span class="icon">🧙</span>WIS</span><span id="wis-value">10</span><span class="green" id="wis-stacked">(+0)</span></div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Navigation Section -->
+            <section class="navigation-section test-only">
+                <h3>Navigation</h3>
+                <div class="nav-buttons">
+                    <a href="daily_quest.html" class="nav-btn">Daily Quests</a>
+                    <a href="dental-study.html" class="nav-btn">Dental Study</a>
+                    <a href="Rituaal.html" class="nav-btn">Ritual</a>
+                    <a href="alarm.html" class="nav-btn">Alarm</a>
+                </div>
+            </section>
+        </main>
+    </div>
+    </div>
+</div>
+
+    <!-- Import Modal -->
+    <div id="import-modal" class="modal hidden">
+        <div class="modal-content">
+            <h3>Import Data</h3>
+            <textarea id="import-textarea" placeholder="Paste your exported data here..."></textarea>
+            <div class="modal-buttons">
+                <button id="confirm-import">Import</button>
+                <button id="cancel-import">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- File Input for Import -->
+    <input type="file" id="file-input" accept=".json" style="display: none;">
+
+    <!-- Scripts -->
+    <script src="js/user-manager.js"></script>
+    <script src="js/status.js"></script>
+    
+    <!-- Service Worker Registration -->
+    <script>
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('sw.js')
+                .then(registration => {
+                    console.log('SW registered:', registration);
+                })
+                .catch(error => {
+                    console.log('SW registration failed:', error);
+                });
+        }
+    </script>
+</body>
+</html>

@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Status - SysLvLUp</title>
-    <link rel="stylesheet" href="css/status.css">
+    <title>Status Design Preview</title>
+    <link rel="stylesheet" href="css/status-preview.css">
     <link rel="manifest" href="manifest.json">
     <link rel="icon" type="image/png" href="icons/icon-192x192.png">
 </head>
@@ -20,8 +20,7 @@
             </form>
         </div>
     </div>
-
-    <div id="status-content" class="hidden neon-frame">
+    <div class="neon-frame">
         <div class="panel-glass">
             <div class="panel-title">STATUS</div>
             <button id="logout-btn" class="icon-btn" aria-label="Logout" title="Logout">
@@ -30,19 +29,11 @@
                     <path d="M18.36 6.64a9 9 0 1 1-12.73 0" />
                 </svg>
             </button>
-            <!-- Hidden utility controls to preserve JS hooks -->
-            <div style="display:none">
-                <button id="export-btn">Export</button>
-                <button id="import-btn">Import</button>
-                <button id="daily-reset-btn">Daily Reset</button>
-                <button id="force-reset-check-btn">Debug Reset</button>
-                <button id="reset-btn">Reset</button>
-            </div>
 
             <div class="panel-columns">
                 <div class="col-left">
                     <div class="level-block">
-                        <div class="level-number" style="display:inline-block"><span id="level-number">100</span></div>
+                        <div class="level-number" style="display:inline-block">100</div>
                         <div class="level-label">LEVEL</div>
                     </div>
 
@@ -138,38 +129,6 @@
             </div>
         </div>
     </div>
-
-    <!-- Import Modal -->
-    <div id="import-modal" class="modal hidden">
-        <div class="modal-content">
-            <h3>Import Data</h3>
-            <textarea id="import-textarea" placeholder="Paste your exported data here..."></textarea>
-            <div class="modal-buttons">
-                <button id="confirm-import">Import</button>
-                <button id="cancel-import">Cancel</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- File Input for Import -->
-    <input type="file" id="file-input" accept=".json" style="display: none;">
-
-    <!-- Scripts -->
-    <script src="js/user-manager.js"></script>
-    <script src="js/status.js"></script>
-    
-    <!-- Service Worker Registration -->
-    <script>
-        if ('serviceWorker' in navigator) {
-            navigator.serviceWorker.register('sw.js')
-                .then(registration => {
-                    console.log('SW registered:', registration);
-                })
-                .catch(error => {
-                    console.log('SW registration failed:', error);
-                });
-        }
-    </script>
 </body>
 </html>
 
