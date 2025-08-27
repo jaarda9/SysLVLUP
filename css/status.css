@@ -162,7 +162,9 @@ body {
 
 .stats-section h3, .attributes-section h3, .navigation-section h3 { margin: 0 0 12px; font-size: 14px; color: var(--muted); font-weight: 600; letter-spacing: 0.6px; }
 
-.stat-bar { display: grid; grid-template-columns: 60px 1fr 46px; align-items: center; gap: 10px; margin: 12px 0; }
+.stat-bar { display: grid; grid-template-columns: 1fr auto; align-items: center; gap: 10px; }
+.stat-bar .chip-bar { margin: 0; }
+.stat-bar .stat-value { text-align: right; font-weight: 700; }
 .stat-bar label { color: var(--muted); font-weight: 700; }
 .bar-container { background: var(--glass); height: 10px; border-radius: 999px; overflow: hidden; border: 1px solid rgba(168,85,247,0.25); }
 .bar-fill { height: 100%; border-radius: 999px; box-shadow: 0 6px 18px rgba(168,85,247,0.35); }
