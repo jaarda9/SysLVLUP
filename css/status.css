@@ -578,7 +578,7 @@ body {
 }
 
 /* Mobile Responsive Design - iPhone 11 & Mobile Optimized */
-@media (max-width: 768px) {
+@media (max-width: 1000px) {
     /* Mobile-first adjustments */
     .neon-frame {
         padding: 12px;
