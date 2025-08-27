@@ -820,3 +820,88 @@ function showDailyResetNotification() {
         }
     }, 5000);
 }
+ // Sync the small level pill with the main level number
+ document.addEventListener('DOMContentLoaded', function () {
+    var levelEl = document.querySelector('.level-number');
+    var pillEl = document.getElementById('player-level-pill');
+    if (!levelEl || !pillEl) return;
+
+    function syncPill() {
+        pillEl.textContent = (levelEl.textContent || '').trim();
+    }
+
+    // Initial sync
+    syncPill();
+
+    // Observe changes to the level element's text
+    var observer = new MutationObserver(syncPill);
+    observer.observe(levelEl, { characterData: true, childList: true, subtree: true });
+
+    // Also resync on visibility/focus just in case
+    document.addEventListener('visibilitychange', function () {
+        if (document.visibilityState === 'visible') syncPill();
+    });
+    window.addEventListener('focus', syncPill);
+});
+
+  // Keep fatigue ring and stacked attributes in sync with current data
+  document.addEventListener('DOMContentLoaded', function () {
+    var fatRing = document.querySelector('.fatigue-ring');
+    var fatVal  = document.querySelector('.fatigue-value');
+
+    function syncFatigueRing() {
+        if (fatRing && fatVal) {
+            var v = parseInt((fatVal.textContent || '0').replace(/[^0-9]/g, ''), 10);
+            if (!isNaN(v)) {
+                fatRing.style.setProperty('--fatigue', String(v));
+            }
+        }
+    }
+
+    // Initial sync and observe text changes
+    syncFatigueRing();
+    if (fatVal) {
+        var fatObs = new MutationObserver(syncFatigueRing);
+        fatObs.observe(fatVal, { characterData: true, childList: true, subtree: true });
+    }
+
+    async function syncStackedAttributes() {
+        try {
+            if (window.userManager && typeof window.userManager.getData === 'function') {
+                var data = window.userManager.getData();
+                var stacked = data && data.gameData ? data.gameData.stackedAttributes : null;
+                if (stacked) {
+                    var map = [
+                        ['str-stacked', stacked.STR],
+                        ['vit-stacked', stacked.VIT],
+                        ['agi-stacked', stacked.AGI],
+                        ['int-stacked', stacked.INT],
+                        ['per-stacked', stacked.PER],
+                        ['wis-stacked', stacked.WIS]
+                    ];
+                    map.forEach(function (pair) {
+                        var el = document.getElementById(pair[0]);
+                        if (el && pair[1] !== undefined && pair[1] !== null) {
+                            el.textContent = "+" + pair[1];
+                        }
+                    });
+                }
+            }
+        } catch (e) { /* no-op */ }
+    }
+
+    // Initial stacked attributes sync
+    syncStackedAttributes();
+
+    // Resync when page becomes visible again
+    document.addEventListener('visibilitychange', function () {
+        if (document.visibilityState === 'visible') {
+            syncFatigueRing();
+            syncStackedAttributes();
+        }
+    });
+    window.addEventListener('focus', function () {
+        syncFatigueRing();
+        syncStackedAttributes();
+    });
+});
