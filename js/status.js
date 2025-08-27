@@ -208,11 +208,18 @@ function loadPlayerData(gameData) {
     
     // Update character info
     if (gameData.name || gameData.job) {
+        const jobValue = gameData.job || gameData.name;
         const jobText = document.getElementById('job-text');
         if (jobText) {
-            jobText.textContent = gameData.job || gameData.name;
+            jobText.textContent = jobValue;
         } else {
             console.warn('job-text element not found');
+        }
+        const nameText = document.getElementById('name-text');
+        if (nameText) {
+            nameText.textContent = jobValue;
+        } else {
+            console.warn('name-text element not found');
         }
     }
     
