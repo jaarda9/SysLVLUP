@@ -207,17 +207,21 @@ function loadPlayerData(gameData) {
     console.log('ping-text exists:', !!document.getElementById('ping-text'));
     
     // Update character info
-    if (gameData.name || gameData.job) {
-        const jobValue = gameData.job || gameData.name;
+    // job-text should display the player's NAME from the database
+    if (gameData.name) {
         const jobText = document.getElementById('job-text');
         if (jobText) {
-            jobText.textContent = jobValue;
+            jobText.textContent = gameData.name;
         } else {
             console.warn('job-text element not found');
         }
+    }
+
+    // name-text should display the player's JOB from the database
+    if (gameData.job !== undefined) {
         const nameText = document.getElementById('name-text');
         if (nameText) {
-            nameText.textContent = jobValue;
+            nameText.textContent = gameData.job || 'None';
         } else {
             console.warn('name-text element not found');
         }
