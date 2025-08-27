@@ -577,5 +577,232 @@ body {
     filter: saturate(1.25) brightness(1.1);
 }
 
+/* Mobile Responsive Design - iPhone 11 & Mobile Optimized */
+@media (max-width: 768px) {
+    /* Mobile-first adjustments */
+    .neon-frame {
+        padding: 12px;
+        min-height: 100vh;
+    }
+    
+    .panel-glass {
+        width: 95vw;
+        max-width: 360px;
+        padding: 16px 20px;
+        margin: 8px auto;
+        border-radius: 12px;
+    }
+    
+    /* Mobile-optimized character header */
+    .character-header {
+        flex-direction: column;
+        gap: 16px;
+        align-items: flex-start;
+    }
+    
+    .level-block {
+        margin: 8px 0 0 12px;
+        width: 2.5ch;
+    }
+    
+    .level-number {
+        font-size: 2.5rem;
+        width: 100%;
+    }
+    
+    /* Mobile navigation buttons */
+    .nav-buttons {
+        display: flex;
+        gap: 12px;
+        width: 100%;
+    }
+    
+    .nav-buttons button {
+        flex: 1;
+        min-height: 44px;
+        padding: 12px 16px;
+        font-size: 0.9rem;
+        border-radius: 8px;
+    }
+    
+    /* Mobile-optimized stats */
+    .stats-section {
+        padding: 16px 14px;
+        margin: 16px 0;
+    }
+    
+    .stat-chip {
+        grid-template-columns: 1fr;
+        gap: 8px;
+        padding: 12px;
+        margin-bottom: 12px;
+    }
+    
+    .stat-bar {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        width: 100%;
+    }
+    
+    .chip-bar {
+        flex: 1;
+        min-height: 8px;
+    }
+    
+    .stat-value {
+        min-width: 3ch;
+        text-align: right;
+        font-size: 0.9rem;
+    }
+    
+    /* Mobile-optimized attributes */
+    .attributes-section {
+        padding: 16px 14px;
+        margin: 16px 0;
+    }
+    
+    .attributes-grid {
+        grid-template-columns: 1fr;
+        gap: 12px;
+    }
+    
+    .attribute-item {
+        padding: 12px;
+        border-radius: 10px;
+    }
+    
+    /* Mobile-optimized quests */
+    .quests-mini {
+        padding: 16px 14px;
+        margin: 16px 0;
+    }
+    
+    .quests-mini-list li {
+        padding: 12px;
+        margin-bottom: 8px;
+        border-radius: 8px;
+    }
+    
+    .quests-mini-list a {
+        padding: 12px;
+        display: block;
+        min-height: 44px;
+    }
+    
+    /* Mobile-optimized pills */
+    .pill {
+        font-size: 0.8rem;
+        padding: 4px 8px;
+        border-radius: 6px;
+    }
+    
+    /* Mobile-optimized fatigue ring */
+    .fatigue-ring {
+        width: 60px;
+        height: 60px;
+        margin: 16px auto;
+    }
+    
+    .fatigue-ring .fat-fg {
+        stroke-width: 4;
+    }
+    
+    /* Mobile-optimized modal */
+    .modal {
+        padding: 16px;
+    }
+    
+    .modal-content {
+        width: 95vw;
+        max-width: 340px;
+        padding: 20px;
+        border-radius: 12px;
+    }
+    
+    .portal-title {
+        font-size: 1.5rem;
+    }
+    
+    .portal-description {
+        font-size: 0.9rem;
+        line-height: 1.4;
+    }
+    
+    #player-name-input {
+        min-height: 48px;
+        font-size: 1rem;
+        padding: 12px 16px;
+    }
+    
+    #start-game-btn {
+        min-height: 48px;
+        padding: 14px 20px;
+        font-size: 1rem;
+    }
+    
+    /* Mobile touch optimizations */
+    button, a, input, .stat-chip, .attribute-item {
+        -webkit-tap-highlight-color: transparent;
+        touch-action: manipulation;
+    }
+    
+    /* Mobile scroll optimization */
+    .panel-glass {
+        -webkit-overflow-scrolling: touch;
+        overflow-y: auto;
+        max-height: 90vh;
+    }
+}
+
+/* iPhone 11 Specific Optimizations */
+@media (max-width: 414px) and (max-height: 896px) {
+    .panel-glass {
+        width: 92vw;
+        max-width: 340px;
+        padding: 14px 18px;
+    }
+    
+    .level-number {
+        font-size: 2.2rem;
+    }
+    
+    .stat-chip {
+        padding: 10px;
+        margin-bottom: 10px;
+    }
+    
+    .attributes-grid {
+        gap: 10px;
+    }
+    
+    .attribute-item {
+        padding: 10px;
+    }
+}
+
+/* Landscape Mobile Optimization */
+@media (max-width: 896px) and (orientation: landscape) {
+    .neon-frame {
+        padding: 8px;
+    }
+    
+    .panel-glass {
+        max-height: 85vh;
+        overflow-y: auto;
+    }
+    
+    .character-header {
+        flex-direction: row;
+        gap: 20px;
+        align-items: center;
+    }
+    
+    .stats-section, .attributes-section {
+        margin: 12px 0;
+        padding: 12px 14px;
+    }
+}
+
 
 
