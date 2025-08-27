@@ -207,10 +207,10 @@ function loadPlayerData(gameData) {
     console.log('ping-text exists:', !!document.getElementById('ping-text'));
     
     // Update character info
-    if (gameData.name) {
+    if (gameData.name || gameData.job) {
         const jobText = document.getElementById('job-text');
         if (jobText) {
-            jobText.textContent = gameData.name;
+            jobText.textContent = gameData.job || gameData.name;
         } else {
             console.warn('job-text element not found');
         }

@@ -269,6 +269,7 @@ class UserManager {
         exp: 0,
         fatigue: 0,
         name: playerName,
+        job: "None",
         ping: "60 ms",
         guild: "Reaper",
         race: "Hunter",
