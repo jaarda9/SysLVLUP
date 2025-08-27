@@ -270,7 +270,7 @@ body {
 }
 .panel-columns { display: grid; grid-template-columns: 180px 1fr; gap: 24px; }
 .col-left { display: grid; place-items: start; }
-.level-block { text-align: center; }
+.level-block { text-align: center; margin: 8px 0 0 8px; }
 .level-number { font-size: 72px; font-weight: 800; line-height: 1; }
 .level-label { color: var(--muted); font-weight: 700; margin-top: 6px; }
 
@@ -411,7 +411,7 @@ body {
 	.panel-columns { grid-template-columns: 1fr; }
 	.col-left { order: 0; }
 	.col-right { order: 1; }
-	.level-block { margin-bottom: 10px; }
+	.level-block { margin: 0 0 10px 0; }
 	.quests-mini { margin-top: 10px; }
 	.stats-grid { grid-template-columns: 1fr; }
 	.fatigue-ring { grid-column: 1 / -1; grid-row: auto; margin: 6px auto 0; }
