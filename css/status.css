@@ -15,6 +15,58 @@
 	--glass: rgba(255,255,255,0.06);
 	--glass-2: rgba(255,255,255,0.12);
 }
+/* Loading Ring */
+.loading-container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: radial-gradient(60% 60% at 50% 20%, #1b1237, var(--bg) 60%);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 9999;
+}
+
+.loading-ring {
+    text-align: center;
+}
+
+.loading-spinner {
+    width: 80px;
+    height: 80px;
+    border: 4px solid rgba(139,92,246,0.2);
+    border-top: 4px solid var(--primary);
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin: 0 auto 20px;
+    box-shadow: 0 0 20px rgba(139,92,246,0.3);
+}
+
+.loading-text {
+    color: var(--text);
+    font-size: 16px;
+    font-weight: 600;
+    letter-spacing: 1px;
+    animation: pulse 2s ease-in-out infinite;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+@keyframes pulse {
+    0%, 100% { opacity: 0.7; }
+    50% { opacity: 1; }
+}
+
+/* Hide loading when content is ready */
+.loading-container.hidden {
+    display: none;
+}
+
 /* Main content styles */
 .hidden {
     display: none !important;

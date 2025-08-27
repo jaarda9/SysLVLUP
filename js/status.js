@@ -7,6 +7,22 @@ document.addEventListener('DOMContentLoaded', () => {
     initializeStatusPage();
 });
 
+// Hide loading ring when content is ready
+function hideLoadingRing() {
+    const loadingRing = document.getElementById('loading-ring');
+    if (loadingRing) {
+        loadingRing.classList.add('hidden');
+    }
+}
+
+// Show loading ring
+function showLoadingRing() {
+    const loadingRing = document.getElementById('loading-ring');
+    if (loadingRing) {
+        loadingRing.classList.remove('hidden');
+    }
+}
+
 // Reload fresh data when page becomes visible (user returns from other pages)
 document.addEventListener('visibilitychange', async () => {
     if (document.visibilityState === 'visible' && userManager && userManager.hasUserId()) {
