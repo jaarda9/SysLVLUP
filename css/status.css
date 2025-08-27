@@ -270,9 +270,14 @@ body {
 }
 .panel-columns { display: grid; grid-template-columns: 180px 1fr; gap: 24px; }
 .col-left { display: grid; place-items: start; }
-.level-block { text-align: center; margin: 8px 0 0 8px; }
-.level-number { font-size: 72px; font-weight: 800; line-height: 1; }
-.level-label { color: var(--muted); font-weight: 700; margin-top: 6px; }
+.level-block { text-align: center; margin: 10px 0 0 20px; width: 3ch; position: relative; }
+.level-number { font-size: 72px; font-weight: 800; line-height: 1; font-variant-numeric: tabular-nums; font-feature-settings: 'tnum' 1, 'lnum' 1; width: 100%; display: inline-block; text-align: center; text-shadow: 0 0 8px rgba(139,92,246,0.45), 0 0 18px rgba(232,121,249,0.35); animation: levelGlow 3s ease-in-out infinite; }
+.level-label { color: var(--muted); font-weight: 700; margin-top: 6px; display: block; width: 100%; text-align: center; }
+
+@keyframes levelGlow {
+	0%, 100% { filter: brightness(1); text-shadow: 0 0 8px rgba(139,92,246,0.35), 0 0 18px rgba(232,121,249,0.25); }
+	50% { filter: brightness(1.06); text-shadow: 0 0 12px rgba(139,92,246,0.6), 0 0 28px rgba(232,121,249,0.45); }
+}
 
 .job-title .row { display: flex; gap: 8px; margin-bottom: 4px; align-items: baseline; }
 .muted { color: var(--muted); font-size: 12px; letter-spacing: 1px; }
@@ -411,7 +416,7 @@ body {
 	.panel-columns { grid-template-columns: 1fr; }
 	.col-left { order: 0; }
 	.col-right { order: 1; }
-	.level-block { margin: 0 0 10px 0; }
+	.level-block { margin: 0px 0 10px 10px; text-align: left; }
 	.quests-mini { margin-top: 10px; }
 	.stats-grid { grid-template-columns: 1fr; }
 	.fatigue-ring { grid-column: 1 / -1; grid-row: auto; margin: 6px auto 0; }
