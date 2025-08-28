@@ -490,6 +490,64 @@
             }
           }
           
+          // DIRECT FATIGUE DATA EXTRACTION - BYPASSING BROKEN SYNC SYSTEM
+          function loadFatigueFromDatabase() {
+            console.log('🚀 DIRECTLY LOADING FATIGUE FROM DATABASE...');
+            
+            // Method 1: Try to get from localStorage
+            const userData = localStorage.getItem('userData');
+            if (userData) {
+              try {
+                const parsed = JSON.parse(userData);
+                if (parsed.gameData && parsed.gameData.fatigue !== undefined) {
+                  console.log('✅ Found fatigue in localStorage:', parsed.gameData.fatigue);
+                  window.updateFatigueRing(parsed.gameData.fatigue);
+                  return true;
+                }
+              } catch (e) {
+                console.log('❌ Error parsing localStorage:', e);
+              }
+            }
+            
+            // Method 2: Try to get from sessionStorage
+            const sessionData = sessionStorage.getItem('userData');
+            if (sessionData) {
+              try {
+                const parsed = JSON.parse(sessionData);
+                if (parsed.gameData && parsed.gameData.fatigue !== undefined) {
+                  console.log('✅ Found fatigue in sessionStorage:', parsed.gameData.fatigue);
+                  window.updateFatigueRing(parsed.gameData.fatigue);
+                  return true;
+                }
+              } catch (e) {
+                console.log('❌ Error parsing sessionStorage:', e);
+              }
+            }
+            
+            // Method 3: Try to get from any global variables that might exist
+            if (window.gameData && window.gameData.fatigue !== undefined) {
+              console.log('✅ Found fatigue in window.gameData:', window.gameData.fatigue);
+              window.updateFatigueRing(window.gameData.fatigue);
+              return true;
+            }
+            
+            // Method 4: Check if status.js has already loaded data somewhere
+            const existingFatigueElements = document.querySelectorAll('[id*="fatigue"]');
+            for (let element of existingFatigueElements) {
+              if (element.textContent && element.textContent.includes('/')) {
+                const fatigueValue = parseInt(element.textContent.split('/')[0]);
+                if (!isNaN(fatigueValue) && fatigueValue > 0) {
+                  console.log('✅ Found fatigue in existing element:', fatigueValue);
+                  window.updateFatigueRing(fatigueValue);
+                  return true;
+                }
+              }
+            }
+            
+            console.log('❌ No fatigue data found in any source');
+            return false;
+          }
+          
           // Create a global function that status.js can call to update our fatigue ring
           window.updateFatigueRing = function(fatigueValue) {
             const ringProgress = document.getElementById('fatringprogg');
@@ -504,49 +562,48 @@
               ringProgress.style.strokeDashoffset = progress;
               fatValue.textContent = fatigueValue;
               
-              console.log(`Fatigue ring updated to ${fatigueValue}%, Progress: ${progress}`);
+              console.log(`🎯 FATIGUE RING UPDATED TO ${fatigueValue}%, Progress: ${progress}`);
+            } else {
+              console.log('❌ Ring elements not found:', {ringProgress: !!ringProgress, fatValue: !!fatValue});
             }
           };
           
-          // Set initial fatigue to 0 (will be updated by status.js)
-          window.updateFatigueRing(0);
+          // AGGRESSIVE FATIGUE LOADING - MULTIPLE ATTEMPTS
+          console.log('🚀 STARTING AGGRESSIVE FATIGUE LOADING...');
           
-          // Debug: Check what fatigue elements exist and their content
-          console.log('=== FATIGUE ELEMENT DEBUG ===');
-          console.log('fatigue-value-old element:', document.getElementById('fatigue-value-old'));
-          console.log('fatigue-value-old content:', document.getElementById('fatigue-value-old')?.textContent);
-          console.log('fatigue-value element:', document.getElementById('fatigue-value'));
-          console.log('fatigue-value content:', document.getElementById('fatigue-value')?.textContent);
-          
-          // Watch for changes to the fatigue-value-old element that status.js actually updates
-          const fatigueObserver = new MutationObserver(function(mutations) {
-            mutations.forEach(function(mutation) {
-              console.log('Fatigue mutation detected:', mutation.type, mutation.target.textContent);
-              
-              if (mutation.type === 'characterData' || mutation.type === 'childList') {
-                const fatigueElement = document.getElementById('fatigue-value-old');
-                if (fatigueElement && fatigueElement.textContent.includes('/')) {
-                  // Extract the fatigue value from "X/100" format
-                  const fatigueValue = parseInt(fatigueElement.textContent.split('/')[0]);
-                  console.log('Extracted fatigue value:', fatigueValue);
-                  if (!isNaN(fatigueValue)) {
-                    window.updateFatigueRing(fatigueValue);
+          // Attempt 1: Immediate load
+          if (!loadFatigueFromDatabase()) {
+            console.log('⚠️ Immediate load failed, trying delayed loads...');
+            
+            // Attempt 2: After 500ms
+            setTimeout(() => {
+              if (!loadFatigueFromDatabase()) {
+                console.log('⚠️ 500ms load failed, trying 1s...');
+                
+                // Attempt 3: After 1 second
+                setTimeout(() => {
+                  if (!loadFatigueFromDatabase()) {
+                    console.log('⚠️ 1s load failed, trying 2s...');
+                    
+                    // Attempt 4: After 2 seconds
+                    setTimeout(() => {
+                      if (!loadFatigueFromDatabase()) {
+                        console.log('⚠️ 2s load failed, trying 3s...');
+                        
+                        // Attempt 5: After 3 seconds
+                        setTimeout(() => {
+                          if (!loadFatigueFromDatabase()) {
+                            console.log('❌ ALL FATIGUE LOADING ATTEMPTS FAILED');
+                            console.log('🔍 SETTING TO DEFAULT VALUE 20%');
+                            window.updateFatigueRing(20);
+                          }
+                        }, 1000);
+                      }
+                    }, 1000);
                   }
-                }
+                }, 1000);
               }
-            });
-          });
-          
-          // Start observing the fatigue-value-old element (the one status.js actually updates)
-          const fatigueElement = document.getElementById('fatigue-value-old');
-          if (fatigueElement) {
-            fatigueObserver.observe(fatigueElement, {
-              childList: true,
-              characterData: true
-            });
-            console.log('✅ Started observing fatigue-value-old element');
-          } else {
-            console.log('❌ fatigue-value-old element not found for observing');
+            }, 500);
           }
           
           // Sync attribute values
@@ -638,6 +695,73 @@
               console.log(`Manually updating ring to ${fatigueValue}%`);
               window.updateFatigueRing(fatigueValue);
             }
+          }
+        }
+        
+        // Function to manually set fatigue (for testing)
+        function setFatigue(value) {
+          console.log(`Setting fatigue to ${value}%`);
+          window.updateFatigueRing(value);
+          
+          // Also update the fatigue-value-old element to simulate database update
+          const fatigueOld = document.getElementById('fatigue-value-old');
+          if (fatigueOld) {
+            fatigueOld.textContent = `${value}/100`;
+            console.log(`Updated fatigue-value-old to ${value}/100`);
+          }
+        }
+        
+        // Function to force load fatigue from database
+        function forceLoadFatigue() {
+          console.log('🚀 FORCE LOADING FATIGUE FROM DATABASE...');
+          return loadFatigueFromDatabase();
+        }
+        
+        // Function to check what's in the database (for debugging)
+        function checkDatabase() {
+          console.log('=== DATABASE CHECK ===');
+          
+          // Check localStorage for game data
+          const userData = localStorage.getItem('userData');
+          if (userData) {
+            try {
+              const parsed = JSON.parse(userData);
+              console.log('LocalStorage userData:', parsed);
+              
+              if (parsed.gameData) {
+                console.log('Game data fields:', Object.keys(parsed.gameData));
+                console.log('Fatigue in gameData:', parsed.gameData.fatigue);
+                console.log('All gameData values:', parsed.gameData);
+              }
+            } catch (e) {
+              console.log('Error parsing localStorage:', e);
+            }
+          } else {
+            console.log('No userData in localStorage');
+          }
+        }
+        
+        // Function to check what's in the database (for debugging)
+        function checkDatabase() {
+          console.log('=== DATABASE CHECK ===');
+          
+          // Check localStorage for game data
+          const userData = localStorage.getItem('userData');
+          if (userData) {
+            try {
+              const parsed = JSON.parse(userData);
+              console.log('LocalStorage userData:', parsed);
+              
+              if (parsed.gameData) {
+                console.log('Game data fields:', Object.keys(parsed.gameData));
+                console.log('Fatigue in gameData:', parsed.gameData.fatigue);
+                console.log('All gameData values:', parsed.gameData);
+              }
+            } catch (e) {
+              console.log('Error parsing localStorage:', e);
+            }
+          } else {
+            console.log('No userData in localStorage');
           }
         }
         
