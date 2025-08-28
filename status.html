@@ -416,6 +416,9 @@
             const circumference = 2 * Math.PI * 16; // r=16 from SVG
             const progress = (fatigueValue / 100) * circumference;
             ring.style.strokeDasharray = `${progress} ${circumference}`;
+            console.log('Fatigue ring updated:', fatigueValue, 'Progress:', progress, 'Circumference:', circumference);
+          } else {
+            console.log('Fatigue ring not found');
           }
         }
 
@@ -426,6 +429,9 @@
             const value = parseInt(fatigueValue.textContent);
             updateFatigueRing(value);
           }
+          
+          // Initialize fatigue ring with 0 progress
+          updateFatigueRing(0);
         });
 
         // Function to sync visible elements with hidden elements (for status.js compatibility)
@@ -501,9 +507,26 @@
           if (fatigueValueOld) {
             const fatigueValue = document.getElementById('fatigue-value');
             if (fatigueValue) {
-              const parts = fatigueValueOld.textContent.split('/');
-              fatigueValue.textContent = parts[0];
-              updateFatigueRing(parseInt(parts[0]));
+              console.log('Fatigue value from database:', fatigueValueOld.textContent);
+              
+              // Handle different fatigue value formats
+              let fatigueNumber;
+              if (fatigueValueOld.textContent.includes('/')) {
+                // Format: "50/100" - take the first part
+                const parts = fatigueValueOld.textContent.split('/');
+                fatigueNumber = parseInt(parts[0]);
+              } else {
+                // Format: "50" - direct number
+                fatigueNumber = parseInt(fatigueValueOld.textContent);
+              }
+              
+              if (!isNaN(fatigueNumber)) {
+                fatigueValue.textContent = fatigueNumber;
+                updateFatigueRing(fatigueNumber);
+                console.log('Fatigue synced successfully:', fatigueNumber);
+              } else {
+                console.log('Invalid fatigue value:', fatigueValueOld.textContent);
+              }
             }
           }
           

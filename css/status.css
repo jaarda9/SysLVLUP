@@ -163,7 +163,7 @@ body {
 .fatigue-ring { width: 28px; height: 28px; }
 .fatigue-ring .ring-bg { fill: none; stroke: rgba(255,255,255,0.25); stroke-width: 2; }
 .fatigue-text .fatigue-label { margin-right: 0px; display: inline-block; }
-.fatigue-ring .ring-progress { fill: none; stroke: rgba(255,255,255,0.95); stroke-width: 2; stroke-linecap: round; stroke-dasharray: 100 100; stroke-dashoffset: 100; filter: drop-shadow(0 0 4px rgba(255,255,255,0.8)); }
+.fatigue-ring .ring-progress { fill: none; stroke: rgba(255,255,255,0.95); stroke-width: 2; stroke-linecap: round; stroke-dasharray: 0 100; filter: drop-shadow(0 0 4px rgba(255,255,255,0.8)); }
 .fatigue-text { font-weight: 800; text-shadow: 0 0 8px rgba(255,255,255,0.9); text-align: center; font-size: small; }
 
 .attributes-panel { border: 1px solid rgba(255,255,255,0.6); padding: 12px; margin-top: 16px; text-align: left; box-shadow: 0 0 14px rgba(0,212,255,0.18) inset; }
