@@ -144,7 +144,7 @@
       </div>
 
       <!-- Player Details Modal -->
-      <div id="player-details-modal" class="modal">
+      <div id="player-details-modal" class="modal hidden">
         <div class="modal-content">
           <span class="close" onclick="closePlayerDetails()">&times;</span>
           <h2>CHARACTER DETAILS</h2>
@@ -162,7 +162,7 @@
       </div>
 
       <!-- Active Quests Modal -->
-      <div id="active-quests-modal" class="modal">
+      <div id="active-quests-modal" class="modal hidden">
         <div class="modal-content">
           <span class="close" onclick="closeActiveQuests()">&times;</span>
           <h2>ACTIVE QUESTS</h2>
@@ -335,20 +335,21 @@
       <script>
         // Player Details Modal Functions
         function openPlayerDetails() {
-          document.getElementById('player-details-modal').style.display = 'block';
+          document.getElementById('player-details-modal').classList.remove('hidden');
         }
 
         function closePlayerDetails() {
-          document.getElementById('player-details-modal').style.display = 'none';
+          document.getElementById('player-details-modal').classList.add('hidden');
         }
 
         // Active Quests Modal Functions
         function openActiveQuests() {
-          document.getElementById('active-quests-modal').style.display = 'block';
+          closeAllModals(); // Close other modals first
+          document.getElementById('active-quests-modal').classList.remove('hidden');
         }
 
         function closeActiveQuests() {
-          document.getElementById('active-quests-modal').style.display = 'none';
+          document.getElementById('active-quests-modal').classList.add('hidden');
         }
 
         // Event Listeners
@@ -359,11 +360,16 @@
         window.onclick = function(event) {
           const playerModal = document.getElementById('player-details-modal');
           const questsModal = document.getElementById('active-quests-modal');
+          const nameModal = document.getElementById('name-input-modal');
+          
           if (event.target === playerModal) {
             closePlayerDetails();
           }
           if (event.target === questsModal) {
             closeActiveQuests();
+          }
+          if (event.target === nameModal) {
+            // Don't close name input modal when clicking outside - let status.js handle it
           }
         }
 
@@ -389,10 +395,18 @@
           if (pingText) document.getElementById('modal-ping-text').textContent = pingText.textContent;
         }
 
+        // Function to close all modals
+        function closeAllModals() {
+          document.getElementById('player-details-modal').classList.add('hidden');
+          document.getElementById('active-quests-modal').classList.add('hidden');
+          // Don't close name-input-modal as it's handled by status.js
+        }
+
         // Sync modal content when opening player details
         function openPlayerDetails() {
+          closeAllModals(); // Close other modals first
           syncModalContent();
-          document.getElementById('player-details-modal').style.display = 'block';
+          document.getElementById('player-details-modal').classList.remove('hidden');
         }
 
         // Function to update fatigue ring
