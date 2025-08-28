@@ -513,18 +513,18 @@
           
           // Debug: Check what fatigue elements exist and their content
           console.log('=== FATIGUE ELEMENT DEBUG ===');
-          console.log('fatigue-value element:', document.getElementById('fatigue-value'));
-          console.log('fatigue-value content:', document.getElementById('fatigue-value')?.textContent);
           console.log('fatigue-value-old element:', document.getElementById('fatigue-value-old'));
           console.log('fatigue-value-old content:', document.getElementById('fatigue-value-old')?.textContent);
+          console.log('fatigue-value element:', document.getElementById('fatigue-value'));
+          console.log('fatigue-value content:', document.getElementById('fatigue-value')?.textContent);
           
-          // Watch for changes to the fatigue elements that status.js updates
+          // Watch for changes to the fatigue-value-old element that status.js actually updates
           const fatigueObserver = new MutationObserver(function(mutations) {
             mutations.forEach(function(mutation) {
               console.log('Fatigue mutation detected:', mutation.type, mutation.target.textContent);
               
               if (mutation.type === 'characterData' || mutation.type === 'childList') {
-                const fatigueElement = document.getElementById('fatigue-value');
+                const fatigueElement = document.getElementById('fatigue-value-old');
                 if (fatigueElement && fatigueElement.textContent.includes('/')) {
                   // Extract the fatigue value from "X/100" format
                   const fatigueValue = parseInt(fatigueElement.textContent.split('/')[0]);
@@ -537,16 +537,16 @@
             });
           });
           
-          // Start observing the fatigue element
-          const fatigueElement = document.getElementById('fatigue-value');
+          // Start observing the fatigue-value-old element (the one status.js actually updates)
+          const fatigueElement = document.getElementById('fatigue-value-old');
           if (fatigueElement) {
             fatigueObserver.observe(fatigueElement, {
               childList: true,
               characterData: true
             });
-            console.log('Started observing fatigue-value element');
+            console.log('✅ Started observing fatigue-value-old element');
           } else {
-            console.log('❌ fatigue-value element not found for observing');
+            console.log('❌ fatigue-value-old element not found for observing');
           }
           
           // Sync attribute values
@@ -619,8 +619,8 @@
         // Function to manually check fatigue data after page loads
         function checkFatigueData() {
           console.log('=== MANUAL FATIGUE CHECK ===');
-          console.log('fatigue-value:', document.getElementById('fatigue-value')?.textContent);
-          console.log('fatigue-value-old:', document.getElementById('fatigue-value-old')?.textContent);
+          console.log('fatigue-value-old (status.js updates this):', document.getElementById('fatigue-value-old')?.textContent);
+          console.log('fatigue-value (our ring text):', document.getElementById('fatigue-value')?.textContent);
           
           // Check if there are any elements with "fatigue" in the ID
           const allElements = document.querySelectorAll('[id*="fatigue"]');
@@ -629,6 +629,16 @@
           // Check if there are any elements with "fatigue" in the class
           const fatigueClassElements = document.querySelectorAll('.fatigue');
           console.log('All elements with "fatigue" class:', fatigueClassElements);
+          
+          // Try to manually update the ring with the current fatigue-value-old value
+          const fatigueOld = document.getElementById('fatigue-value-old');
+          if (fatigueOld && fatigueOld.textContent.includes('/')) {
+            const fatigueValue = parseInt(fatigueOld.textContent.split('/')[0]);
+            if (!isNaN(fatigueValue)) {
+              console.log(`Manually updating ring to ${fatigueValue}%`);
+              window.updateFatigueRing(fatigueValue);
+            }
+          }
         }
         
         // Check fatigue data after a delay to see what's loaded
