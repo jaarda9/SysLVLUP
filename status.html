@@ -490,6 +490,11 @@
             }
           }
           
+          // Debug: Check what fatigue data is available
+          console.log('=== FATIGUE DEBUG ===');
+          console.log('fatigue-value-old element:', document.getElementById('fatigue-value-old'));
+          console.log('fatigue-value-old content:', document.getElementById('fatigue-value-old')?.textContent);
+          
           if (fatigueValueOld) {
             const fatigueRing = document.querySelector('.fatigue-ring');
             
@@ -504,6 +509,8 @@
                 // Format: "50" - direct number
                 fatigueNumber = parseInt(fatigueValueOld.textContent);
               }
+              
+              console.log('Parsed fatigue number:', fatigueNumber);
               
               if (!isNaN(fatigueNumber)) {
                 // Update the SVG ring progress using stroke-dashoffset
@@ -523,9 +530,17 @@
                   }
                   
                   console.log(`Fatigue: ${fatigueNumber}%, Progress: ${progress}, stroke-dashoffset: ${progress}`);
+                } else {
+                  console.log('❌ fatringprogg element not found');
                 }
+              } else {
+                console.log('❌ Invalid fatigue number:', fatigueValueOld.textContent);
               }
+            } else {
+              console.log('❌ fatigue-ring element not found');
             }
+          } else {
+            console.log('❌ fatigue-value-old element not found');
           }
           
           // Sync attribute values
@@ -613,6 +628,57 @@
                       console.log('SW registration failed:', error);
                   });
           }
+        
+        // Manual test function for fatigue ring
+        function testFatigueRing() {
+          console.log('=== MANUAL FATIGUE TEST ===');
+          
+          // Test with different values
+          const testValues = [0, 25, 50, 75, 100];
+          let currentIndex = 0;
+          
+          const interval = setInterval(() => {
+            const testValue = testValues[currentIndex];
+            console.log(`Testing fatigue value: ${testValue}%`);
+            
+            const ringProgress = document.getElementById('fatringprogg');
+            const fatValue = document.getElementById('Fatvalue');
+            
+            if (ringProgress && fatValue) {
+              const circumference = 213.628;
+              const progress = circumference - (testValue / 100) * circumference;
+              ringProgress.style.strokeDashoffset = progress;
+              fatValue.textContent = testValue;
+              
+              console.log(`Set fatigue to ${testValue}%, Progress: ${progress}`);
+            }
+            
+            currentIndex++;
+            if (currentIndex >= testValue.length) {
+              clearInterval(interval);
+              console.log('Fatigue test complete');
+            }
+          }, 1000);
+        }
+        
+        // Simple test function to set fatigue to a specific value
+        function setFatigue(value) {
+          console.log(`Setting fatigue to ${value}%`);
+          
+          const ringProgress = document.getElementById('fatringprogg');
+          const fatValue = document.getElementById('Fatvalue');
+          
+          if (ringProgress && fatValue) {
+            const circumference = 213.628;
+            const progress = circumference - (value / 100) * circumference;
+            ringProgress.style.strokeDashoffset = progress;
+            fatValue.textContent = value;
+            
+            console.log(`Fatigue set to ${value}%, Progress: ${progress}, stroke-dashoffset: ${progress}`);
+          } else {
+            console.log('❌ Ring elements not found');
+          }
+        }
       </script>
     </body>
   </html>
