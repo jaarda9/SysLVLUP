@@ -511,14 +511,24 @@
           // Set initial fatigue to 0 (will be updated by status.js)
           window.updateFatigueRing(0);
           
+          // Debug: Check what fatigue elements exist and their content
+          console.log('=== FATIGUE ELEMENT DEBUG ===');
+          console.log('fatigue-value element:', document.getElementById('fatigue-value'));
+          console.log('fatigue-value content:', document.getElementById('fatigue-value')?.textContent);
+          console.log('fatigue-value-old element:', document.getElementById('fatigue-value-old'));
+          console.log('fatigue-value-old content:', document.getElementById('fatigue-value-old')?.textContent);
+          
           // Watch for changes to the fatigue elements that status.js updates
           const fatigueObserver = new MutationObserver(function(mutations) {
             mutations.forEach(function(mutation) {
+              console.log('Fatigue mutation detected:', mutation.type, mutation.target.textContent);
+              
               if (mutation.type === 'characterData' || mutation.type === 'childList') {
                 const fatigueElement = document.getElementById('fatigue-value');
                 if (fatigueElement && fatigueElement.textContent.includes('/')) {
                   // Extract the fatigue value from "X/100" format
                   const fatigueValue = parseInt(fatigueElement.textContent.split('/')[0]);
+                  console.log('Extracted fatigue value:', fatigueValue);
                   if (!isNaN(fatigueValue)) {
                     window.updateFatigueRing(fatigueValue);
                   }
@@ -534,6 +544,9 @@
               childList: true,
               characterData: true
             });
+            console.log('Started observing fatigue-value element');
+          } else {
+            console.log('❌ fatigue-value element not found for observing');
           }
           
           // Sync attribute values
@@ -603,6 +616,23 @@
 
         });
         
+        // Function to manually check fatigue data after page loads
+        function checkFatigueData() {
+          console.log('=== MANUAL FATIGUE CHECK ===');
+          console.log('fatigue-value:', document.getElementById('fatigue-value')?.textContent);
+          console.log('fatigue-value-old:', document.getElementById('fatigue-value-old')?.textContent);
+          
+          // Check if there are any elements with "fatigue" in the ID
+          const allElements = document.querySelectorAll('[id*="fatigue"]');
+          console.log('All elements with "fatigue" in ID:', allElements);
+          
+          // Check if there are any elements with "fatigue" in the class
+          const fatigueClassElements = document.querySelectorAll('.fatigue');
+          console.log('All elements with "fatigue" class:', fatigueClassElements);
+        }
+        
+        // Check fatigue data after a delay to see what's loaded
+        setTimeout(checkFatigueData, 2000);
 
       </script>
 
