@@ -200,6 +200,115 @@
                 <button id="daily-reset-btn">RESET</button>
             </div>
         </div>
+        
+        <!-- Character Info Section -->
+        <div class="character-info">
+            <div class="info-row">
+                <span class="info-label">NAME:</span>
+                <span id="job-text">None</span>
+            </div>
+            <div class="info-row">
+                <span class="info-label">GUILD:</span>
+                <span id="guild-text">None</span>
+            </div>
+            <div class="info-row">
+                <span class="info-label">RACE:</span>
+                <span id="race-text">None</span>
+            </div>
+            <div class="info-row">
+                <span class="info-label">REGION:</span>
+                <span id="region-text">None</span>
+            </div>
+            <div class="info-row">
+                <span class="info-label">LOCATION:</span>
+                <span id="location-text">None</span>
+            </div>
+            <div class="info-row">
+                <span class="info-label">PING:</span>
+                <span id="ping-text">0 ms</span>
+            </div>
+        </div>
+        
+        <!-- Stats Section -->
+        <div class="stats-section">
+            <div class="stat-row">
+                <span class="stat-label">HP:</span>
+                <div class="stat-bar">
+                    <div id="hp-fill-old" class="stat-fill"></div>
+                </div>
+                <span id="hp-value-old">100/100</span>
+            </div>
+            <div class="stat-row">
+                <span class="stat-label">MP:</span>
+                <div class="stat-bar">
+                    <div id="mp-fill-old" class="stat-fill"></div>
+                </div>
+                <span id="mp-value-old">100/100</span>
+            </div>
+            <div class="stat-row">
+                <span class="stat-label">STM:</span>
+                <div class="stat-bar">
+                    <div id="stm-fill-old" class="stat-fill"></div>
+                </div>
+                <span id="stm-value-old">100/100</span>
+            </div>
+            <div class="stat-row">
+                <span class="stat-label">EXP:</span>
+                <div class="stat-bar">
+                    <div id="exp-fill-old" class="stat-fill"></div>
+                </div>
+                <span id="exp-value-old">0/100</span>
+            </div>
+            <div class="stat-row">
+                <span class="stat-label">FATIGUE:</span>
+                <div class="stat-bar">
+                    <div id="fatigue-fill" class="stat-fill"></div>
+                </div>
+                <span id="fatigue-value-old">0/100</span>
+            </div>
+        </div>
+        
+        <!-- Attributes Section -->
+        <div class="attributes-section">
+            <div class="attr-row">
+                <span class="attr-label">STR:</span>
+                <span id="str-value-old">10</span>
+            </div>
+            <div class="attr-row">
+                <span class="attr-label">VIT:</span>
+                <span id="vit-value-old">10</span>
+            </div>
+            <div class="attr-row">
+                <span class="attr-label">AGI:</span>
+                <span id="agi-value-old">10</span>
+            </div>
+            <div class="attr-row">
+                <span class="attr-label">INT:</span>
+                <span id="int-value-old">10</span>
+            </div>
+            <div class="attr-row">
+                <span class="attr-label">PER:</span>
+                <span id="per-value-old">10</span>
+            </div>
+            <div class="attr-row">
+                <span class="attr-label">WIS:</span>
+                <span id="wis-value-old">10</span>
+            </div>
+        </div>
+        
+        <!-- Available Points -->
+        <div class="available-points-section">
+            <span class="points-label">Available Points:</span>
+            <span id="available-points">0</span>
+        </div>
+        
+        <!-- Level Pills -->
+        <div id="player-level-pill">1</div>
+        <div id="player-level-pill-2">1</div>
+        
+        <!-- Additional buttons for status.js compatibility -->
+        <button id="force-reset-check-btn" style="display: none;">Force Reset Check</button>
+        <button id="reset-btn" style="display: none;">Reset</button>
        
 
       <!-- Loading Ring -->
@@ -257,6 +366,184 @@
             closeActiveQuests();
           }
         }
+
+        // Function to sync modal content with main display
+        function syncModalContent() {
+          // Sync player details modal
+          const jobText = document.getElementById('name-text'); // JOB is displayed in name-text
+          const titleText = document.getElementById('title-text');
+          const nameText = document.getElementById('job-text'); // NAME is displayed in job-text
+          const guildText = document.getElementById('guild-text');
+          const raceText = document.getElementById('race-text');
+          const regionText = document.getElementById('region-text');
+          const locationText = document.getElementById('location-text');
+          const pingText = document.getElementById('ping-text');
+          
+          if (jobText) document.getElementById('modal-job-text').textContent = jobText.textContent;
+          if (titleText) document.getElementById('modal-title-text').textContent = titleText.textContent;
+          if (nameText) document.getElementById('modal-name-text').textContent = nameText.textContent;
+          if (guildText) document.getElementById('modal-guild-text').textContent = guildText.textContent;
+          if (raceText) document.getElementById('modal-race-text').textContent = raceText.textContent;
+          if (regionText) document.getElementById('modal-region-text').textContent = regionText.textContent;
+          if (locationText) document.getElementById('modal-location-text').textContent = locationText.textContent;
+          if (pingText) document.getElementById('modal-ping-text').textContent = pingText.textContent;
+        }
+
+        // Sync modal content when opening player details
+        function openPlayerDetails() {
+          syncModalContent();
+          document.getElementById('player-details-modal').style.display = 'block';
+        }
+
+        // Function to update fatigue ring
+        function updateFatigueRing(fatigueValue) {
+          const ring = document.querySelector('.ring-progress');
+          if (ring) {
+            const circumference = 2 * Math.PI * 16; // r=16 from SVG
+            const progress = (fatigueValue / 100) * circumference;
+            ring.style.strokeDasharray = `${progress} ${circumference}`;
+          }
+        }
+
+        // Update fatigue ring when page loads
+        document.addEventListener('DOMContentLoaded', function() {
+          const fatigueValue = document.getElementById('fatigue-value');
+          if (fatigueValue) {
+            const value = parseInt(fatigueValue.textContent);
+            updateFatigueRing(value);
+          }
+        });
+
+        // Function to sync visible elements with hidden elements (for status.js compatibility)
+        function syncVisibleElements() {
+          // Sync character info (correct ID mapping)
+          const jobTextOld = document.getElementById('job-text'); // This contains the NAME
+          const nameTextOld = document.getElementById('name-text'); // This contains the JOB
+          
+          if (jobTextOld) {
+            const jobText = document.querySelector('.level-right .level-meta-line:first-child span:last-child');
+            if (jobText) jobText.textContent = jobTextOld.textContent;
+          }
+          
+          if (nameTextOld) {
+            const jobText = document.querySelector('.level-right .level-meta-line:first-child span:last-child');
+            if (jobText) jobText.textContent = nameTextOld.textContent;
+          }
+          
+          // Sync stat values
+          const hpValueOld = document.getElementById('hp-value-old');
+          const mpValueOld = document.getElementById('mp-value-old');
+          const stmValueOld = document.getElementById('stm-value-old');
+          const expValueOld = document.getElementById('exp-value-old');
+          const fatigueValueOld = document.getElementById('fatigue-value-old');
+          
+          if (hpValueOld) {
+            const hpValue = document.getElementById('hp-value');
+            if (hpValue) {
+              const parts = hpValueOld.textContent.split('/');
+              const majorSpan = hpValue.querySelector('.value-major');
+              const maxSpan = hpValue.querySelector('.value-max');
+              if (majorSpan) majorSpan.textContent = parts[0];
+              if (maxSpan) maxSpan.textContent = parts[1];
+            }
+          }
+          
+          if (mpValueOld) {
+            const mpValue = document.getElementById('mp-value');
+            if (mpValue) {
+              const parts = mpValueOld.textContent.split('/');
+              const majorSpan = mpValue.querySelector('.value-major');
+              const maxSpan = mpValue.querySelector('.value-max');
+              if (majorSpan) majorSpan.textContent = parts[0];
+              if (maxSpan) maxSpan.textContent = parts[1];
+            }
+          }
+          
+          if (stmValueOld) {
+            const stmValue = document.getElementById('stm-value');
+            if (stmValue) {
+              const parts = stmValueOld.textContent.split('/');
+              const majorSpan = stmValue.querySelector('.value-major');
+              const maxSpan = stmValue.querySelector('.value-max');
+              if (majorSpan) majorSpan.textContent = parts[0];
+              if (maxSpan) maxSpan.textContent = parts[1];
+            }
+          }
+          
+          if (expValueOld) {
+            const expValue = document.getElementById('exp-value');
+            if (expValue) {
+              const parts = expValueOld.textContent.split('/');
+              const majorSpan = expValue.querySelector('.value-major');
+              const maxSpan = expValue.querySelector('.value-max');
+              if (majorSpan) majorSpan.textContent = parts[0];
+              if (maxSpan) maxSpan.textContent = parts[1];
+            }
+          }
+          
+          if (fatigueValueOld) {
+            const fatigueValue = document.getElementById('fatigue-value');
+            if (fatigueValue) {
+              const parts = fatigueValueOld.textContent.split('/');
+              fatigueValue.textContent = parts[0];
+              updateFatigueRing(parseInt(parts[0]));
+            }
+          }
+          
+          // Sync attribute values
+          const strValueOld = document.getElementById('str-value-old');
+          const vitValueOld = document.getElementById('vit-value-old');
+          const agiValueOld = document.getElementById('agi-value-old');
+          const intValueOld = document.getElementById('int-value-old');
+          const perValueOld = document.getElementById('per-value-old');
+          const wisValueOld = document.getElementById('wis-value-old');
+          
+          if (strValueOld) {
+            const strValue = document.getElementById('str-value');
+            if (strValue) strValue.textContent = strValueOld.textContent;
+          }
+          if (vitValueOld) {
+            const vitValue = document.getElementById('vit-value');
+            if (vitValue) vitValue.textContent = vitValueOld.textContent;
+          }
+          if (agiValueOld) {
+            const agiValue = document.getElementById('agi-value');
+            if (agiValue) agiValue.textContent = agiValueOld.textContent;
+          }
+          if (intValueOld) {
+            const intValue = document.getElementById('int-value');
+            if (intValue) intValue.textContent = intValueOld.textContent;
+          }
+          if (perValueOld) {
+            const perValue = document.getElementById('per-value');
+            if (perValue) perValue.textContent = perValueOld.textContent;
+          }
+          if (wisValueOld) {
+            const wisValue = document.getElementById('wis-value');
+            if (wisValue) wisValue.textContent = wisValueOld.textContent;
+          }
+        }
+
+        // Set up observer to watch for changes in hidden elements
+        const observer = new MutationObserver(function(mutations) {
+          mutations.forEach(function(mutation) {
+            if (mutation.type === 'childList' || mutation.type === 'characterData') {
+              syncVisibleElements();
+            }
+          });
+        });
+
+        // Start observing when DOM is loaded
+        document.addEventListener('DOMContentLoaded', function() {
+          const statusContent = document.getElementById('status-content');
+          if (statusContent) {
+            observer.observe(statusContent, {
+              childList: true,
+              subtree: true,
+              characterData: true
+            });
+          }
+        });
       </script>
 
       <!-- Scripts -->

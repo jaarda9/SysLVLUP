@@ -285,6 +285,19 @@ body {
 }
 
 /* Name Input Modal Styles */
+.modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.8);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 10000;
+}
+
 .modal.hidden {
     display: none;
 }
@@ -368,6 +381,101 @@ body {
 
 .portal-button:active {
     transform: translateY(0);
+}
+
+/* Player Details and Active Quests Modal Styles */
+#player-details-modal .modal-content,
+#active-quests-modal .modal-content {
+    background-color: rgba(10, 27, 46, 0.95);
+    border: 2px solid rgba(255, 255, 255, 0.55);
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.7), 0 0 22px rgba(0, 212, 255, 0.08) inset;
+    border-radius: 2px;
+    width: 500px;
+    max-width: 90vw;
+    max-height: 80vh;
+    overflow-y: auto;
+    padding: 30px;
+    text-align: center;
+    position: relative;
+}
+
+#player-details-modal h2,
+#active-quests-modal h2 {
+    font-size: 1.8rem;
+    margin-bottom: 20px;
+    text-shadow: 0 0 8px rgba(255, 255, 255, 0.9);
+    font-weight: bold;
+    color: #fff;
+}
+
+.close {
+    position: absolute;
+    top: 10px;
+    right: 15px;
+    font-size: 28px;
+    font-weight: bold;
+    color: rgba(255, 255, 255, 0.7);
+    cursor: pointer;
+    transition: color 0.3s ease;
+}
+
+.close:hover {
+    color: #fff;
+}
+
+.player-details-content {
+    text-align: left;
+}
+
+.detail-item {
+    margin-bottom: 15px;
+    padding: 10px;
+    background-color: rgba(255, 255, 255, 0.05);
+    border-radius: 4px;
+    border-left: 3px solid rgba(0, 212, 255, 0.5);
+}
+
+.detail-item strong {
+    color: rgba(0, 212, 255, 0.8);
+    margin-right: 10px;
+}
+
+.quests-content {
+    text-align: left;
+}
+
+.quest-item {
+    margin-bottom: 15px;
+    padding: 15px;
+    background-color: rgba(255, 255, 255, 0.05);
+    border-radius: 4px;
+    border-left: 3px solid rgba(0, 212, 255, 0.5);
+    transition: all 0.3s ease;
+}
+
+.quest-item:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+    transform: translateX(5px);
+}
+
+.quest-info {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.quest-type {
+    font-weight: bold;
+    color: #fff;
+}
+
+.quest-level {
+    color: rgba(0, 212, 255, 0.8);
+    font-size: 0.9em;
+    padding: 2px 8px;
+    border: 1px solid rgba(0, 212, 255, 0.3);
+    border-radius: 4px;
+    background-color: rgba(0, 212, 255, 0.1);
 }
 
 
