@@ -450,6 +450,45 @@
             console.log('No fatigue value found in database yet');
           }
         }
+        
+        // Function to debug all fatigue-related elements
+        function debugFatigue() {
+          console.log('=== FATIGUE DEBUG ===');
+          console.log('Hidden fatigue element (fatigue-value-old):', document.getElementById('fatigue-value-old'));
+          console.log('Visible fatigue element (fatigue-value):', document.getElementById('fatigue-value'));
+          console.log('Fatigue ring element (.ring-progress):', document.querySelector('.ring-progress'));
+          
+          // Check all elements with "fatigue" in their ID
+          const allFatigueElements = document.querySelectorAll('[id*="fatigue"]');
+          console.log('All fatigue-related elements:', allFatigueElements);
+          
+          // Check the hidden status-content div
+          const statusContent = document.getElementById('status-content');
+          if (statusContent) {
+            console.log('Status content div exists:', statusContent);
+            console.log('Status content innerHTML:', statusContent.innerHTML);
+          }
+        }
+        
+        // Function to check what status.js is actually loading
+        function checkDatabaseData() {
+          console.log('=== DATABASE DATA CHECK ===');
+          
+          // Try to access the gameData from status.js if it's available
+          if (typeof window.gameData !== 'undefined') {
+            console.log('Game data from status.js:', window.gameData);
+          } else {
+            console.log('Game data not accessible from status.js');
+          }
+          
+          // Check if we can find the fatigue value in the hidden elements
+          const allHiddenElements = document.querySelectorAll('#status-content [id*="fatigue"]');
+          console.log('All hidden fatigue elements:', allHiddenElements);
+          
+          // Look for any element that might contain the fatigue value
+          const possibleFatigueElements = document.querySelectorAll('#status-content [id*="fatigue"], #status-content [id*="sts"]');
+          console.log('Possible fatigue/STS elements:', possibleFatigueElements);
+        }
 
         // Update fatigue ring when page loads
         document.addEventListener('DOMContentLoaded', function() {
@@ -624,6 +663,14 @@
             console.log('Performing delayed sync...');
             syncVisibleElements();
           }, 3000);
+          
+          // Sync after status.js data loading (based on console logs)
+          setTimeout(() => {
+            console.log('Performing post-status.js sync...');
+            syncVisibleElements();
+            debugFatigue();
+            checkDatabaseData();
+          }, 5000);
         });
       </script>
 
