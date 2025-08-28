@@ -173,7 +173,7 @@
                 <span class="quest-level">Lv.1</span>
               </div>
             </div>
-            <div class="quest-item">
+            <div class="quest-item clickable" onclick="window.location.href='daily_quest.html'">
               <div class="quest-info">
                 <span class="quest-type">[MAIN] Power</span>
                 <span class="quest-level">Lv.1</span>
@@ -431,17 +431,20 @@
         // Function to sync visible elements with hidden elements (for status.js compatibility)
         function syncVisibleElements() {
           // Sync character info (correct ID mapping)
-          const jobTextOld = document.getElementById('job-text'); // This contains the NAME
-          const nameTextOld = document.getElementById('name-text'); // This contains the JOB
+          const jobTextOld = document.getElementById('job-text-old'); // This contains the JOB from database
+          const nameTextOld = document.getElementById('name-text-old'); // This contains the NAME from database
+          const titleTextOld = document.getElementById('title-text-old'); // This contains the TITLE from database
           
-          if (jobTextOld) {
-            const jobText = document.querySelector('.level-right .level-meta-line:first-child span:last-child');
-            if (jobText) jobText.textContent = jobTextOld.textContent;
+          // Update the JOB field (should show name-text from database)
+          if (nameTextOld) {
+            const jobText = document.getElementById('name-text');
+            if (jobText) jobText.textContent = nameTextOld.textContent;
           }
           
-          if (nameTextOld) {
-            const jobText = document.querySelector('.level-right .level-meta-line:first-child span:last-child');
-            if (jobText) jobText.textContent = nameTextOld.textContent;
+          // Update the TITLE field
+          if (titleTextOld) {
+            const titleText = document.getElementById('title-text');
+            if (titleText) titleText.textContent = titleTextOld.textContent;
           }
           
           // Sync stat values
