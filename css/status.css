@@ -177,28 +177,56 @@ body {
 .resource-block.stm { grid-column: 1; grid-row: 2; }
 .resource-block.exp { grid-column: 3; grid-row: 2; }
 .resource-block.fatigue { grid-column: 4; grid-row: 1 / span 2; align-self: center; }
-.fatigue-ring { grid-column: 2 / 3; grid-row: 1 / span 2; display: grid; place-items: center; position: relative; width: 84px; height: 84px; background: var(--surface-2); border: 1px solid var(--glass-2); border-radius: 12px; box-shadow: inset 0 6px 20px rgba(0,0,0,0.25); }
-.fatigue-ring svg { transform: rotate(-90deg); }
-.fatigue-ring .fat-bg { fill: none; stroke: rgba(255,255,255,0.1); stroke-width: 10; }
-.fatigue-ring .fat-fg { 
-	fill: none; 
-	stroke: url(#fatigueGradient); 
-	stroke-width: 10; 
-	stroke-linecap: round; 
-	stroke-dasharray: 201.06; 
-	stroke-dashoffset: 201.06; /* Start at 0% progress, will be updated by JavaScript */
-	filter: drop-shadow(0 0 8px rgba(236,72,153,0.6));
-	animation: fatigueGradientFlow 3s linear infinite;
-}
-.fat-label { position: absolute; display: grid; place-items: center; text-align: center; }
-.fat-label span { font-size: 10px; color: var(--muted); letter-spacing: 1px; }
-.fat-label strong { font-size: 18px; font-weight: 600; }
 
-/* Fatigue gradient flow animation */
-@keyframes fatigueGradientFlow {
-    0% { stroke-dashoffset: 201.06; }
-    100% { stroke-dashoffset: 0; }
+.fatigue-ring { 
+  position: relative; 
+  width: 84px; 
+  height: 84px; 
+  background: rgba(10, 27, 46, 0.8); 
+  border: 2px solid rgba(0, 212, 255, 0.6); 
+  border-radius: 50%; 
+  box-shadow: 0 0 20px rgba(0, 212, 255, 0.3), inset 0 0 20px rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
+
+.ring-bg {
+  position: absolute;
+  top: 8px;
+  left: 8px;
+  right: 8px;
+  bottom: 8px;
+  border: 8px solid rgba(255, 255, 255, 0.1);
+  border-radius: 50%;
+}
+
+.ring-progress {
+  position: absolute;
+  top: 8px;
+  left: 8px;
+  right: 8px;
+  bottom: 8px;
+  border: 8px solid transparent;
+  border-top: 8px solid #00d4ff;
+  border-right: 8px solid #00d4ff;
+  border-radius: 50%;
+  transform: rotate(-45deg);
+  transition: transform 0.5s ease;
+  box-shadow: 0 0 15px rgba(0, 212, 255, 0.6);
+}
+
+.fat-label { 
+  position: absolute; 
+  display: flex; 
+  flex-direction: column; 
+  align-items: center; 
+  justify-content: center;
+  text-align: center;
+  z-index: 2;
+}
+.fat-label span { font-size: 10px; color: rgba(255, 255, 255, 0.7); letter-spacing: 1px; }
+.fat-label strong { font-size: 18px; font-weight: 600; color: #00d4ff; text-shadow: 0 0 10px rgba(0, 212, 255, 0.8); }
 
 .attributes-panel { border: 1px solid rgba(255,255,255,0.6); padding: 12px; margin-top: 16px; text-align: left; box-shadow: 0 0 14px rgba(0,212,255,0.18) inset; }
 .attributes-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px 40px; justify-items: center; align-items: center; }

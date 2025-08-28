@@ -91,40 +91,10 @@
         </div>
 
         <div class="resource-block fatigue">
-          <div class="fatigue-ring" style="--fatigue:0">
-            <svg viewBox="0 0 80 80" width="80" height="80" aria-hidden="true">
-              <defs>
-                <linearGradient id="fatigueGradient" x1="0%" y1="0%" x2="100%" y2="0%">
-                  <stop offset="0%" stop-color="#9ca3af">
-                    <animate attributeName="stop-color" 
-                      values="#9ca3af;#6b7280;#4b5563;#6b7280;#9ca3af" 
-                      dur="3s" repeatCount="indefinite"/>
-                  </stop>
-                  <stop offset="25%" stop-color="#6b7280">
-                    <animate attributeName="stop-color" 
-                      values="#6b7280;#4b5563;#9ca3af;#4b5563;#6b7280" 
-                      dur="3s" repeatCount="indefinite"/>
-                  </stop>
-                  <stop offset="50%" stop-color="#4b5563">
-                    <animate attributeName="stop-color" 
-                      values="#4b5563;#9ca3af;#6b7280;#9ca3af;#4b5563" 
-                      dur="3s" repeatCount="indefinite"/>
-                  </stop>
-                  <stop offset="75%" stop-color="#6b7280">
-                    <animate attributeName="stop-color" 
-                      values="#6b7280;#4b5563;#9ca3af;#4b5563;#6b7280" 
-                      dur="3s" repeatCount="indefinite"/>
-                  </stop>
-                  <stop offset="100%" stop-color="#9ca3af">
-                    <animate attributeName="stop-color" 
-                      values="#9ca3af;#6b7280;#4b5563;#6b7280;#9ca3af" 
-                      dur="3s" repeatCount="indefinite"/>
-                  </stop>
-                </linearGradient>
-              </defs>
-              <circle class="fat-bg" cx="40" cy="40" r="32" />
-              <circle class="fat-fg" cx="40" cy="40" r="32" />
-            </svg>
+          <div class="fatigue-ring">
+            <div class="ring-bg"></div>
+            <div class="ring-progress" id="fatigue-ring-progress"></div>
+              
             <div class="fat-label"><span><span class="icon">😴</span>FAT</span><strong id="fatigue-value">0</strong></div>
           </div>
         </div>
@@ -532,14 +502,12 @@
               }
               
               if (!isNaN(fatigueNumber)) {
-                // Calculate the stroke-dashoffset for the ring progress
-                const circumference = 201.06; // 2 * π * 32 (radius)
-                const progress = circumference - (fatigueNumber * circumference / 100);
-                
-                // Update the ring progress by setting stroke-dashoffset directly
-                const fatFg = fatigueRing.querySelector('.fat-fg');
-                if (fatFg) {
-                  fatFg.style.strokeDashoffset = progress;
+                // Update the ring progress using CSS transform
+                const ringProgress = document.getElementById('fatigue-ring-progress');
+                if (ringProgress) {
+                  // Set the rotation to show progress (0% = 0deg, 100% = 360deg)
+                  const rotation = (fatigueNumber / 100) * 360;
+                  ringProgress.style.transform = `rotate(${rotation}deg)`;
                 }
               }
             }
