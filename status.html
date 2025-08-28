@@ -91,11 +91,15 @@
         </div>
 
         <div class="resource-block fatigue">
-          <div class="fatigue-ring">
-            <div class="ring-bg"></div>
-            <div class="ring-progress" id="fatigue-ring-progress"></div>
-              
-            <div class="fat-label"><span><span class="icon">😴</span>FAT</span><strong id="fatigue-value">0</strong></div>
+          <div class="fatigue-section">
+            <div class="fatigue-ring">
+              <svg class="progress-ring" width="80" height="80">
+                <circle class="progress-ring__circle" id="fatringprogg" stroke="#56ccf2" stroke-width="8" fill="transparent" r="34" cx="40" cy="40" style="stroke-dasharray: 213.628, 213.628; stroke-dashoffset: 213.628;"></circle>
+              </svg>
+              <div class="fatigue-label">
+                Fatigue: <span class="fatigue-value" id="Fatvalue">0</span>%
+              </div>
+            </div>
           </div>
         </div>
 
@@ -502,12 +506,23 @@
               }
               
               if (!isNaN(fatigueNumber)) {
-                // Update the ring progress using CSS transform
-                const ringProgress = document.getElementById('fatigue-ring-progress');
+                // Update the SVG ring progress using stroke-dashoffset
+                const ringProgress = document.getElementById('fatringprogg');
                 if (ringProgress) {
-                  // Set the rotation to show progress (0% = 0deg, 100% = 360deg)
-                  const rotation = (fatigueNumber / 100) * 360;
-                  ringProgress.style.transform = `rotate(${rotation}deg)`;
+                  // Calculate the stroke-dashoffset for the progress
+                  // stroke-dasharray: 213.628 (full circle)
+                  // stroke-dashoffset: 213.628 = 0% progress, 0 = 100% progress
+                  const circumference = 213.628;
+                  const progress = circumference - (fatigueNumber / 100) * circumference;
+                  ringProgress.style.strokeDashoffset = progress;
+                  
+                  // Update the fatigue value text
+                  const fatValue = document.getElementById('Fatvalue');
+                  if (fatValue) {
+                    fatValue.textContent = fatigueNumber;
+                  }
+                  
+                  console.log(`Fatigue: ${fatigueNumber}%, Progress: ${progress}, stroke-dashoffset: ${progress}`);
                 }
               }
             }
