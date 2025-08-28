@@ -125,7 +125,7 @@
               <circle class="fat-bg" cx="40" cy="40" r="32" />
               <circle class="fat-fg" cx="40" cy="40" r="32" />
             </svg>
-            <div class="fat-label"><span><span class="icon">😴</span>FAT</span><strong class="fatigue-value">0</strong></div>
+            <div class="fat-label"><span><span class="icon">😴</span>FAT</span><strong id="fatigue-value">0</strong></div>
           </div>
         </div>
 
@@ -517,8 +517,12 @@
           }
           
           if (fatigueValueOld) {
+            console.log('Found fatigue value old:', fatigueValueOld.textContent);
             const fatigueRing = document.querySelector('.fatigue-ring');
             const fatigueValue = document.querySelector('.fatigue-value');
+            console.log('Fatigue ring element:', fatigueRing);
+            console.log('Fatigue value element:', fatigueValue);
+            
             if (fatigueRing && fatigueValue) {
               // Handle different fatigue value formats
               let fatigueNumber;
@@ -531,13 +535,20 @@
                 fatigueNumber = parseInt(fatigueValueOld.textContent);
               }
               
+              console.log('Parsed fatigue number:', fatigueNumber);
+              
               if (!isNaN(fatigueNumber)) {
                 // Update the CSS variable for the ring progress
                 fatigueRing.style.setProperty('--fatigue', fatigueNumber);
                 // Update the fatigue value text
                 fatigueValue.textContent = fatigueNumber;
+                console.log('Fatigue ring updated with value:', fatigueNumber);
               }
+            } else {
+              console.log('Fatigue elements not found - Ring:', !!fatigueRing, 'Value:', !!fatigueValue);
             }
+          } else {
+            console.log('No fatigue-value-old element found');
           }
           
           // Sync attribute values
@@ -606,6 +617,42 @@
           
 
         });
+        
+        // Function to manually test fatigue ring sync
+        function testFatigueSync() {
+          console.log('=== TESTING FATIGUE SYNC ===');
+          const fatigueValueOld = document.getElementById('fatigue-value-old');
+          const fatigueRing = document.querySelector('.fatigue-ring');
+          const fatigueValue = document.getElementById('fatigue-value');
+          
+          console.log('fatigue-value-old:', fatigueValueOld);
+          console.log('fatigue-ring:', fatigueRing);
+          console.log('fatigue-value:', fatigueValue);
+          
+          if (fatigueValueOld) {
+            console.log('Database fatigue value:', fatigueValueOld.textContent);
+            
+            let fatigueNumber;
+            if (fatigueValueOld.textContent.includes('/')) {
+              const parts = fatigueValueOld.textContent.split('/');
+              fatigueNumber = parseInt(parts[0]);
+            } else {
+              fatigueNumber = parseInt(fatigueValueOld.textContent);
+            }
+            
+            console.log('Parsed fatigue number:', fatigueNumber);
+            
+            if (!isNaN(fatigueNumber) && fatigueRing && fatigueValue) {
+              fatigueRing.style.setProperty('--fatigue', fatigueNumber);
+              fatigueValue.textContent = fatigueNumber;
+              console.log('✅ Fatigue ring updated successfully with value:', fatigueNumber);
+            } else {
+              console.log('❌ Failed to update fatigue ring');
+            }
+          } else {
+            console.log('❌ No fatigue-value-old element found');
+          }
+        }
       </script>
 
       <!-- Scripts -->
