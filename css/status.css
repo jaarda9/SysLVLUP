@@ -186,13 +186,19 @@ body {
 	stroke-width: 10; 
 	stroke-linecap: round; 
 	stroke-dasharray: 201.06; 
-	stroke-dashoffset: calc(201.06 - (var(--fatigue) * 2.0106)); 
+	stroke-dashoffset: 201.06; /* Start at 0% progress, will be updated by JavaScript */
 	filter: drop-shadow(0 0 8px rgba(236,72,153,0.6));
 	animation: fatigueGradientFlow 3s linear infinite;
 }
 .fat-label { position: absolute; display: grid; place-items: center; text-align: center; }
 .fat-label span { font-size: 10px; color: var(--muted); letter-spacing: 1px; }
 .fat-label strong { font-size: 18px; font-weight: 600; }
+
+/* Fatigue gradient flow animation */
+@keyframes fatigueGradientFlow {
+    0% { stroke-dashoffset: 201.06; }
+    100% { stroke-dashoffset: 0; }
+}
 
 .attributes-panel { border: 1px solid rgba(255,255,255,0.6); padding: 12px; margin-top: 16px; text-align: left; box-shadow: 0 0 14px rgba(0,212,255,0.18) inset; }
 .attributes-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px 40px; justify-items: center; align-items: center; }

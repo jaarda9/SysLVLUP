@@ -643,9 +643,21 @@
             console.log('Parsed fatigue number:', fatigueNumber);
             
             if (!isNaN(fatigueNumber) && fatigueRing && fatigueValue) {
-              fatigueRing.style.setProperty('--fatigue', fatigueNumber);
+              // Calculate the stroke-dashoffset for the ring progress
+              const circumference = 201.06; // 2 * π * 32 (radius)
+              const progress = circumference - (fatigueNumber * circumference / 100);
+              
+              // Update the ring progress by setting stroke-dashoffset directly
+              const fatFg = fatigueRing.querySelector('.fat-fg');
+              if (fatFg) {
+                fatFg.style.strokeDashoffset = progress;
+                console.log('✅ Fatigue ring updated successfully with value:', fatigueNumber, 'Progress:', progress);
+              } else {
+                console.log('❌ Fat-fg element not found');
+              }
+              
+              // Update the fatigue value text
               fatigueValue.textContent = fatigueNumber;
-              console.log('✅ Fatigue ring updated successfully with value:', fatigueNumber);
             } else {
               console.log('❌ Failed to update fatigue ring');
             }
