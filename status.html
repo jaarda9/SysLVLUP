@@ -517,11 +517,8 @@
           }
           
           if (fatigueValueOld) {
-            console.log('Found fatigue value old:', fatigueValueOld.textContent);
             const fatigueRing = document.querySelector('.fatigue-ring');
-            const fatigueValue = document.querySelector('.fatigue-value');
-            console.log('Fatigue ring element:', fatigueRing);
-            console.log('Fatigue value element:', fatigueValue);
+            const fatigueValue = document.getElementById('fatigue-value');
             
             if (fatigueRing && fatigueValue) {
               // Handle different fatigue value formats
@@ -535,20 +532,21 @@
                 fatigueNumber = parseInt(fatigueValueOld.textContent);
               }
               
-              console.log('Parsed fatigue number:', fatigueNumber);
-              
               if (!isNaN(fatigueNumber)) {
-                // Update the CSS variable for the ring progress
-                fatigueRing.style.setProperty('--fatigue', fatigueNumber);
+                // Calculate the stroke-dashoffset for the ring progress
+                const circumference = 201.06; // 2 * π * 32 (radius)
+                const progress = circumference - (fatigueNumber * circumference / 100);
+                
+                // Update the ring progress by setting stroke-dashoffset directly
+                const fatFg = fatigueRing.querySelector('.fat-fg');
+                if (fatFg) {
+                  fatFg.style.strokeDashoffset = progress;
+                }
+                
                 // Update the fatigue value text
                 fatigueValue.textContent = fatigueNumber;
-                console.log('Fatigue ring updated with value:', fatigueNumber);
               }
-            } else {
-              console.log('Fatigue elements not found - Ring:', !!fatigueRing, 'Value:', !!fatigueValue);
             }
-          } else {
-            console.log('No fatigue-value-old element found');
           }
           
           // Sync attribute values
@@ -618,58 +616,12 @@
 
         });
         
-        // Function to manually test fatigue ring sync
-        function testFatigueSync() {
-          console.log('=== TESTING FATIGUE SYNC ===');
-          const fatigueValueOld = document.getElementById('fatigue-value-old');
-          const fatigueRing = document.querySelector('.fatigue-ring');
-          const fatigueValue = document.getElementById('fatigue-value');
-          
-          console.log('fatigue-value-old:', fatigueValueOld);
-          console.log('fatigue-ring:', fatigueRing);
-          console.log('fatigue-value:', fatigueValue);
-          
-          if (fatigueValueOld) {
-            console.log('Database fatigue value:', fatigueValueOld.textContent);
-            
-            let fatigueNumber;
-            if (fatigueValueOld.textContent.includes('/')) {
-              const parts = fatigueValueOld.textContent.split('/');
-              fatigueNumber = parseInt(parts[0]);
-            } else {
-              fatigueNumber = parseInt(fatigueValueOld.textContent);
-            }
-            
-            console.log('Parsed fatigue number:', fatigueNumber);
-            
-            if (!isNaN(fatigueNumber) && fatigueRing && fatigueValue) {
-              // Calculate the stroke-dashoffset for the ring progress
-              const circumference = 201.06; // 2 * π * 32 (radius)
-              const progress = circumference - (fatigueNumber * circumference / 100);
-              
-              // Update the ring progress by setting stroke-dashoffset directly
-              const fatFg = fatigueRing.querySelector('.fat-fg');
-              if (fatFg) {
-                fatFg.style.strokeDashoffset = progress;
-                console.log('✅ Fatigue ring updated successfully with value:', fatigueNumber, 'Progress:', progress);
-              } else {
-                console.log('❌ Fat-fg element not found');
-              }
-              
-              // Update the fatigue value text
-              fatigueValue.textContent = fatigueNumber;
-            } else {
-              console.log('❌ Failed to update fatigue ring');
-            }
-          } else {
-            console.log('❌ No fatigue-value-old element found');
-          }
-        }
+
       </script>
 
       <!-- Scripts -->
       <script src="js/user-manager.js"></script>
-      <script src="js/status.js" onload="setTimeout(syncVisibleElements, 500);"></script>
+      <script src="js/status.js"></script>
       
       <!-- Service Worker Registration -->
       <script>
