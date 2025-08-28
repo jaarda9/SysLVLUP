@@ -518,9 +518,8 @@
           
           if (fatigueValueOld) {
             const fatigueRing = document.querySelector('.fatigue-ring');
-            const fatigueValue = document.getElementById('fatigue-value');
             
-            if (fatigueRing && fatigueValue) {
+            if (fatigueRing) {
               // Handle different fatigue value formats
               let fatigueNumber;
               if (fatigueValueOld.textContent.includes('/')) {
@@ -542,9 +541,6 @@
                 if (fatFg) {
                   fatFg.style.strokeDashoffset = progress;
                 }
-                
-                // Update the fatigue value text
-                fatigueValue.textContent = fatigueNumber;
               }
             }
           }
