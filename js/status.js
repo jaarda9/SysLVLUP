@@ -353,64 +353,56 @@ function loadPlayerData(gameData) {
     // Update stats
     if (gameData.hp !== undefined) {
         const hpFill = document.getElementById('hp-fill');
+        const hpValue = document.getElementById('hp-value');
         if (hpFill) {
             hpFill.style.width = `${gameData.hp}%`;
-            // Find the stat value element within the same stat-bar container
-            const statBar = hpFill.closest('.stat-bar');
-            const hpValue = statBar ? statBar.querySelector('.stat-value') : null;
-            if (hpValue) {
-                hpValue.textContent = gameData.hp;
-            }
+        }
+        if (hpValue) {
+            hpValue.textContent = `${gameData.hp}/100`;
         }
     }
     
     if (gameData.mp !== undefined) {
         const mpFill = document.getElementById('mp-fill');
+        const mpValue = document.getElementById('mp-value');
         if (mpFill) {
             mpFill.style.width = `${gameData.mp}%`;
-            // Find the stat value element within the same stat-bar container
-            const statBar = mpFill.closest('.stat-bar');
-            const mpValue = statBar ? statBar.querySelector('.stat-value') : null;
-            if (mpValue) {
-                mpValue.textContent = gameData.mp;
-            }
+        }
+        if (mpValue) {
+            mpValue.textContent = `${gameData.mp}/100`;
         }
     }
     
     if (gameData.stm !== undefined) {
         const stmFill = document.getElementById('stm-fill');
+        const stmValue = document.getElementById('stm-value');
         if (stmFill) {
             stmFill.style.width = `${gameData.stm}%`;
-            // Find the stat value element within the same stat-bar container
-            const statBar = stmFill.closest('.stat-bar');
-            const stmValue = statBar ? statBar.querySelector('.stat-value') : null;
-            if (stmValue) {
-                stmValue.textContent = gameData.stm;
-            }
+        }
+        if (stmValue) {
+            stmValue.textContent = `${gameData.stm}/100`;
         }
     }
     
     if (gameData.exp !== undefined) {
         const expFill = document.getElementById('exp-fill');
+        const expValue = document.getElementById('exp-value');
         if (expFill) {
             expFill.style.width = `${gameData.exp}%`;
-            // Find the stat value element within the same stat-bar container
-            const statBar = expFill.closest('.stat-bar');
-            const expValue = statBar ? statBar.querySelector('.stat-value') : null;
-            if (expValue) {
-                expValue.textContent = gameData.exp;
-            }
+        }
+        if (expValue) {
+            expValue.textContent = `${gameData.exp}/100`;
         }
     }
     
     if (gameData.fatigue !== undefined) {
-        const fatigueValue = document.querySelector('.fatigue-value');
-        if (fatigueValue) {
-            fatigueValue.textContent = gameData.fatigue;
+        const fatigueFill = document.getElementById('fatigue-fill');
+        const fatigueValue = document.getElementById('fatigue-value');
+        if (fatigueFill) {
+            fatigueFill.style.width = `${gameData.fatigue}%`;
         }
-        const fatigueRing = document.querySelector('.fatigue-ring');
-        if (fatigueRing) {
-            fatigueRing.style.setProperty('--fatigue', String(gameData.fatigue));
+        if (fatigueValue) {
+            fatigueValue.textContent = `${gameData.fatigue}/100`;
         }
     }
     
@@ -443,31 +435,11 @@ function loadPlayerData(gameData) {
         }
     }
     
-    if (gameData.stackedAttributes) {
-        const stacked = gameData.stackedAttributes;
-        if (stacked.STR !== undefined) {
-            const strStacked = document.getElementById('str-stacked');
-            if (strStacked) strStacked.textContent = `+${stacked.STR}`;
-        }
-        if (stacked.VIT !== undefined) {
-            const vitStacked = document.getElementById('vit-stacked');
-            if (vitStacked) vitStacked.textContent = `+${stacked.VIT}`;
-        }
-        if (stacked.AGI !== undefined) {
-            const agiStacked = document.getElementById('agi-stacked');
-            if (agiStacked) agiStacked.textContent = `+${stacked.AGI}`;
-        }
-        if (stacked.INT !== undefined) {
-            const intStacked = document.getElementById('int-stacked');
-            if (intStacked) intStacked.textContent = `+${stacked.INT}`;
-        }
-        if (stacked.PER !== undefined) {
-            const perStacked = document.getElementById('per-stacked');
-            if (perStacked) perStacked.textContent = `+${stacked.PER}`;
-        }
-        if (stacked.WIS !== undefined) {
-            const wisStacked = document.getElementById('wis-stacked');
-            if (wisStacked) wisStacked.textContent = `+${stacked.WIS}`;
+    // Update available points
+    if (gameData.availablePoints !== undefined) {
+        const availablePoints = document.getElementById('available-points');
+        if (availablePoints) {
+            availablePoints.textContent = gameData.availablePoints;
         }
     }
     
@@ -898,88 +870,31 @@ function showDailyResetNotification() {
         }
     }, 5000);
 }
- // Sync the small level pill with the main level number
- document.addEventListener('DOMContentLoaded', function () {
-    var levelEl = document.querySelector('.level-number');
-    var pillEl = document.getElementById('player-level-pill');
-    if (!levelEl || !pillEl) return;
+ // Sync the level pills with the main level number
+document.addEventListener('DOMContentLoaded', function () {
+    var levelEl = document.getElementById('level-number');
+    var pillEl1 = document.getElementById('player-level-pill');
+    var pillEl2 = document.getElementById('player-level-pill-2');
+    
+    if (!levelEl) return;
 
-    function syncPill() {
-        pillEl.textContent = (levelEl.textContent || '').trim();
+    function syncPills() {
+        var levelText = (levelEl.textContent || '').trim();
+        if (pillEl1) pillEl1.textContent = levelText;
+        if (pillEl2) pillEl2.textContent = levelText;
     }
 
     // Initial sync
-    syncPill();
+    syncPills();
 
     // Observe changes to the level element's text
-    var observer = new MutationObserver(syncPill);
+    var observer = new MutationObserver(syncPills);
     observer.observe(levelEl, { characterData: true, childList: true, subtree: true });
 
     // Also resync on visibility/focus just in case
     document.addEventListener('visibilitychange', function () {
-        if (document.visibilityState === 'visible') syncPill();
+        if (document.visibilityState === 'visible') syncPills();
     });
-    window.addEventListener('focus', syncPill);
+    window.addEventListener('focus', syncPills);
 });
 
-  // Keep fatigue ring and stacked attributes in sync with current data
-  document.addEventListener('DOMContentLoaded', function () {
-    var fatRing = document.querySelector('.fatigue-ring');
-    var fatVal  = document.querySelector('.fatigue-value');
-
-    function syncFatigueRing() {
-        if (fatRing && fatVal) {
-            var v = parseInt((fatVal.textContent || '0').replace(/[^0-9]/g, ''), 10);
-            if (!isNaN(v)) {
-                fatRing.style.setProperty('--fatigue', String(v));
-            }
-        }
-    }
-
-    // Initial sync and observe text changes
-    syncFatigueRing();
-    if (fatVal) {
-        var fatObs = new MutationObserver(syncFatigueRing);
-        fatObs.observe(fatVal, { characterData: true, childList: true, subtree: true });
-    }
-
-    async function syncStackedAttributes() {
-        try {
-            if (window.userManager && typeof window.userManager.getData === 'function') {
-                var data = window.userManager.getData();
-                var stacked = data && data.gameData ? data.gameData.stackedAttributes : null;
-                if (stacked) {
-                    var map = [
-                        ['str-stacked', stacked.STR],
-                        ['vit-stacked', stacked.VIT],
-                        ['agi-stacked', stacked.AGI],
-                        ['int-stacked', stacked.INT],
-                        ['per-stacked', stacked.PER],
-                        ['wis-stacked', stacked.WIS]
-                    ];
-                    map.forEach(function (pair) {
-                        var el = document.getElementById(pair[0]);
-                        if (el && pair[1] !== undefined && pair[1] !== null) {
-                            el.textContent = "+" + pair[1];
-                        }
-                    });
-                }
-            }
-        } catch (e) { /* no-op */ }
-    }
-
-    // Initial stacked attributes sync
-    syncStackedAttributes();
-
-    // Resync when page becomes visible again
-    document.addEventListener('visibilitychange', function () {
-        if (document.visibilityState === 'visible') {
-            syncFatigueRing();
-            syncStackedAttributes();
-        }
-    });
-    window.addEventListener('focus', function () {
-        syncFatigueRing();
-        syncStackedAttributes();
-    });
-});

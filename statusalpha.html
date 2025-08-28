@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Status - SysLvLUp</title>
+    <link rel="stylesheet" href="css/status.css">
+    <link rel="manifest" href="manifest.json">
+    <link rel="icon" type="image/png" href="icons/icon-192x192.png">
+</head>
+<body>
+    <!-- Name Input Modal (shown for new players) -->
+    <div id="name-input-modal" class="modal hidden">
+        <div class="modal-content">
+            <h2>🎮 GATE OF AWAKENING</h2>
+            <p>Enter the realm of the Shadow Monarch</p>
+            <form id="name-form">
+                <div class="input-container">
+                    <input 
+                        type="text" 
+                        id="player-name-input" 
+                        placeholder="Enter your hunter name..." 
+                        maxlength="20" 
+                        required
+                        autocomplete="off"
+                    >
+                </div>
+                <button type="submit" class="portal-button">CROSS THE GATE</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Loading Ring -->
+    <div id="loading-ring" class="loading-container">
+        <div class="loading-spinner"></div>
+        <div class="loading-text">Loading...</div>
+    </div>
+
+    <!-- Main Status Content -->
+    <div id="status-content">
+        <!-- Status Header -->
+        <div class="status-header">
+            <h1>STATUS</h1>
+            <div class="header-controls">
+                <button id="logout-btn">LOGOUT</button>
+                <button id="export-btn">EXPORT</button>
+                <button id="import-btn">IMPORT</button>
+                <button id="daily-reset-btn">RESET</button>
+            </div>
+        </div>
+
+        <!-- Main Content Grid -->
+        <div class="status-main">
+            <!-- Character Info Section -->
+            <div class="character-info">
+                <div class="character-header">
+                    <h2>CHARACTER</h2>
+                    <div class="level-badge">
+                        <div class="level-number" id="level-number">1</div>
+                        <div class="level-label">LEVEL</div>
+                    </div>
+                </div>
+                <div class="character-details">
+                    <div><strong>JOB:</strong> <span id="name-text">None</span></div>
+                    <div><strong>TITLE:</strong> <span id="title-text">None</span></div>
+                    <div><strong>NAME:</strong> <span id="job-text">None</span></div>
+                    <div><strong>GUILD:</strong> <span id="guild-text">None</span></div>
+                    <div><strong>RACE:</strong> <span id="race-text">None</span></div>
+                    <div><strong>REGION:</strong> <span id="region-text">None</span></div>
+                    <div><strong>LOCATION:</strong> <span id="location-text">None</span></div>
+                    <div><strong>PING:</strong> <span id="ping-text">0 ms</span></div>
+                </div>
+            </div>
+
+            <!-- Stats Section -->
+            <div class="stats-section">
+                <h3 class="section-headers">RESOURCES</h3>
+                <div class="stat-bars">
+                    <div class="stat-bar">
+                        <div class="stat-icon">❤️</div>
+                        <div class="stat-info">
+                            <div class="stat-label">HP</div>
+                            <div class="stat-bar-container">
+                                <div id="hp-fill" class="stat-bar-fill" style="width: 100%"></div>
+                            </div>
+                        </div>
+                        <div class="stat-value" id="hp-value">100/100</div>
+                    </div>
+                    <div class="stat-bar">
+                        <div class="stat-icon">✨</div>
+                        <div class="stat-info">
+                            <div class="stat-label">MP</div>
+                            <div class="stat-bar-container">
+                                <div id="mp-fill" class="stat-bar-fill" style="width: 80%"></div>
+                            </div>
+                        </div>
+                        <div class="stat-value" id="mp-value">80/100</div>
+                    </div>
+                    <div class="stat-bar">
+                        <div class="stat-icon">🏃</div>
+                        <div class="stat-info">
+                            <div class="stat-label">STAMINA</div>
+                            <div class="stat-bar-container">
+                                <div id="stm-fill" class="stat-bar-fill" style="width: 90%"></div>
+                            </div>
+                        </div>
+                        <div class="stat-value" id="stm-value">90/100</div>
+                    </div>
+                    <div class="stat-bar">
+                        <div class="stat-icon">⭐</div>
+                        <div class="stat-info">
+                            <div class="stat-label">EXPERIENCE</div>
+                            <div class="stat-bar-container">
+                                <div id="exp-fill" class="stat-bar-fill" style="width: 45%"></div>
+                            </div>
+                        </div>
+                        <div class="stat-value" id="exp-value">45/100</div>
+                    </div>
+                    <div class="stat-bar">
+                        <div class="stat-icon">😴</div>
+                        <div class="stat-info">
+                            <div class="stat-label">FATIGUE</div>
+                            <div class="stat-bar-container">
+                                <div id="fatigue-fill" class="stat-bar-fill" style="width: 60%"></div>
+                            </div>
+                        </div>
+                        <div class="stat-value" id="fatigue-value">60/100</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Attributes Section -->
+            <div class="attributes-section">
+                <h3 class="section-headers">ATTRIBUTES</h3>
+                <div class="attributes-grid">
+                    <div class="attribute-item">
+                        <div class="attribute-icon">💪</div>
+                        <div class="attribute-label">STR</div>
+                        <div class="attribute-value" id="str-value">48</div>
+                    </div>
+                    <div class="attribute-item">
+                        <div class="attribute-icon">🛡️</div>
+                        <div class="attribute-label">VIT</div>
+                        <div class="attribute-value" id="vit-value">27</div>
+                    </div>
+                    <div class="attribute-item">
+                        <div class="attribute-icon">🏃</div>
+                        <div class="attribute-label">AGI</div>
+                        <div class="attribute-value" id="agi-value">27</div>
+                    </div>
+                    <div class="attribute-item">
+                        <div class="attribute-icon">🧠</div>
+                        <div class="attribute-label">INT</div>
+                        <div class="attribute-value" id="int-value">27</div>
+                    </div>
+                    <div class="attribute-item">
+                        <div class="attribute-icon">👁️</div>
+                        <div class="attribute-label">PER</div>
+                        <div class="attribute-value" id="per-value">27</div>
+                    </div>
+                    <div class="attribute-item">
+                        <div class="attribute-icon">🧙</div>
+                        <div class="attribute-label">WIS</div>
+                        <div class="attribute-value" id="wis-value">—</div>
+                    </div>
+                </div>
+                <div class="available-points">
+                    <div class="available-points-label">Available Ability Points</div>
+                    <div class="available-points-value" id="available-points">12</div>
+                </div>
+            </div>
+
+            <!-- Navigation Section -->
+            <div class="navigation-section">
+                <h3 class="section-headers">NAVIGATION</h3>
+                <div class="nav-buttons">
+                    <a href="daily_quest.html" class="nav-button">DAILY QUESTS</a>
+                    <a href="quests.html" class="nav-button">ALL QUESTS</a>
+                    <a href="inventory.html" class="nav-button">INVENTORY</a>
+                    <a href="shop.html" class="nav-button">SHOP</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Quests Section -->
+        <div class="quests-section">
+            <h3 class="quests-title">ACTIVE QUESTS</h3>
+            <div class="quest-item">
+                <div class="quest-info">
+                    <span class="quest-type">Grunt Work</span>
+                    <span class="quest-level" id="player-level-pill-2">Lv.1</span>
+                </div>
+            </div>
+            <div class="quest-item">
+                <a href="daily_quest.html" class="quest-link">
+                    <div class="quest-info">
+                        <span class="quest-type">[MAIN] Power</span>
+                        <span class="quest-level" id="player-level-pill">Lv.1</span>
+                    </div>
+                </a>
+            </div>
+            <div class="quest-item">
+                <div class="quest-info">
+                    <span class="quest-type">[SIDE] New World</span>
+                    <span class="quest-level">Lv.5</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Import Modal -->
+    <div id="import-modal" class="modal hidden">
+        <div class="modal-content">
+            <h3>Import Data</h3>
+            <textarea id="import-textarea" placeholder="Paste your exported data here..."></textarea>
+            <div class="modal-buttons">
+                <button id="confirm-import">Import</button>
+                <button id="cancel-import">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- File Input for Import -->
+    <input type="file" id="file-input" accept=".json" style="display: none;">
+
+    <!-- Scripts -->
+    <script src="js/user-manager.js"></script>
+    <script src="js/status.js"></script>
+    
+    <!-- Service Worker Registration -->
+    <script>
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('sw.js')
+                .then(registration => {
+                    console.log('SW registered:', registration);
+                })
+                .catch(error => {
+                    console.log('SW registration failed:', error);
+                });
+        }
+    </script>
+</body>
+</html>
+
