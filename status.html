@@ -91,11 +91,42 @@
         </div>
 
         <div class="resource-block fatigue">
-          <svg class="fatigue-ring" viewBox="0 0 36 36" aria-hidden="true">
-            <circle class="ring-bg" cx="18" cy="18" r="16" />
-            <circle class="ring-progress" cx="18" cy="18" r="16" />
-          </svg>
-          <div class="fatigue-text"><span class="fatigue-label">FATIGUE:</span> <span class="value-major" id="fatigue-value">0</span></div>
+          <div class="fatigue-ring" style="--fatigue:0">
+            <svg viewBox="0 0 80 80" width="80" height="80" aria-hidden="true">
+              <defs>
+                <linearGradient id="fatigueGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                  <stop offset="0%" stop-color="#9ca3af">
+                    <animate attributeName="stop-color" 
+                      values="#9ca3af;#6b7280;#4b5563;#6b7280;#9ca3af" 
+                      dur="3s" repeatCount="indefinite"/>
+                  </stop>
+                  <stop offset="25%" stop-color="#6b7280">
+                    <animate attributeName="stop-color" 
+                      values="#6b7280;#4b5563;#9ca3af;#4b5563;#6b7280" 
+                      dur="3s" repeatCount="indefinite"/>
+                  </stop>
+                  <stop offset="50%" stop-color="#4b5563">
+                    <animate attributeName="stop-color" 
+                      values="#4b5563;#9ca3af;#6b7280;#9ca3af;#4b5563" 
+                      dur="3s" repeatCount="indefinite"/>
+                  </stop>
+                  <stop offset="75%" stop-color="#6b7280">
+                    <animate attributeName="stop-color" 
+                      values="#6b7280;#4b5563;#9ca3af;#4b5563;#6b7280" 
+                      dur="3s" repeatCount="indefinite"/>
+                  </stop>
+                  <stop offset="100%" stop-color="#9ca3af">
+                    <animate attributeName="stop-color" 
+                      values="#9ca3af;#6b7280;#4b5563;#6b7280;#9ca3af" 
+                      dur="3s" repeatCount="indefinite"/>
+                  </stop>
+                </linearGradient>
+              </defs>
+              <circle class="fat-bg" cx="40" cy="40" r="32" />
+              <circle class="fat-fg" cx="40" cy="40" r="32" />
+            </svg>
+            <div class="fat-label"><span><span class="icon">😴</span>FAT</span><strong class="fatigue-value">0</strong></div>
+          </div>
         </div>
 
         <div class="resource-block stm">
@@ -409,98 +440,11 @@
           document.getElementById('player-details-modal').classList.remove('hidden');
         }
 
-        // Function to update fatigue ring
-        function updateFatigueRing(fatigueValue) {
-          const ring = document.querySelector('.ring-progress');
-          if (ring) {
-            const circumference = 2 * Math.PI * 16; // r=16 from SVG
-            const progress = (fatigueValue / 100) * circumference;
-            ring.style.strokeDasharray = `${progress} ${circumference}`;
-            console.log('Fatigue ring updated:', fatigueValue, 'Progress:', progress, 'Circumference:', circumference);
-          } else {
-            console.log('Fatigue ring not found');
-          }
-        }
-        
-        // Function to manually sync fatigue (can be called from console for testing)
-        function syncFatigue() {
-          console.log('Manual fatigue sync triggered...');
-          const fatigueValueOld = document.getElementById('fatigue-value-old');
-          if (fatigueValueOld) {
-            console.log('Found fatigue value in database:', fatigueValueOld.textContent);
-            const fatigueValue = document.getElementById('fatigue-value');
-            if (fatigueValue) {
-              let fatigueNumber;
-              if (fatigueValueOld.textContent.includes('/')) {
-                const parts = fatigueValueOld.textContent.split('/');
-                fatigueNumber = parseInt(parts[0]);
-              } else {
-                fatigueNumber = parseInt(fatigueValueOld.textContent);
-              }
-              
-              if (!isNaN(fatigueNumber)) {
-                fatigueValue.textContent = fatigueNumber;
-                updateFatigueRing(fatigueNumber);
-                console.log('Fatigue manually synced:', fatigueNumber);
-              } else {
-                console.log('Invalid fatigue value:', fatigueValueOld.textContent);
-              }
-            }
-          } else {
-            console.log('No fatigue value found in database yet');
-          }
-        }
-        
-        // Function to debug all fatigue-related elements
-        function debugFatigue() {
-          console.log('=== FATIGUE DEBUG ===');
-          console.log('Hidden fatigue element (fatigue-value-old):', document.getElementById('fatigue-value-old'));
-          console.log('Visible fatigue element (fatigue-value):', document.getElementById('fatigue-value'));
-          console.log('Fatigue ring element (.ring-progress):', document.querySelector('.ring-progress'));
-          
-          // Check all elements with "fatigue" in their ID
-          const allFatigueElements = document.querySelectorAll('[id*="fatigue"]');
-          console.log('All fatigue-related elements:', allFatigueElements);
-          
-          // Check the hidden status-content div
-          const statusContent = document.getElementById('status-content');
-          if (statusContent) {
-            console.log('Status content div exists:', statusContent);
-            console.log('Status content innerHTML:', statusContent.innerHTML);
-          }
-        }
-        
-        // Function to check what status.js is actually loading
-        function checkDatabaseData() {
-          console.log('=== DATABASE DATA CHECK ===');
-          
-          // Try to access the gameData from status.js if it's available
-          if (typeof window.gameData !== 'undefined') {
-            console.log('Game data from status.js:', window.gameData);
-          } else {
-            console.log('Game data not accessible from status.js');
-          }
-          
-          // Check if we can find the fatigue value in the hidden elements
-          const allHiddenElements = document.querySelectorAll('#status-content [id*="fatigue"]');
-          console.log('All hidden fatigue elements:', allHiddenElements);
-          
-          // Look for any element that might contain the fatigue value
-          const possibleFatigueElements = document.querySelectorAll('#status-content [id*="fatigue"], #status-content [id*="sts"]');
-          console.log('Possible fatigue/STS elements:', possibleFatigueElements);
-        }
 
-        // Update fatigue ring when page loads
-        document.addEventListener('DOMContentLoaded', function() {
-          const fatigueValue = document.getElementById('fatigue-value');
-          if (fatigueValue) {
-            const value = parseInt(fatigueValue.textContent);
-            updateFatigueRing(value);
-          }
-          
-          // Initialize fatigue ring with 0 progress
-          updateFatigueRing(0);
-        });
+        
+
+
+
 
         // Function to sync visible elements with hidden elements (for status.js compatibility)
         function syncVisibleElements() {
@@ -573,10 +517,9 @@
           }
           
           if (fatigueValueOld) {
-            const fatigueValue = document.getElementById('fatigue-value');
-            if (fatigueValue) {
-              console.log('Fatigue value from database:', fatigueValueOld.textContent);
-              
+            const fatigueRing = document.querySelector('.fatigue-ring');
+            const fatigueValue = document.querySelector('.fatigue-value');
+            if (fatigueRing && fatigueValue) {
               // Handle different fatigue value formats
               let fatigueNumber;
               if (fatigueValueOld.textContent.includes('/')) {
@@ -589,11 +532,10 @@
               }
               
               if (!isNaN(fatigueNumber)) {
+                // Update the CSS variable for the ring progress
+                fatigueRing.style.setProperty('--fatigue', fatigueNumber);
+                // Update the fatigue value text
                 fatigueValue.textContent = fatigueNumber;
-                updateFatigueRing(fatigueNumber);
-                console.log('Fatigue synced successfully:', fatigueNumber);
-              } else {
-                console.log('Invalid fatigue value:', fatigueValueOld.textContent);
               }
             }
           }
@@ -654,29 +596,21 @@
           
           // Initial sync attempt after a short delay to allow status.js to load data
           setTimeout(() => {
-            console.log('Performing initial sync...');
             syncVisibleElements();
           }, 1000);
           
           // Additional sync attempts to catch late-loading data
           setTimeout(() => {
-            console.log('Performing delayed sync...');
             syncVisibleElements();
           }, 3000);
           
-          // Sync after status.js data loading (based on console logs)
-          setTimeout(() => {
-            console.log('Performing post-status.js sync...');
-            syncVisibleElements();
-            debugFatigue();
-            checkDatabaseData();
-          }, 5000);
+
         });
       </script>
 
       <!-- Scripts -->
       <script src="js/user-manager.js"></script>
-      <script src="js/status.js" onload="console.log('status.js loaded, triggering sync...'); setTimeout(syncVisibleElements, 500);"></script>
+      <script src="js/status.js" onload="setTimeout(syncVisibleElements, 500);"></script>
       
       <!-- Service Worker Registration -->
       <script>

@@ -1,5 +1,22 @@
 /* Status Design Test - base styles copied from daily_quest.css where needed */
 
+/* CSS Variables for fatigue ring */
+:root {
+    --bg: #0d0b1e;
+    --surface: #141129;
+    --surface-2: #1a1736;
+    --primary: #8b5cf6;
+    --primary-2: #a855f7;
+    --accent: #e879f9;
+    --good: #34d399;
+    --warn: #f59e0b;
+    --bad: #ef4444;
+    --text: #ede9fe;
+    --muted: #c4b5fd;
+    --glass: rgba(255,255,255,0.06);
+    --glass-2: rgba(255,255,255,0.12);
+}
+
 /* Background and centering (from daily_quest.css body) */
 body {
     margin: 0;
@@ -160,11 +177,22 @@ body {
 .resource-block.stm { grid-column: 1; grid-row: 2; }
 .resource-block.exp { grid-column: 3; grid-row: 2; }
 .resource-block.fatigue { grid-column: 4; grid-row: 1 / span 2; align-self: center; }
-.fatigue-ring { width: 28px; height: 28px; }
-.fatigue-ring .ring-bg { fill: none; stroke: rgba(255,255,255,0.25); stroke-width: 2; }
-.fatigue-text .fatigue-label { margin-right: 0px; display: inline-block; }
-.fatigue-ring .ring-progress { fill: none; stroke: rgba(255,255,255,0.95); stroke-width: 2; stroke-linecap: round; stroke-dasharray: 0 100; filter: drop-shadow(0 0 4px rgba(255,255,255,0.8)); }
-.fatigue-text { font-weight: 800; text-shadow: 0 0 8px rgba(255,255,255,0.9); text-align: center; font-size: small; }
+.fatigue-ring { grid-column: 2 / 3; grid-row: 1 / span 2; display: grid; place-items: center; position: relative; width: 84px; height: 84px; background: var(--surface-2); border: 1px solid var(--glass-2); border-radius: 12px; box-shadow: inset 0 6px 20px rgba(0,0,0,0.25); }
+.fatigue-ring svg { transform: rotate(-90deg); }
+.fatigue-ring .fat-bg { fill: none; stroke: rgba(255,255,255,0.1); stroke-width: 10; }
+.fatigue-ring .fat-fg { 
+	fill: none; 
+	stroke: url(#fatigueGradient); 
+	stroke-width: 10; 
+	stroke-linecap: round; 
+	stroke-dasharray: 201.06; 
+	stroke-dashoffset: calc(201.06 - (var(--fatigue) * 2.0106)); 
+	filter: drop-shadow(0 0 8px rgba(236,72,153,0.6));
+	animation: fatigueGradientFlow 3s linear infinite;
+}
+.fat-label { position: absolute; display: grid; place-items: center; text-align: center; }
+.fat-label span { font-size: 10px; color: var(--muted); letter-spacing: 1px; }
+.fat-label strong { font-size: 18px; font-weight: 600; }
 
 .attributes-panel { border: 1px solid rgba(255,255,255,0.6); padding: 12px; margin-top: 16px; text-align: left; box-shadow: 0 0 14px rgba(0,212,255,0.18) inset; }
 .attributes-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px 40px; justify-items: center; align-items: center; }
