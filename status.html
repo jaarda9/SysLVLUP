@@ -421,6 +421,35 @@
             console.log('Fatigue ring not found');
           }
         }
+        
+        // Function to manually sync fatigue (can be called from console for testing)
+        function syncFatigue() {
+          console.log('Manual fatigue sync triggered...');
+          const fatigueValueOld = document.getElementById('fatigue-value-old');
+          if (fatigueValueOld) {
+            console.log('Found fatigue value in database:', fatigueValueOld.textContent);
+            const fatigueValue = document.getElementById('fatigue-value');
+            if (fatigueValue) {
+              let fatigueNumber;
+              if (fatigueValueOld.textContent.includes('/')) {
+                const parts = fatigueValueOld.textContent.split('/');
+                fatigueNumber = parseInt(parts[0]);
+              } else {
+                fatigueNumber = parseInt(fatigueValueOld.textContent);
+              }
+              
+              if (!isNaN(fatigueNumber)) {
+                fatigueValue.textContent = fatigueNumber;
+                updateFatigueRing(fatigueNumber);
+                console.log('Fatigue manually synced:', fatigueNumber);
+              } else {
+                console.log('Invalid fatigue value:', fatigueValueOld.textContent);
+              }
+            }
+          } else {
+            console.log('No fatigue value found in database yet');
+          }
+        }
 
         // Update fatigue ring when page loads
         document.addEventListener('DOMContentLoaded', function() {
@@ -583,12 +612,24 @@
               characterData: true
             });
           }
+          
+          // Initial sync attempt after a short delay to allow status.js to load data
+          setTimeout(() => {
+            console.log('Performing initial sync...');
+            syncVisibleElements();
+          }, 1000);
+          
+          // Additional sync attempts to catch late-loading data
+          setTimeout(() => {
+            console.log('Performing delayed sync...');
+            syncVisibleElements();
+          }, 3000);
         });
       </script>
 
       <!-- Scripts -->
       <script src="js/user-manager.js"></script>
-      <script src="js/status.js"></script>
+      <script src="js/status.js" onload="console.log('status.js loaded, triggering sync...'); setTimeout(syncVisibleElements, 500);"></script>
       
       <!-- Service Worker Registration -->
       <script>
