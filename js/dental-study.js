@@ -333,7 +333,7 @@ class DentalStudyManager {
     }
     
     calculateRewards(sessionDuration) {
-        const baseReward = 2 * (sessionDuration / (10 * 60)); // 10 min = base (changed from 50)
+        const baseReward = 2 * (sessionDuration / (10)); // 10 seconds = base (changed from 10 minutes)
         const totalXP = Math.round(baseReward);
         
         return {
@@ -510,7 +510,7 @@ class DentalStudyManager {
 // Enhanced Timer System
 class StudyTimer {
     constructor(duration = 10) {
-        this.duration = duration * 60; // Convert to seconds
+        this.duration = duration; // Duration is now in seconds directly
         this.remaining = this.duration;
         this.isRunning = false;
         this.isPaused = false;
