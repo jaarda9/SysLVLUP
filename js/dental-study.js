@@ -156,10 +156,10 @@ class DentalStudyManager {
             newGoalItem.setAttribute('data-custom', 'true');
             newGoalItem.innerHTML = `
                 <span class="task-name">${sessionName}</span>
-                <button class="start-button" onclick="dentalStudyManager.openPomodoro('${sessionName}', '${newSessionName.replace(/\s+/g, '-').toLowerCase()}-checkbox')">
+                <button class="start-button" onclick="dentalStudyManager.openPomodoro('${sessionName}', '${sessionName.replace(/\s+/g, '-').toLowerCase()}-checkbox')">
                     <i class="fa-solid fa-play"></i>
                 </button>
-                <input type="checkbox" id="${newSessionName.replace(/\s+/g, '-').toLowerCase()}-checkbox" class="task-checkbox" disabled />
+                <input type="checkbox" id="${sessionName.replace(/\s+/g, '-').toLowerCase()}-checkbox" class="task-checkbox" disabled />
             `;
             goalSection.appendChild(newGoalItem);
         });
