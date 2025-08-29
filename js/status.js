@@ -3,6 +3,31 @@ let userManager = null;
 let isPhone = false;
 let performanceMode = false;
 
+// Function to animate text values from start to end
+function animateTextValue(element, startValue, endValue, maxValue) {
+    if (!element) return;
+    
+    const duration = 1000; // 1 second animation
+    const startTime = performance.now();
+    
+    function updateText(currentTime) {
+        const elapsed = currentTime - startTime;
+        const progress = Math.min(elapsed / duration, 1);
+        
+        // Easing function for smooth animation
+        const easeOutQuart = 1 - Math.pow(1 - progress, 4);
+        
+        const currentValue = Math.round(startValue + (endValue - startValue) * easeOutQuart);
+        element.innerHTML = `<span class="value-major">${currentValue}</span>/<span class="value-max">${maxValue}</span>`;
+        
+        if (progress < 1) {
+            requestAnimationFrame(updateText);
+        }
+    }
+    
+    requestAnimationFrame(updateText);
+}
+
 // Initialize when DOM is loaded
 document.addEventListener('DOMContentLoaded', () => {
     console.log('Status page loaded, initializing...');
@@ -358,7 +383,8 @@ function loadPlayerData(gameData) {
             hpFill.style.width = `${gameData.hp}%`;
         }
         if (hpValue) {
-            hpValue.textContent = `${gameData.hp}/100`;
+            // Animate text from 0 to real value
+            animateTextValue(hpValue, 0, gameData.hp, 100);
         }
     }
     
@@ -369,7 +395,8 @@ function loadPlayerData(gameData) {
             mpFill.style.width = `${gameData.mp}%`;
         }
         if (mpValue) {
-            mpValue.textContent = `${gameData.mp}/100`;
+            // Animate text from 0 to real value
+            animateTextValue(mpValue, 0, gameData.mp, 100);
         }
     }
     
@@ -380,7 +407,8 @@ function loadPlayerData(gameData) {
             stmFill.style.width = `${gameData.stm}%`;
         }
         if (stmValue) {
-            stmValue.textContent = `${gameData.stm}/100`;
+            // Animate text from 0 to real value
+            animateTextValue(stmValue, 0, gameData.stm, 100);
         }
     }
     
@@ -391,7 +419,8 @@ function loadPlayerData(gameData) {
             expFill.style.width = `${gameData.exp}%`;
         }
         if (expValue) {
-            expValue.textContent = `${gameData.exp}/100`;
+            // Animate text from 0 to real value
+            animateTextValue(expValue, 0, gameData.exp, 100);
         }
     }
     

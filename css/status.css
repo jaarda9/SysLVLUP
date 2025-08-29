@@ -164,8 +164,17 @@ body {
     -webkit-transform: translateZ(0);
     -webkit-backface-visibility: hidden;
 }
-.stat-value { font-size: 11px; font-weight: 800; text-shadow: 0 0 6px rgba(255,255,255,0.8); text-align: right; }
-.stat-value .value-major { font-size: 13px; font-weight: 900; font-weight: bold; }
+.stat-value { 
+  font-size: 11px; 
+  font-weight: 800; 
+  text-shadow: 0 0 6px rgba(255,255,255,0.8); 
+  text-align: right; 
+}
+.stat-value .value-major { 
+  font-size: 13px; 
+  font-weight: 900; 
+  font-weight: bold; 
+}
 .stat-value .value-max { opacity: 0.6; }
 .stat-bar-container { position: relative; }
 .stat-bar-container .stat-value { position: absolute; right: 0; bottom: -17px; }
