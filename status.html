@@ -739,29 +739,32 @@
           } else {
             console.log('No userData in localStorage');
           }
-        }
-        
-        // Function to check what's in the database (for debugging)
-        function checkDatabase() {
-          console.log('=== DATABASE CHECK ===');
           
-          // Check localStorage for game data
-          const userData = localStorage.getItem('userData');
+          // Check ALL localStorage keys for fatigue data
+          console.log('=== SEARCHING ALL STORAGE ===');
+          for (let i = 0; i < localStorage.length; i++) {
+            const key = localStorage.key(i);
+            if (key && key.toLowerCase().includes('fatigue')) {
+              console.log('Found fatigue-related key:', key, 'Value:', localStorage.getItem(key));
+            }
+          }
+          
+          // Check if fatigue is stored under a different name
           if (userData) {
             try {
               const parsed = JSON.parse(userData);
-              console.log('LocalStorage userData:', parsed);
-              
               if (parsed.gameData) {
-                console.log('Game data fields:', Object.keys(parsed.gameData));
-                console.log('Fatigue in gameData:', parsed.gameData.fatigue);
-                console.log('All gameData values:', parsed.gameData);
+                // Look for fields that might be fatigue
+                const possibleFatigueFields = ['stamina', 'energy', 'tiredness', 'exhaustion', 'fatigue'];
+                for (let field of possibleFatigueFields) {
+                  if (parsed.gameData[field] !== undefined) {
+                    console.log(`Found possible fatigue field '${field}':`, parsed.gameData[field]);
+                  }
+                }
               }
             } catch (e) {
-              console.log('Error parsing localStorage:', e);
+              console.log('Error searching for fatigue fields:', e);
             }
-          } else {
-            console.log('No userData in localStorage');
           }
         }
         

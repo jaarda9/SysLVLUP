@@ -404,6 +404,20 @@ function loadPlayerData(gameData) {
         if (fatigueValue) {
             fatigueValue.textContent = `${gameData.fatigue}/100`;
         }
+
+        // Also update the new SVG fatigue ring used in the redesigned status page
+        // These elements exist in the visible UI and should reflect the same value
+        const svgRingCircle = document.getElementById('fatringprogg');
+        const svgRingText = document.getElementById('Fatvalue');
+        if (svgRingCircle) {
+            // 2 * Math.PI * r for r=34 → 213.628 (kept inline to avoid floating drift)
+            const circumference = 213.628;
+            const dashOffset = circumference - (Number(gameData.fatigue) / 100) * circumference;
+            svgRingCircle.style.strokeDashoffset = String(dashOffset);
+        }
+        if (svgRingText) {
+            svgRingText.textContent = String(gameData.fatigue);
+        }
     }
     
     // Update attributes
