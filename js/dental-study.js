@@ -1,3 +1,13 @@
+// Initialize user manager (same pattern as other pages)
+let userManager;
+if (typeof UserManager !== 'undefined') {
+    userManager = new UserManager();
+    window.userManager = userManager;
+    console.log('UserManager initialized for dental study page');
+} else {
+    console.warn('UserManager class not available');
+}
+
 // Dental Study Manager - Simplified Core Features
 class DentalStudyManager {
     constructor() {
@@ -682,5 +692,22 @@ function testUserManager() {
     }
     
     console.log('=== End Test ===');
+}
+
+// Sync to database function (same pattern as other pages)
+async function syncToDatabase() {
+    if (window.userManager) {
+        try {
+            await window.userManager.saveUserData();
+            console.log('Sync successful via user manager');
+            return { success: true, message: 'Data synced successfully' };
+        } catch (error) {
+            console.error('Error syncing to database:', error);
+            throw error;
+        }
+    } else {
+        console.warn('User manager not available for syncing');
+        return { success: false, message: 'User manager not available' };
+    }
 }
 
