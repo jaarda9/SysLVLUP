@@ -4,7 +4,7 @@ let isPhone = false;
 let performanceMode = false;
 
 // Function to animate text values from start to end
-function animateTextValue(element, startValue, endValue, maxValue) {
+function animateTextValue(element, startValue, endValue, maxValue, isFatigue = false) {
     if (!element) return;
     
     const duration = 1000; // 1 second animation
@@ -18,7 +18,14 @@ function animateTextValue(element, startValue, endValue, maxValue) {
         const easeOutQuart = 1 - Math.pow(1 - progress, 4);
         
         const currentValue = Math.round(startValue + (endValue - startValue) * easeOutQuart);
-        element.innerHTML = `<span class="value-major">${currentValue}</span>/<span class="value-max">${maxValue}</span>`;
+        
+        if (isFatigue) {
+            // Fatigue mode: just show the number with % (no /100)
+            element.textContent = currentValue + '%';
+        } else {
+            // Regular mode: show "value/max" format
+            element.innerHTML = `<span class="value-major">${currentValue}</span>/<span class="value-max">${maxValue}</span>`;
+        }
         
         if (progress < 1) {
             requestAnimationFrame(updateText);
@@ -445,7 +452,8 @@ function loadPlayerData(gameData) {
             svgRingCircle.style.strokeDashoffset = String(dashOffset);
         }
         if (svgRingText) {
-            svgRingText.textContent = String(gameData.fatigue);
+            // Animate fatigue text from 0 to real value
+            animateTextValue(svgRingText, 0, gameData.fatigue, 100, true); // true = fatigue mode (no /100)
         }
     }
     

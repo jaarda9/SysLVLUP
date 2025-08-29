@@ -251,8 +251,7 @@ body {
   font-size: 11px;
 }
 
-/* Append % without causing line wrap */
-.fatigue-value::after { content: '%'; margin-left: 1px; }
+/* No need to append % since we're handling it manually in the HTML */
 
 .attributes-panel { border: 1px solid rgba(255,255,255,0.6); padding: 12px; margin-top: 16px; text-align: left; box-shadow: 0 0 14px rgba(0,212,255,0.18) inset; }
 .attributes-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px 40px; justify-items: center; align-items: center; }
