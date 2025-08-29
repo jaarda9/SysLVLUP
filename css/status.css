@@ -191,6 +191,7 @@ body {
   width: 64px;
   height: 64px;
   overflow: visible; /* prevent rounded arc caps from being clipped */
+  padding: 2px; /* nudge away from panel border */
 }
 
 .progress-ring {
@@ -200,6 +201,7 @@ body {
   overflow: visible; /* ensure stroke caps render outside bbox */
 }
 
+.progress-ring__track { stroke-linecap: round; }
 .progress-ring__circle {
   transition: stroke-dashoffset 0.5s ease;
   stroke-linecap: round; /* rounded arc ends for smoother look */
