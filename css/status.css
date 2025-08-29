@@ -190,12 +190,14 @@ body {
   position: relative;
   width: 64px;
   height: 64px;
+  overflow: visible; /* prevent rounded arc caps from being clipped */
 }
 
 .progress-ring {
   transform: rotate(-90deg);
   width: 64px;
   height: 64px;
+  overflow: visible; /* ensure stroke caps render outside bbox */
 }
 
 .progress-ring__circle {
