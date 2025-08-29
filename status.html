@@ -490,121 +490,16 @@
             }
           }
           
-          // DIRECT FATIGUE DATA EXTRACTION - BYPASSING BROKEN SYNC SYSTEM
-          function loadFatigueFromDatabase() {
-            console.log('🚀 DIRECTLY LOADING FATIGUE FROM DATABASE...');
-            
-            // Method 1: Try to get from localStorage
-            const userData = localStorage.getItem('userData');
-            if (userData) {
-              try {
-                const parsed = JSON.parse(userData);
-                if (parsed.gameData && parsed.gameData.fatigue !== undefined) {
-                  console.log('✅ Found fatigue in localStorage:', parsed.gameData.fatigue);
-                  window.updateFatigueRing(parsed.gameData.fatigue);
-                  return true;
-                }
-              } catch (e) {
-                console.log('❌ Error parsing localStorage:', e);
-              }
-            }
-            
-            // Method 2: Try to get from sessionStorage
-            const sessionData = sessionStorage.getItem('userData');
-            if (sessionData) {
-              try {
-                const parsed = JSON.parse(sessionData);
-                if (parsed.gameData && parsed.gameData.fatigue !== undefined) {
-                  console.log('✅ Found fatigue in sessionStorage:', parsed.gameData.fatigue);
-                  window.updateFatigueRing(parsed.gameData.fatigue);
-                  return true;
-                }
-              } catch (e) {
-                console.log('❌ Error parsing sessionStorage:', e);
-              }
-            }
-            
-            // Method 3: Try to get from any global variables that might exist
-            if (window.gameData && window.gameData.fatigue !== undefined) {
-              console.log('✅ Found fatigue in window.gameData:', window.gameData.fatigue);
-              window.updateFatigueRing(window.gameData.fatigue);
-              return true;
-            }
-            
-            // Method 4: Check if status.js has already loaded data somewhere
-            const existingFatigueElements = document.querySelectorAll('[id*="fatigue"]');
-            for (let element of existingFatigueElements) {
-              if (element.textContent && element.textContent.includes('/')) {
-                const fatigueValue = parseInt(element.textContent.split('/')[0]);
-                if (!isNaN(fatigueValue) && fatigueValue > 0) {
-                  console.log('✅ Found fatigue in existing element:', fatigueValue);
-                  window.updateFatigueRing(fatigueValue);
-                  return true;
-                }
-              }
-            }
-            
-            console.log('❌ No fatigue data found in any source');
-            return false;
-          }
-          
-          // Create a global function that status.js can call to update our fatigue ring
+          // Provide a minimal helper that status.js can call if needed
           window.updateFatigueRing = function(fatigueValue) {
             const ringProgress = document.getElementById('fatringprogg');
             const fatValue = document.getElementById('Fatvalue');
-            
-            if (ringProgress && fatValue) {
-              // Calculate the stroke-dashoffset for the progress
-              const circumference = 213.628;
-              const progress = circumference - (fatigueValue / 100) * circumference;
-              
-              // Update the ring and text
-              ringProgress.style.strokeDashoffset = progress;
-              fatValue.textContent = fatigueValue;
-              
-              console.log(`🎯 FATIGUE RING UPDATED TO ${fatigueValue}%, Progress: ${progress}`);
-            } else {
-              console.log('❌ Ring elements not found:', {ringProgress: !!ringProgress, fatValue: !!fatValue});
-            }
+            if (!ringProgress || !fatValue) return;
+            const circumference = 213.628;
+            const progress = circumference - (Number(fatigueValue) / 100) * circumference;
+            ringProgress.style.strokeDashoffset = String(progress);
+            fatValue.textContent = String(fatigueValue);
           };
-          
-          // AGGRESSIVE FATIGUE LOADING - MULTIPLE ATTEMPTS
-          console.log('🚀 STARTING AGGRESSIVE FATIGUE LOADING...');
-          
-          // Attempt 1: Immediate load
-          if (!loadFatigueFromDatabase()) {
-            console.log('⚠️ Immediate load failed, trying delayed loads...');
-            
-            // Attempt 2: After 500ms
-            setTimeout(() => {
-              if (!loadFatigueFromDatabase()) {
-                console.log('⚠️ 500ms load failed, trying 1s...');
-                
-                // Attempt 3: After 1 second
-                setTimeout(() => {
-                  if (!loadFatigueFromDatabase()) {
-                    console.log('⚠️ 1s load failed, trying 2s...');
-                    
-                    // Attempt 4: After 2 seconds
-                    setTimeout(() => {
-                      if (!loadFatigueFromDatabase()) {
-                        console.log('⚠️ 2s load failed, trying 3s...');
-                        
-                        // Attempt 5: After 3 seconds
-                        setTimeout(() => {
-                          if (!loadFatigueFromDatabase()) {
-                            console.log('❌ ALL FATIGUE LOADING ATTEMPTS FAILED');
-                            console.log('🔍 SETTING TO DEFAULT VALUE 20%');
-                            window.updateFatigueRing(20);
-                          }
-                        }, 1000);
-                      }
-                    }, 1000);
-                  }
-                }, 1000);
-              }
-            }, 500);
-          }
           
           // Sync attribute values
           const strValueOld = document.getElementById('str-value-old');
@@ -673,103 +568,7 @@
 
         });
         
-        // Function to manually check fatigue data after page loads
-        function checkFatigueData() {
-          console.log('=== MANUAL FATIGUE CHECK ===');
-          console.log('fatigue-value-old (status.js updates this):', document.getElementById('fatigue-value-old')?.textContent);
-          console.log('fatigue-value (our ring text):', document.getElementById('fatigue-value')?.textContent);
-          
-          // Check if there are any elements with "fatigue" in the ID
-          const allElements = document.querySelectorAll('[id*="fatigue"]');
-          console.log('All elements with "fatigue" in ID:', allElements);
-          
-          // Check if there are any elements with "fatigue" in the class
-          const fatigueClassElements = document.querySelectorAll('.fatigue');
-          console.log('All elements with "fatigue" class:', fatigueClassElements);
-          
-          // Try to manually update the ring with the current fatigue-value-old value
-          const fatigueOld = document.getElementById('fatigue-value-old');
-          if (fatigueOld && fatigueOld.textContent.includes('/')) {
-            const fatigueValue = parseInt(fatigueOld.textContent.split('/')[0]);
-            if (!isNaN(fatigueValue)) {
-              console.log(`Manually updating ring to ${fatigueValue}%`);
-              window.updateFatigueRing(fatigueValue);
-            }
-          }
-        }
-        
-        // Function to manually set fatigue (for testing)
-        function setFatigue(value) {
-          console.log(`Setting fatigue to ${value}%`);
-          window.updateFatigueRing(value);
-          
-          // Also update the fatigue-value-old element to simulate database update
-          const fatigueOld = document.getElementById('fatigue-value-old');
-          if (fatigueOld) {
-            fatigueOld.textContent = `${value}/100`;
-            console.log(`Updated fatigue-value-old to ${value}/100`);
-          }
-        }
-        
-        // Function to force load fatigue from database
-        function forceLoadFatigue() {
-          console.log('🚀 FORCE LOADING FATIGUE FROM DATABASE...');
-          return loadFatigueFromDatabase();
-        }
-        
-        // Function to check what's in the database (for debugging)
-        function checkDatabase() {
-          console.log('=== DATABASE CHECK ===');
-          
-          // Check localStorage for game data
-          const userData = localStorage.getItem('userData');
-          if (userData) {
-            try {
-              const parsed = JSON.parse(userData);
-              console.log('LocalStorage userData:', parsed);
-              
-              if (parsed.gameData) {
-                console.log('Game data fields:', Object.keys(parsed.gameData));
-                console.log('Fatigue in gameData:', parsed.gameData.fatigue);
-                console.log('All gameData values:', parsed.gameData);
-              }
-            } catch (e) {
-              console.log('Error parsing localStorage:', e);
-            }
-          } else {
-            console.log('No userData in localStorage');
-          }
-          
-          // Check ALL localStorage keys for fatigue data
-          console.log('=== SEARCHING ALL STORAGE ===');
-          for (let i = 0; i < localStorage.length; i++) {
-            const key = localStorage.key(i);
-            if (key && key.toLowerCase().includes('fatigue')) {
-              console.log('Found fatigue-related key:', key, 'Value:', localStorage.getItem(key));
-            }
-          }
-          
-          // Check if fatigue is stored under a different name
-          if (userData) {
-            try {
-              const parsed = JSON.parse(userData);
-              if (parsed.gameData) {
-                // Look for fields that might be fatigue
-                const possibleFatigueFields = ['stamina', 'energy', 'tiredness', 'exhaustion', 'fatigue'];
-                for (let field of possibleFatigueFields) {
-                  if (parsed.gameData[field] !== undefined) {
-                    console.log(`Found possible fatigue field '${field}':`, parsed.gameData[field]);
-                  }
-                }
-              }
-            } catch (e) {
-              console.log('Error searching for fatigue fields:', e);
-            }
-          }
-        }
-        
-        // Check fatigue data after a delay to see what's loaded
-        setTimeout(checkFatigueData, 2000);
+        // Remove heavy debug utilities to avoid overriding values. status.js is the source of truth.
 
       </script>
 
