@@ -318,3 +318,18 @@ class UserManager {
 
 // Make it available globally
 window.UserManager = UserManager;
+
+// Create and initialize a global instance
+window.userManager = new UserManager();
+
+// Auto-initialize with a default user ID for testing
+document.addEventListener('DOMContentLoaded', async function() {
+    try {
+        // Set a default user ID for testing
+        const defaultUserId = 'testUser_' + Date.now();
+        await window.userManager.setUserId(defaultUserId);
+        console.log('UserManager initialized with default ID:', defaultUserId);
+    } catch (error) {
+        console.error('Error initializing UserManager:', error);
+    }
+});

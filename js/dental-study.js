@@ -572,8 +572,23 @@ class StudyTimer {
 // Initialize the dental study manager when the page loads
 let dentalStudyManager;
 
-document.addEventListener("DOMContentLoaded", function() {
-    dentalStudyManager = new DentalStudyManager();
+document.addEventListener("DOMContentLoaded", async function() {
+    // Wait for UserManager to be ready
+    let attempts = 0;
+    const maxAttempts = 50; // Wait up to 5 seconds
+    
+    while (!window.userManager && attempts < maxAttempts) {
+        await new Promise(resolve => setTimeout(resolve, 100));
+        attempts++;
+    }
+    
+    if (window.userManager) {
+        console.log('UserManager ready, initializing DentalStudyManager');
+        dentalStudyManager = new DentalStudyManager();
+    } else {
+        console.warn('UserManager not available after waiting, using fallback');
+        dentalStudyManager = new DentalStudyManager();
+    }
     
     // Service Worker Registration
     if ('serviceWorker' in navigator) {
@@ -622,11 +637,13 @@ function addNewSession() {
 function testUserManager() {
     console.log('=== Testing User Manager ===');
     console.log('Window userManager:', window.userManager);
+    console.log('Window UserManager class:', window.UserManager);
     
     if (window.userManager) {
-        console.log('UserManager class available');
+        console.log('UserManager instance available');
         console.log('Has user ID:', window.userManager.hasUserId());
         console.log('Current user ID:', window.userManager.getUserId());
+        console.log('User data:', window.userManager.getData());
         
         // Try to set a test user ID
         try {
@@ -652,7 +669,16 @@ function testUserManager() {
             console.error('Error in test function:', error);
         }
     } else {
-        console.log('UserManager not available on window');
+        console.log('UserManager instance not available on window');
+        if (window.UserManager) {
+            console.log('UserManager class is available, creating instance...');
+            try {
+                window.userManager = new window.UserManager();
+                console.log('Created new UserManager instance:', window.userManager);
+            } catch (error) {
+                console.error('Error creating UserManager instance:', error);
+            }
+        }
     }
     
     console.log('=== End Test ===');
