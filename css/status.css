@@ -182,25 +182,25 @@ body {
   display: flex;
   justify-content: center;
   align-items: center;
-  margin-bottom: 15px;
-  position: relative;
-  bottom: 185px;
-  left: 325px;
+  margin: 0;
+  position: static;
 }
 
 .fatigue-ring {
   position: relative;
-  width: 80px;
-  height: 80px;
+  width: 64px;
+  height: 64px;
 }
 
 .progress-ring {
   transform: rotate(-90deg);
+  width: 64px;
+  height: 64px;
 }
 
 .progress-ring__circle {
   transition: stroke-dashoffset 0.5s ease;
-  filter: drop-shadow(0 0 8px rgba(86, 204, 242, 0.6));
+ 
 }
 
 .fatigue-label {
@@ -211,6 +211,7 @@ body {
   text-align: center;
   font-family: 'Consolas', 'Courier New', monospace;
   color: #e0e6f6;
+  font-size: 13px;
   z-index: 2;
 }
 
@@ -218,6 +219,7 @@ body {
   font-weight: bold;
   color: #56ccf2;
   text-shadow: 0 0 10px rgba(86, 204, 242, 0.8);
+  font-size: 13px;
 }
 
 .attributes-panel { border: 1px solid rgba(255,255,255,0.6); padding: 12px; margin-top: 16px; text-align: left; box-shadow: 0 0 14px rgba(0,212,255,0.18) inset; }
