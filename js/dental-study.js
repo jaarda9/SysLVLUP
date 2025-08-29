@@ -18,8 +18,6 @@ class DentalStudyManager {
         this.timerInterval = null;
         this.customSessions = [];
         this.sessionCompletionStatus = {}; // Track completion status for each session
-        
-        this.initialize();
     }
     
     async initialize() {
@@ -583,22 +581,28 @@ class StudyTimer {
 let dentalStudyManager;
 
 document.addEventListener("DOMContentLoaded", async function() {
-    // Wait for UserManager to be ready
-    let attempts = 0;
-    const maxAttempts = 50; // Wait up to 5 seconds
-    
-    while (!window.userManager && attempts < maxAttempts) {
-        await new Promise(resolve => setTimeout(resolve, 100));
-        attempts++;
-    }
-    
+    // Initialize user manager and load existing data (same pattern as other pages)
     if (window.userManager) {
-        console.log('UserManager ready, initializing DentalStudyManager');
-        dentalStudyManager = new DentalStudyManager();
-    } else {
-        console.warn('UserManager not available after waiting, using fallback');
-        dentalStudyManager = new DentalStudyManager();
+        const existingPlayerName = localStorage.getItem('playerName');
+        if (existingPlayerName) {
+            console.log('Existing player found:', existingPlayerName);
+            try {
+                // Set the user ID and load data from database
+                const result = await window.userManager.setUserId(existingPlayerName);
+                console.log('User data loaded result:', result);
+            } catch (error) {
+                console.error('Error loading user data:', error);
+            }
+        } else {
+            console.log('No existing player name found');
+        }
     }
+    
+    // Create dental study manager instance
+    dentalStudyManager = new DentalStudyManager();
+    
+    // Initialize the manager after creation (same pattern as other pages)
+    await dentalStudyManager.initialize();
     
     // Service Worker Registration
     if ('serviceWorker' in navigator) {
@@ -655,40 +659,10 @@ function testUserManager() {
         console.log('Current user ID:', window.userManager.getUserId());
         console.log('User data:', window.userManager.getData());
         
-        // Try to set a test user ID
-        try {
-            const testUserId = 'testUser_' + Date.now();
-            window.userManager.setUserId(testUserId).then(result => {
-                console.log('Set user ID result:', result);
-                console.log('Now has user ID:', window.userManager.hasUserId());
-                
-                // Try to save some test data
-                window.userManager.updateUserData({
-                    testField: 'testValue',
-                    timestamp: new Date().toISOString()
-                }).then(saveResult => {
-                    console.log('Save test data result:', saveResult);
-                }).catch(error => {
-                    console.error('Error saving test data:', error);
-                });
-                
-            }).catch(error => {
-                console.error('Error setting user ID:', error);
-            });
-        } catch (error) {
-            console.error('Error in test function:', error);
-        }
+        // Check current user data
+        console.log('Current user data:', window.userManager.getData());
     } else {
         console.log('UserManager instance not available on window');
-        if (window.UserManager) {
-            console.log('UserManager class is available, creating instance...');
-            try {
-                window.userManager = new window.UserManager();
-                console.log('Created new UserManager instance:', window.userManager);
-            } catch (error) {
-                console.error('Error creating UserManager instance:', error);
-            }
-        }
     }
     
     console.log('=== End Test ===');
