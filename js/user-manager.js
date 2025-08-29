@@ -69,46 +69,77 @@ class UserManager {
     console.log('Loading user data for:', this.userId);
 
     try {
-      // Try to load from /api/user/:userId endpoint
+      // Try to load from /api/sync first (Vercel API)
       const timestamp = Date.now();
-      const userUrl = `/api/user/${encodeURIComponent(this.userId)}?_t=${timestamp}`;
-      console.log('Trying user API URL:', userUrl);
-      let response = await fetch(userUrl, {
+      const syncUrl = `/api/sync?userId=${encodeURIComponent(this.userId)}&_t=${timestamp}`;
+      console.log('Trying sync API URL:', syncUrl);
+      let response = await fetch(syncUrl, {
         method: 'GET',
         headers: {
           'Cache-Control': 'no-cache',
           'Pragma': 'no-cache'
         }
       });
-      console.log('User API response status:', response.status);
+      console.log('Sync API response status:', response.status);
+      
+      // If sync API fails, try the users API as fallback
+      if (response.status === 404) {
+        console.log('Sync API not found, trying users API...');
+        const usersUrl = `/api/users?userId=${encodeURIComponent(this.userId)}&_t=${timestamp}`;
+        console.log('Trying users API URL:', usersUrl);
+        response = await fetch(usersUrl, {
+          method: 'GET',
+          headers: {
+            'Cache-Control': 'no-cache',
+            'Pragma': 'no-cache'
+          }
+        });
+        console.log('Users API response status:', response.status);
+      }
       
       if (response.ok) {
-        const userData = await response.json();
-        console.log('User data loaded from database:', userData);
-        
-        // Extract gameData from localStorage field
-        if (userData.localStorage && userData.localStorage.gameData) {
-          this.data = userData.localStorage;
+        const result = await response.json();
+        console.log('API response data:', result);
+        if (result.localStorageData) {
+          this.data = result.localStorageData;
+          this.lastLoadTime = Date.now();
+          console.log('Data loaded successfully from API:', this.data);
+          return { success: true, data: this.data };
         } else {
-          // Create initial data structure
-          this.data = this.createInitialData(this.userId);
+          console.log('No existing data found for user:', this.userId);
+          this.data = null;
+          return { success: true, message: 'No existing data' };
+        }
+      } else if (response.status === 404) {
+        // Check if it's a 404 from the API (user not found) or a 404 from Vercel (API not found)
+        try {
+          const errorData = await response.json();
+          if (errorData.error === 'User not found') {
+            console.log('User not found in database:', this.userId);
+            this.data = null;
+            return { success: true, message: 'No existing data' };
+          }
+        } catch (parseError) {
+          // If we can't parse the response, it might be a Vercel 404
+          console.log('API endpoint not found (404), treating as no existing data');
+          this.data = null;
+          return { success: true, message: 'No existing data' };
         }
         
-        this.isLoading = false;
-        return { success: true, message: 'Data loaded successfully' };
-      } else if (response.status === 404) {
-        console.log('User not found in database:', this.userId);
-        // Create initial data structure for new user
-        this.data = this.createInitialData(this.userId);
-        this.isLoading = false;
-        return { success: true, message: 'New user created' };
+        console.log('No existing data found for user:', this.userId);
+        this.data = null;
+        return { success: true, message: 'No existing data' };
       } else {
         throw new Error(`HTTP ${response.status}: ${response.statusText}`);
       }
     } catch (error) {
       console.error('Error loading user data:', error);
+      // If there's a network error or API is not available, treat as no existing data
+      console.log('API error, treating as no existing data');
+      this.data = null;
+      return { success: true, message: 'No existing data' };
+    } finally {
       this.isLoading = false;
-      return { success: false, message: error.message };
     }
   }
 
@@ -288,17 +319,4 @@ class UserManager {
 // Make it available globally
 window.UserManager = UserManager;
 
-// Create and initialize a global instance
-window.userManager = new UserManager();
 
-// Auto-initialize with a default user ID for testing
-document.addEventListener('DOMContentLoaded', async function() {
-    try {
-        // Use a consistent test user ID instead of creating new ones
-        const defaultUserId = 'testUser';
-        await window.userManager.setUserId(defaultUserId);
-        console.log('UserManager initialized with default ID:', defaultUserId);
-    } catch (error) {
-        console.error('Error initializing UserManager:', error);
-    }
-});
