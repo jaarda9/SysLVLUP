@@ -171,7 +171,7 @@ body {
 .stat-bar-container .stat-value { position: absolute; right: 0; bottom: -17px; }
 
 /* Fatigue ring */
-.resource-block.fatigue { display: flex; flex-direction: column; align-items: center; gap: 6px; justify-self: end; margin-right: 0px ; text-align: center; }
+.resource-block.fatigue { display: flex; flex-direction: column; align-items: center; gap: 6px; justify-self: end; margin-right: 8px; margin-top: 6px; text-align: center; }
 .resource-block.hp { grid-column: 1; grid-row: 1; }
 .resource-block.mp { grid-column: 3; grid-row: 1; }
 .resource-block.stm { grid-column: 1; grid-row: 2; }
@@ -188,46 +188,57 @@ body {
 
 .fatigue-ring {
   position: relative;
-  width: 64px;
-  height: 64px;
+  width: 48px;
+  height: auto;
   overflow: visible; /* prevent rounded arc caps from being clipped */
   padding: 2px; /* nudge away from panel border */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-top: 4px;
 }
 
 .progress-ring {
   transform: rotate(-90deg);
-  width: 64px;
-  height: 64px;
+  width: 48px;
+  height: 48px;
   overflow: visible; /* ensure stroke caps render outside bbox */
 }
 
-.progress-ring__track { stroke-linecap: round; }
+.progress-ring__track { stroke-linecap: round; stroke-width: 5px; }
 .progress-ring__circle {
-  transition: stroke-dashoffset 0.5s ease;
+  transition: stroke-dashoffset 0.3s ease;
   stroke-linecap: round; /* rounded arc ends for smoother look */
+  stroke-width: 6px;
 }
 
 /* Ensure the specific circle also uses rounded caps */
 #fatringprogg { stroke-linecap: round; }
 
 .fatigue-label {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
+  position: static;
+  margin-top: 6px;
+  display: inline-flex;
+  align-items: baseline;
+  gap: 4px;
+  justify-content: center;
+  white-space: nowrap;
+  text-transform: uppercase;
   text-align: center;
   font-family: 'Consolas', 'Courier New', monospace;
   color: #e0e6f6;
-  font-size: 13px;
-  z-index: 2;
+  font-size: 10px;
 }
 
 .fatigue-value {
   font-weight: bold;
   color: #56ccf2;
-  text-shadow: 0 0 10px rgba(86, 204, 242, 0.8);
-  font-size: 13px;
+  text-shadow: 0 0 8px rgba(86, 204, 242, 0.7);
+  font-size: 11px;
 }
+
+/* Append % without causing line wrap */
+.fatigue-value::after { content: '%'; margin-left: 1px; }
 
 .attributes-panel { border: 1px solid rgba(255,255,255,0.6); padding: 12px; margin-top: 16px; text-align: left; box-shadow: 0 0 14px rgba(0,212,255,0.18) inset; }
 .attributes-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px 40px; justify-items: center; align-items: center; }
