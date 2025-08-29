@@ -618,3 +618,43 @@ function addNewSession() {
     }
 }
 
+// Test function for debugging user manager
+function testUserManager() {
+    console.log('=== Testing User Manager ===');
+    console.log('Window userManager:', window.userManager);
+    
+    if (window.userManager) {
+        console.log('UserManager class available');
+        console.log('Has user ID:', window.userManager.hasUserId());
+        console.log('Current user ID:', window.userManager.getUserId());
+        
+        // Try to set a test user ID
+        try {
+            const testUserId = 'testUser_' + Date.now();
+            window.userManager.setUserId(testUserId).then(result => {
+                console.log('Set user ID result:', result);
+                console.log('Now has user ID:', window.userManager.hasUserId());
+                
+                // Try to save some test data
+                window.userManager.updateUserData({
+                    testField: 'testValue',
+                    timestamp: new Date().toISOString()
+                }).then(saveResult => {
+                    console.log('Save test data result:', saveResult);
+                }).catch(error => {
+                    console.error('Error saving test data:', error);
+                });
+                
+            }).catch(error => {
+                console.error('Error setting user ID:', error);
+            });
+        } catch (error) {
+            console.error('Error in test function:', error);
+        }
+    } else {
+        console.log('UserManager not available on window');
+    }
+    
+    console.log('=== End Test ===');
+}
+
