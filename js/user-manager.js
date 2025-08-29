@@ -249,6 +249,15 @@ class UserManager {
   }
 
   /**
+   * Update user data (alias for updateData for compatibility)
+   */
+  async updateUserData(updates) {
+    this.updateData(updates);
+    // Optionally save to database
+    return await this.saveUserData();
+  }
+
+  /**
    * Create initial data structure for new player
    */
   createInitialData(playerName) {

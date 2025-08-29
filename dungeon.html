@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dungeon Labyrinth</title>
+    <link rel="stylesheet" href="css/dungeon.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <!-- Header -->
+    <header class="dungeon-header">
+        <div class="header-content">
+            <h1>DUNGEON LABYRINTH</h1>
+            <div class="dungeon-stats">
+                <span class="week">Week 1</span>
+                <span class="timer">Resets in: <span id="countdown">6d 23h 45m</span></span>
+            </div>
+        </div>
+        <button class="back-btn" onclick="window.location.href='status.html'">
+            <i class="fas fa-arrow-left"></i> Back to Status
+        </button>
+    </header>
+
+    <!-- Main Container -->
+    <main class="dungeon-main">
+        <!-- Dungeon Map -->
+        <section class="dungeon-map">
+            <div class="map-container">
+                <!-- Start Nodes -->
+                <div class="node start-node" data-node="start-1" style="left: 15%; top: 25%;">
+                    <div class="node-icon"><i class="fas fa-play"></i></div>
+                    <div class="node-label">START</div>
+                </div>
+                
+                <div class="node start-node" data-node="start-2" style="left: 20%; top: 75%;">
+                    <div class="node-icon"><i class="fas fa-play"></i></div>
+                    <div class="node-label">START</div>
+                </div>
+
+                <!-- Challenge Nodes -->
+                <div class="node challenge-node" data-node="challenge-1" style="left: 35%; top: 35%;">
+                    <div class="node-icon"><i class="fas fa-gem"></i></div>
+                    <div class="node-label">200</div>
+                </div>
+                
+                <div class="node challenge-node" data-node="challenge-2" style="left: 45%; top: 25%;">
+                    <div class="node-icon"><i class="fas fa-gem"></i></div>
+                    <div class="node-label">225</div>
+                </div>
+                
+                <div class="node challenge-node" data-node="challenge-3" style="left: 55%; top: 45%;">
+                    <div class="node-icon"><i class="fas fa-gem"></i></div>
+                    <div class="node-label">250</div>
+                </div>
+                
+                <div class="node challenge-node" data-node="challenge-4" style="left: 65%; top: 35%;">
+                    <div class="node-icon"><i class="fas fa-gem"></i></div>
+                    <div class="node-label">275</div>
+                </div>
+
+                <!-- Boss Nodes -->
+                <div class="node boss-node" data-node="boss-1" style="left: 30%; top: 15%;">
+                    <div class="node-icon"><i class="fas fa-user-helmet-safety"></i></div>
+                    <div class="node-label">47980</div>
+                </div>
+                
+                <div class="node boss-node" data-node="boss-2" style="left: 50%; top: 15%;">
+                    <div class="node-icon"><i class="fas fa-user-tie"></i></div>
+                    <div class="node-label">48080 X</div>
+                </div>
+                
+                <div class="node boss-node" data-node="boss-3" style="left: 70%; top: 25%;">
+                    <div class="node-icon"><i class="fas fa-user-astronaut"></i></div>
+                    <div class="node-label">47990</div>
+                </div>
+                
+                <div class="node boss-node" data-node="boss-4" style="left: 25%; top: 70%;">
+                    <div class="node-icon"><i class="fas fa-user-ninja"></i></div>
+                    <div class="node-label">48080 X</div>
+                </div>
+                
+                <div class="node boss-node" data-node="boss-5" style="left: 60%; top: 75%;">
+                    <div class="node-icon"><i class="fas fa-user-shield"></i></div>
+                    <div class="node-label">48040</div>
+                </div>
+
+                <!-- Final Boss -->
+                <div class="node final-boss-node" data-node="final-boss" style="left: 80%; top: 50%;">
+                    <div class="node-icon"><i class="fas fa-crown"></i></div>
+                    <div class="node-label">50000</div>
+                    <div class="boss-title">FINAL BOSS</div>
+                </div>
+
+                <!-- Connection Lines -->
+                <svg class="connections" width="100%" height="100%">
+                    <!-- Path 1: Start -> Challenge -> Boss -> Final Boss -->
+                    <path d="M 15% 25% Q 25% 30% 35% 35%" class="path unlocked" data-from="start-1" data-to="challenge-1"/>
+                    <path d="M 35% 35% Q 32.5% 25% 30% 15%" class="path locked" data-from="challenge-1" data-to="boss-1"/>
+                    <path d="M 30% 15% Q 55% 32.5% 80% 50%" class="path locked" data-from="boss-1" data-to="final-boss"/>
+                    
+                    <!-- Path 2: Start -> Challenge -> Challenge -> Boss -> Final Boss -->
+                    <path d="M 20% 75% Q 27.5% 55% 35% 35%" class="path unlocked" data-from="start-2" data-to="challenge-1"/>
+                    <path d="M 35% 35% Q 40% 30% 45% 25%" class="path locked" data-from="challenge-1" data-to="challenge-2"/>
+                    <path d="M 45% 25% Q 47.5% 20% 50% 15%" class="path locked" data-from="challenge-2" data-to="boss-2"/>
+                    <path d="M 50% 15% Q 65% 32.5% 80% 50%" class="path locked" data-from="boss-2" data-to="final-boss"/>
+                    
+                    <!-- Path 3: Challenge -> Challenge -> Challenge -> Boss -> Final Boss -->
+                    <path d="M 45% 25% Q 50% 35% 55% 45%" class="path locked" data-from="challenge-2" data-to="challenge-3"/>
+                    <path d="M 55% 45% Q 60% 40% 65% 35%" class="path locked" data-from="challenge-3" data-to="challenge-4"/>
+                    <path d="M 65% 35% Q 67.5% 30% 70% 25%" class="path locked" data-from="challenge-4" data-to="boss-3"/>
+                    <path d="M 70% 25% Q 75% 37.5% 80% 50%" class="path locked" data-from="boss-3" data-to="final-boss"/>
+                    
+                    <!-- Path 4: Alternative Boss Route -->
+                    <path d="M 25% 70% Q 42.5% 72.5% 60% 75%" class="path locked" data-from="boss-4" data-to="boss-5"/>
+                    <path d="M 60% 75% Q 70% 62.5% 80% 50%" class="path locked" data-from="boss-5" data-to="final-boss"/>
+                    
+                    <!-- Cross-connections for variety -->
+                    <path d="M 35% 35% Q 37.5% 20% 40% 5%" class="path locked" data-from="challenge-1" data-to="challenge-5"/>
+                    <path d="M 40% 5% Q 45% 15% 50% 25%" class="path locked" data-from="challenge-5" data-to="challenge-2"/>
+                </svg>
+            </div>
+        </section>
+
+        <!-- Info Panel -->
+        <aside class="info-panel">
+            <h2>DUNGEON INFO</h2>
+            
+            <div class="info-section">
+                <h3>Current Progress</h3>
+                <div class="progress-item">
+                    <span>Nodes Completed:</span>
+                    <span id="nodes-completed">0/12</span>
+                </div>
+                <div class="progress-item">
+                    <span>Bosses Defeated:</span>
+                    <span id="bosses-defeated">0/6</span>
+                </div>
+                <div class="progress-item">
+                    <span>Final Boss:</span>
+                    <span id="final-boss-status">Locked</span>
+                </div>
+            </div>
+
+            <div class="info-section">
+                <h3>Weekly Rewards</h3>
+                <div class="reward-item">
+                    <i class="fas fa-star"></i>
+                    <span>Experience Points</span>
+                </div>
+                <div class="reward-item">
+                    <i class="fas fa-gem"></i>
+                    <span>Dungeon Currency</span>
+                </div>
+                <div class="reward-item">
+                    <i class="fas fa-trophy"></i>
+                    <span>Special Items</span>
+                </div>
+            </div>
+
+            <div class="info-section">
+                <h3>Difficulty</h3>
+                <div class="difficulty-bar">
+                    <div class="difficulty-fill" style="width: 25%"></div>
+                </div>
+                <span class="difficulty-text">Easy</span>
+            </div>
+        </aside>
+    </main>
+
+    <!-- Node Modal -->
+    <div id="node-modal" class="modal">
+        <div class="modal-content">
+            <span class="close-btn" onclick="closeModal()">&times;</span>
+            <div id="modal-body">
+                <!-- Content will be populated by JavaScript -->
+            </div>
+        </div>
+    </div>
+
+    <script src="js/dungeon.js"></script>
+</body>
+</html>

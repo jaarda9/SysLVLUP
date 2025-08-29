@@ -3,11 +3,9 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Study Quests</title>
+    <title>Dental Study - Enhanced</title>
     <link rel="stylesheet" href="css/dental-study.css" />
-    <link
-      rel="stylesheet"
-      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     
     <!-- Web App Manifest -->
     <link rel="manifest" href="/manifest.json">
@@ -35,39 +33,56 @@
 </head>
 <body>
     <div class="navigation">
-        <a href="status.html" class="back-link">Back to Status</a>
+        <a href="status.html" class="back-link">
+            <i class="fa-solid fa-arrow-left"></i> Back to Status
+        </a>
     </div>
+    
     <div class="quest-box" id="quest-box">
         <div class="quest-header">
            <span>ⓘ Scholarly Endeavors</span>
         </div>
+        
         <div class="quest-details">
             <p>[Daily Quest: Academic Pursuits Training has arrived.]</p>
         </div>
+        
         <div class="goal-section" id="goal-section">
             <h2>GOAL</h2>
             <div class="goal-item">
                 <span class="task-name">Comprehensive Study Session</span>
-                <button class="start-button" onclick="openPomodoro('Comprehensive Study Session', 'anatomy-checkbox')"><i class="fa-solid fa-play"></i></button>
+                <button class="start-button" onclick="openPomodoro('Comprehensive Study Session', 'anatomy-checkbox')">
+                    <i class="fa-solid fa-play"></i>
+                </button>
                 <input type="checkbox" id="anatomy-checkbox" class="task-checkbox" disabled />
             </div>
             <div class="goal-item">
-                <span class="task-name"> Study and Review</span>
-                <button class="start-button" onclick="openPomodoro('Study and Review', 'hygiene-checkbox')"><i class="fa-solid fa-play"></i></button>
+                <span class="task-name">Study and Review</span>
+                <button class="start-button" onclick="openPomodoro('Study and Review', 'hygiene-checkbox')">
+                    <i class="fa-solid fa-play"></i>
+                </button>
                 <input type="checkbox" id="hygiene-checkbox" class="task-checkbox" disabled />
             </div>
             <div class="goal-item">
                 <span class="task-name">Prepare for Exam</span>
-                <button class="start-button" onclick="openPomodoro('Prepare for Exam', 'exam-checkbox')"><i class="fa-solid fa-play"></i></button>
+                <button class="start-button" onclick="openPomodoro('Prepare for Exam', 'exam-checkbox')">
+                    <i class="fa-solid fa-play"></i>
+                </button>
                 <input type="checkbox" id="exam-checkbox" class="task-checkbox" disabled />
-               
             </div>
-            
         </div>
+        
         <div class="add-session">
-            <input type="text" id="new-session-input" placeholder="New Session " />
-            <button id="add-session-button" onclick="addNewSession()"><i class="fa-solid fa-plus"></i></button>
+            <input type="text" id="new-session-input" placeholder="New Session Name" />
+            <button id="add-session-button" onclick="addNewSession()">
+                <i class="fa-solid fa-plus"></i>
+            </button>
         </div>
+        
+        <div class="session-info-text">
+            <small>Custom sessions persist until daily reset. Complete any 3 sessions to finish the daily quest.</small>
+        </div>
+        
         <div class="warning-section">
             <p>
                 WARNING: Failure to complete the daily study quest will result in an
@@ -81,21 +96,45 @@
         </div>
     </div>
 
-    <!-- Pomodoro Timer Modal -->
+    <!-- Enhanced Pomodoro Timer Modal -->
     <div id="pomodoro-modal" class="modal">
         <div class="modal-content">
             <span class="close" onclick="closePomodoro()">&times;</span>
-            <h2 id="task-title">Pomodoro Timer</h2>  
-            <i class="fa-regular fa-clock"  style="font-size: 24px;"></i> <i class="fa-solid fa-pencil" style="font-size: 24px;"></i> <i class="fa-solid fa-book-open" style="font-size: 24px;"></i>         
-            <div id="timer-display">50:00</div>
-            <button id="start-button" onclick="startTimer()">Start</button>
-            <button id="reset-button" onclick="resetTimer()">Reset</button>
+            <h2 id="task-title">Study Session</h2>
+            
+            <div class="timer-icons">
+                <i class="fa-regular fa-clock"></i>
+                <i class="fa-solid fa-pencil"></i>
+                <i class="fa-solid fa-book-open"></i>
+            </div>
+            
+            <div id="timer-display">10:00</div>
+            
+            <div class="timer-controls">
+                <button id="start-button" class="timer-btn primary">
+                    <i class="fa-solid fa-play"></i> Start
+                </button>
+                <button id="pause-button" class="timer-btn secondary" style="display: none;">
+                    <i class="fa-solid fa-pause"></i> Pause
+                </button>
+                <button id="reset-button" class="timer-btn secondary">
+                    <i class="fa-solid fa-undo"></i> Reset
+                </button>
+            </div>
+            
+            <div class="session-info">
+                <p>Press <kbd>Space</kbd> to pause/resume</p>
+                <p>Press <kbd>Esc</kbd> to close</p>
+            </div>
         </div>
     </div>
-      <div id="notification" class="notification hidden">
+    
+    <div id="notification" class="notification hidden">
         <p>Time's up! Great job on your study session!</p>
     </div>
 
+    <!-- Load scripts in correct order -->
+    <script src="js/user-manager.js"></script>
     <script src="js/dental-study.js"></script>
     
     <!-- Service Worker Registration -->

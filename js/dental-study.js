@@ -1,523 +1,620 @@
-  async function syncToDatabase() {
-    try {
-      // Use centralized user manager if available
-      if (window.userManager) {
-        await window.userManager.syncToDatabase();
-        console.log('Sync successful using centralized user manager');
-        return { success: true, message: 'Data synced successfully' };
-      }
-      
-      // Fallback to original logic if user manager not available
-      const localStorageData = JSON.parse(localStorage.getItem("gameData"));
-      
-      if (!localStorageData || Object.keys(localStorageData).length === 0) {
-        console.log('No localStorage data to sync');
-        return { success: true, message: 'No data to sync' };
-      }
-
-      // Get userId from localStorage
-      const userId = localStorage.getItem('userId');
-      if (!userId) {
-        console.error('No userId found in localStorage');
-        return { success: false, message: 'No userId available' };
-      }
-
-      const response = await fetch('/api/sync', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          userId: userId,
-          localStorageData: localStorageData
-        })
-      });
-
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-
-      const result = await response.json();
-      console.log('Sync successful:', result);
-      return result;
-
-    } catch (error) {
-      console.error('Error syncing to database:', error);
-      throw error;
+// Dental Study Manager - Simplified Core Features
+class DentalStudyManager {
+    constructor() {
+        this.userManager = window.userManager;
+        this.currentSession = null;
+        this.studyTimer = null;
+        this.completedSessions = 0;
+        this.timerInterval = null;
+        this.customSessions = [];
+        this.sessionCompletionStatus = {}; // Track completion status for each session
+        
+        this.initialize();
     }
-  }
-
-let x = 0;
-let timer; // Timer variable
-let isRunning = false;
-let totalDuration = 3000; // Total duration in seconds (50 minutes)
-let startTime; // Variable to store the start time
-let currentCheckboxId = '';
-let currentSTS = parseInt(localStorage.getItem("STS")) || 0; // Default to 0 if STS is not set
-
-function openPomodoro(task, checkboxId) {
-    document.getElementById('task-title').textContent = task;
-    document.getElementById('pomodoro-modal').style.display = 'block';
-    resetTimer(); // Reset timer when opening
-    currentCheckboxId = checkboxId; // Store the checkbox ID
-}
-
-function showNotification() {
-    const notification = document.getElementById("notification");
     
-    // Ensure the notification is visible before adding the class
-    notification.classList.remove("hidden"); // Remove hidden class if it exists
-
-    // Add the show class to make it visible
-    notification.classList.add("show");
-
-    // Automatically hide the notification after 3 seconds
-    setTimeout(() => {
-        notification.classList.remove("show"); // Remove show class to hide it
-        notification.classList.add("hidden"); // Add hidden class back
-    }, 3000);
-}
-
-
-function checkForNewDay() {
-    const currentDate = new Date().toLocaleDateString(); // Get today's date
-    const lastResetDate = localStorage.getItem("lastResetDate"); // Get the last reset date from localStorage
-  
-    console.log("Current Date:", currentDate);
-    console.log("Last Reset Date:", lastResetDate);
-  
-    // If no date is saved or the day has changed, reset the stats
-    if (!lastResetDate || lastResetDate !== currentDate) {
-        console.log("Resetting daily stats...");
-        currentSTS = 0; // Reset daily quests
-        localStorage.setItem("STS", currentSTS); // Update STS in localStorage
-        localStorage.setItem("lastResetDate", currentDate); // Update the last reset date
-    } else {
-        console.log("No reset needed.");
+    async initialize() {
+        await this.loadUserData();
+        this.setupEventListeners();
+        this.updateCheckboxes();
+        this.updateCustomSessions();
+        this.checkForNewDay();
+    }
+    
+    async loadUserData() {
+        try {
+            if (this.userManager && this.userManager.hasUserId()) {
+                const userData = this.userManager.getData();
+                this.completedSessions = userData?.dentalStudyCompleted || 0;
+                this.customSessions = userData?.dentalStudyCustomSessions || [];
+                this.sessionCompletionStatus = userData?.dentalStudySessionStatus || {};
+                return userData;
+            } else {
+                console.warn('User manager not available, using localStorage fallback');
+                return this.loadFromLocalStorage();
+            }
+        } catch (error) {
+            console.error('Error loading user data:', error);
+            return this.loadFromLocalStorage();
+        }
+    }
+    
+    loadFromLocalStorage() {
+        const savedData = JSON.parse(localStorage.getItem("gameData")) || {};
+        this.completedSessions = parseInt(localStorage.getItem("dentalStudyCompleted")) || 0;
+        this.customSessions = JSON.parse(localStorage.getItem("dentalStudyCustomSessions")) || [];
+        this.sessionCompletionStatus = JSON.parse(localStorage.getItem("dentalStudySessionStatus")) || {};
+        return savedData;
+    }
+    
+    async saveProgress() {
+        try {
+            if (this.userManager && this.userManager.hasUserId()) {
+                await this.userManager.updateUserData({
+                    dentalStudyCompleted: this.completedSessions,
+                    dentalStudyCustomSessions: this.customSessions,
+                    dentalStudySessionStatus: this.sessionCompletionStatus,
+                    lastStudySession: new Date().toISOString()
+                });
+            } else {
+                localStorage.setItem("dentalStudyCompleted", this.completedSessions.toString());
+                localStorage.setItem("dentalStudyCustomSessions", JSON.stringify(this.customSessions));
+                localStorage.setItem("dentalStudySessionStatus", JSON.stringify(this.sessionCompletionStatus));
+            }
+        } catch (error) {
+            console.error('Error saving progress:', error);
+            localStorage.setItem("dentalStudyCompleted", this.completedSessions.toString());
+            localStorage.setItem("dentalStudyCustomSessions", JSON.stringify(this.customSessions));
+            localStorage.setItem("dentalStudySessionStatus", JSON.stringify(this.sessionCompletionStatus));
+        }
+    }
+    
+    setupEventListeners() {
+        // Session controls
+        document.getElementById('start-button')?.addEventListener('click', () => this.startTimer());
+        document.getElementById('pause-button')?.addEventListener('click', () => this.pauseTimer());
+        document.getElementById('reset-button')?.addEventListener('click', () => this.resetTimer());
+        
+        // Add session button
+        document.getElementById('add-session-button')?.addEventListener('click', () => this.addNewSession());
+        
+        // Modal close
+        document.querySelector('.close')?.addEventListener('click', () => this.closePomodoro());
+        
+        // Click outside modal to close
+        document.getElementById('pomodoro-modal')?.addEventListener('click', (e) => {
+            if (e.target.id === 'pomodoro-modal') {
+                this.closePomodoro();
+            }
+        });
+        
+        // Keyboard shortcuts
+        document.addEventListener('keydown', (e) => {
+            // Only handle shortcuts when modal is open
+            const modal = document.getElementById('pomodoro-modal');
+            if (modal && modal.style.display === 'block') {
+                if (e.key === 'Escape') {
+                    e.preventDefault();
+                    this.closePomodoro();
+                }
+                if (e.key === ' ' && this.studyTimer?.isRunning) {
+                    e.preventDefault();
+                    this.pauseTimer();
+                }
+                if (e.key === 'r' && (e.ctrlKey || e.metaKey)) {
+                    e.preventDefault();
+                    this.resetTimer();
+                }
+                if (e.key === 's' && (e.ctrlKey || e.metaKey)) {
+                    e.preventDefault();
+                    if (this.studyTimer?.isRunning) {
+                        this.pauseTimer();
+                    } else {
+                        this.startTimer();
+                    }
+                }
+            }
+        });
+    }
+    
+    updateCheckboxes() {
+        const checkboxes = document.querySelectorAll('.task-checkbox');
+        
+        checkboxes.forEach((checkbox, index) => {
+            const sessionName = this.getSessionNameByIndex(index);
+            checkbox.checked = this.sessionCompletionStatus[sessionName] || false;
+        });
+        
+        // Update main completion checkbox
+        const completeCheckbox = document.getElementById('complete');
+        if (completeCheckbox) {
+            const totalSessions = this.getTotalSessionCount();
+            const completedCount = Object.values(this.sessionCompletionStatus).filter(status => status).length;
+            completeCheckbox.checked = completedCount >= 3;
+        }
+    }
+    
+    updateCustomSessions() {
+        const goalSection = document.getElementById('goal-section');
+        if (!goalSection) return;
+        
+        // Remove existing custom sessions (keep only the 3 default ones)
+        const existingCustomSessions = goalSection.querySelectorAll('.goal-item[data-custom="true"]');
+        existingCustomSessions.forEach(session => session.remove());
+        
+        // Add custom sessions back
+        this.customSessions.forEach(sessionName => {
+            const newGoalItem = document.createElement('div');
+            newGoalItem.className = 'goal-item';
+            newGoalItem.setAttribute('data-custom', 'true');
+            newGoalItem.innerHTML = `
+                <span class="task-name">${sessionName}</span>
+                <button class="start-button" onclick="dentalStudyManager.openPomodoro('${sessionName}', '${newSessionName.replace(/\s+/g, '-').toLowerCase()}-checkbox')">
+                    <i class="fa-solid fa-play"></i>
+                </button>
+                <input type="checkbox" id="${newSessionName.replace(/\s+/g, '-').toLowerCase()}-checkbox" class="task-checkbox" disabled />
+            `;
+            goalSection.appendChild(newGoalItem);
+        });
+        
+        // Update checkboxes after adding custom sessions
+        this.updateCheckboxes();
+    }
+    
+    getSessionNameByIndex(index) {
+        const defaultSessions = [
+            'Comprehensive Study Session',
+            'Study and Review', 
+            'Prepare for Exam'
+        ];
+        
+        if (index < defaultSessions.length) {
+            return defaultSessions[index];
+        } else {
+            const customIndex = index - defaultSessions.length;
+            return this.customSessions[customIndex] || '';
+        }
+    }
+    
+    getTotalSessionCount() {
+        return 3 + this.customSessions.length; // 3 default + custom sessions
+    }
+    
+    checkForNewDay() {
+        const currentDate = new Date().toLocaleDateString();
+        const lastResetDate = this.userManager?.getData()?.lastDentalStudyReset || 
+                            localStorage.getItem("lastDentalStudyReset");
+        
+        if (!lastResetDate || lastResetDate !== currentDate) {
+            this.resetDailyStats();
+            if (this.userManager && this.userManager.hasUserId()) {
+                this.userManager.setData('lastDentalStudyReset', currentDate);
+            } else {
+                localStorage.setItem("lastDentalStudyReset", currentDate);
+            }
+        }
+    }
+    
+    resetDailyStats() {
+        this.completedSessions = 0;
+        this.sessionCompletionStatus = {};
+        this.customSessions = [];
+        this.updateCheckboxes();
+        this.updateCustomSessions();
+    }
+    
+    openPomodoro(task, checkboxId) {
+        document.getElementById('task-title').textContent = task;
+        document.getElementById('pomodoro-modal').style.display = 'block';
+        
+        this.currentSession = {
+            topic: task,
+            checkboxId: checkboxId,
+            startTime: new Date().toISOString()
+        };
+        
+        this.studyTimer = new StudyTimer(10); // Changed to 10 seconds for testing
+        this.resetTimer();
+        this.updateTimerButtons();
+    }
+    
+    startTimer() {
+        if (this.studyTimer && !this.studyTimer.isRunning) {
+            this.studyTimer.start();
+            this.updateTimerDisplay();
+            this.startTimerInterval();
+            this.updateTimerButtons();
+        }
+    }
+    
+    pauseTimer() {
+        if (this.studyTimer && this.studyTimer.isRunning) {
+            if (this.studyTimer.isPaused) {
+                this.studyTimer.resume();
+            } else {
+                this.studyTimer.pause();
+            }
+            this.updateTimerDisplay();
+            this.updateTimerButtons();
+        }
+    }
+    
+    updateTimerButtons() {
+        const startBtn = document.getElementById('start-button');
+        const pauseBtn = document.getElementById('pause-button');
+        
+        if (!startBtn || !pauseBtn) return;
+        
+        if (this.studyTimer && this.studyTimer.isRunning) {
+            if (this.studyTimer.isPaused) {
+                startBtn.style.display = 'inline-flex';
+                pauseBtn.style.display = 'none';
+                startBtn.innerHTML = '<i class="fa-solid fa-play"></i> Resume';
+            } else {
+                startBtn.style.display = 'none';
+                pauseBtn.style.display = 'inline-flex';
+            }
+        } else {
+            startBtn.style.display = 'inline-flex';
+            pauseBtn.style.display = 'none';
+            startBtn.innerHTML = '<i class="fa-solid fa-play"></i> Start';
+        }
+    }
+    
+    resetTimer() {
+        if (this.studyTimer) {
+            this.studyTimer.reset();
+            this.updateTimerDisplay();
+            this.updateTimerButtons();
+        }
+    }
+    
+    startTimerInterval() {
+        if (this.timerInterval) clearInterval(this.timerInterval);
+        
+        this.timerInterval = setInterval(() => {
+            if (this.studyTimer && this.studyTimer.isRunning) {
+                this.updateTimerDisplay();
+                
+                if (this.studyTimer.isComplete()) {
+                    this.completeSession();
+                }
+            }
+        }, 1000);
+    }
+    
+    updateTimerDisplay() {
+        const timerDisplay = document.getElementById('timer-display');
+        if (timerDisplay && this.studyTimer) {
+            const timeLeft = this.studyTimer.getTimeLeft();
+            const minutes = Math.floor(timeLeft / 60);
+            const seconds = Math.floor(timeLeft % 60);
+            timerDisplay.textContent = `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+        }
+    }
+    
+    async completeSession() {
+        if (!this.currentSession || !this.studyTimer) return;
+        
+        clearInterval(this.timerInterval);
+        
+        // Mark this specific session as completed
+        const sessionName = this.currentSession.topic;
+        this.sessionCompletionStatus[sessionName] = true;
+        
+        // Calculate and apply rewards
+        const sessionDuration = this.studyTimer.getDuration() - this.studyTimer.getTimeLeft();
+        const rewards = this.calculateRewards(sessionDuration);
+        await this.applyRewards(rewards);
+        
+        // Update UI
+        this.updateCheckboxes();
+        
+        // Show completion notification
+        const minutes = Math.floor(sessionDuration / 60);
+        const seconds = sessionDuration % 60;
+        const xpGained = rewards.xp;
+        
+        this.showNotification(`Session completed! ${minutes}m ${seconds}s | +${xpGained} XP`);
+        
+        // Check completion (need 3 sessions completed)
+        const completedCount = Object.values(this.sessionCompletionStatus).filter(status => status).length;
+        if (completedCount >= 3) {
+            this.completeDailyQuest();
+            this.showNotification('Daily quest completed! 🎉');
+        }
+        
+        // Save progress
+        await this.saveProgress();
+        
+        // Reset timer buttons
+        this.updateTimerButtons();
+        
+        this.closePomodoro();
+    }
+    
+    calculateRewards(sessionDuration) {
+        const baseReward = 2 * (sessionDuration / (10 * 60)); // 10 min = base (changed from 50)
+        const totalXP = Math.round(baseReward);
+        
+        return {
+            xp: totalXP,
+            intelligence: 0.5,
+            fatigue: 3,
+            mp: -2, // MP cost
+            stm: -3  // Stamina cost
+        };
+    }
+    
+    async applyRewards(rewards) {
+        try {
+            if (this.userManager && this.userManager.hasUserId()) {
+                const userData = this.userManager.getData();
+                const gameData = userData.gameData || {};
+                
+                // Apply rewards
+                gameData.exp = (gameData.exp || 0) + rewards.xp;
+                gameData.stackedAttributes = gameData.stackedAttributes || {};
+                gameData.stackedAttributes.INT = (gameData.stackedAttributes.INT || 0) + rewards.intelligence;
+                gameData.mp = Math.max(0, (gameData.mp || 100) + rewards.mp);
+                gameData.stm = Math.max(0, (gameData.stm || 100) + rewards.stm);
+                gameData.fatigue = Math.min(100, (gameData.fatigue || 0) + rewards.fatigue);
+                
+                // Level up check
+                let levelUps = 0;
+                while (gameData.exp >= 100) {
+                    gameData.exp -= 100;
+                    gameData.level = (gameData.level || 1) + 1;
+                    levelUps++;
+                    
+                    // Apply stacked attributes
+                    if (gameData.Attributes) {
+                        for (let key in gameData.stackedAttributes) {
+                            if (gameData.Attributes[key] !== undefined) {
+                                gameData.Attributes[key] += Math.round(gameData.stackedAttributes[key] * 0.25);
+                            }
+                        }
+                    }
+                    
+                    // Reset stacked attributes
+                    for (let key in gameData.stackedAttributes) {
+                        gameData.stackedAttributes[key] = 0;
+                    }
+                }
+                
+                this.userManager.setData('gameData', gameData);
+                await this.userManager.saveUserData();
+                
+                // Show level up notification
+                if (levelUps > 0) {
+                    this.showNotification(`🎉 Level Up! You are now level ${gameData.level}!`, 'info');
+                }
+                
+            } else {
+                // Fallback to localStorage
+                const savedData = JSON.parse(localStorage.getItem("gameData")) || {};
+                savedData.exp = (savedData.exp || 0) + rewards.xp;
+                savedData.stackedAttributes = savedData.stackedAttributes || {};
+                savedData.stackedAttributes.INT = (savedData.stackedAttributes.INT || 0) + rewards.intelligence;
+                savedData.mp = Math.max(0, (savedData.mp || 100) + rewards.mp);
+                savedData.stm = Math.max(0, (savedData.stm || 100) + rewards.stm);
+                savedData.fatigue = Math.min(100, (savedData.fatigue || 0) + rewards.fatigue);
+                
+                localStorage.setItem("gameData", JSON.stringify(savedData));
+            }
+            
+        } catch (error) {
+            console.error('Error applying rewards:', error);
+            this.showNotification('Error saving progress. Please try again.', 'error');
+        }
+    }
+    
+    completeDailyQuest() {
+        const completeCheckbox = document.getElementById('complete');
+        const section = document.getElementById('complete-section');
+        
+        if (completeCheckbox && section) {
+            completeCheckbox.checked = true;
+            section.classList.add("animatedd");
+            completeCheckbox.classList.add("animatedd");
+            this.shakeElement(completeCheckbox);
+        }
+    }
+    
+    shakeElement(element) {
+        let position = 0;
+        const interval = setInterval(() => {
+            position = (position + 1) % 4;
+            const offset = position % 2 === 0 ? -10 : 10;
+            element.style.transform = `translateX(${offset}px)`;
+            
+            if (position === 0) {
+                clearInterval(interval);
+                element.style.transform = "translateX(0px)";
+            }
+        }, 100);
+    }
+    
+    showNotification(message, type = 'success') {
+        const notification = document.getElementById("notification");
+        if (notification) {
+            notification.querySelector('p').textContent = message;
+            
+            // Update notification style based on type
+            notification.className = `notification ${type}`;
+            notification.classList.remove("hidden");
+            notification.classList.add("show");
+            
+            // Auto-hide after appropriate time
+            const duration = type === 'error' ? 5000 : 4000;
+            setTimeout(() => {
+                notification.classList.remove("show");
+                notification.classList.add("hidden");
+            }, duration);
+        }
+    }
+    
+    closePomodoro() {
+        const modal = document.getElementById('pomodoro-modal');
+        if (modal) {
+            modal.style.display = 'none';
+        }
+        
+        if (this.studyTimer) {
+            this.studyTimer.reset();
+        }
+        this.currentSession = null;
+        
+        if (this.timerInterval) {
+            clearInterval(this.timerInterval);
+            this.timerInterval = null;
+        }
+    }
+    
+    addNewSession() {
+        const newSessionInput = document.getElementById('new-session-input');
+        const newSessionName = newSessionInput.value.trim();
+        
+        if (newSessionName) {
+            // Check if session already exists
+            if (this.customSessions.includes(newSessionName)) {
+                this.showNotification('Session already exists!', 'warning');
+                return;
+            }
+            
+            // Add to custom sessions array
+            this.customSessions.push(newSessionName);
+            
+            // Create the new goal item
+            const goalSection = document.getElementById('goal-section');
+            const newGoalItem = document.createElement('div');
+            newGoalItem.className = 'goal-item';
+            newGoalItem.setAttribute('data-custom', 'true');
+            newGoalItem.innerHTML = `
+                <span class="task-name">${newSessionName}</span>
+                <button class="start-button" onclick="dentalStudyManager.openPomodoro('${newSessionName}', '${newSessionName.replace(/\s+/g, '-').toLowerCase()}-checkbox')">
+                    <i class="fa-solid fa-play"></i>
+                </button>
+                <input type="checkbox" id="${newSessionName.replace(/\s+/g, '-').toLowerCase()}-checkbox" class="task-checkbox" disabled />
+            `;
+            goalSection.appendChild(newGoalItem);
+            newSessionInput.value = '';
+            
+            // Save to database
+            this.saveProgress();
+            
+            // No notification for session added
+        }
     }
 }
 
-// Call this function when the page loads
+// Enhanced Timer System
+class StudyTimer {
+    constructor(duration = 10) {
+        this.duration = duration * 60; // Convert to seconds
+        this.remaining = this.duration;
+        this.isRunning = false;
+        this.isPaused = false;
+        this.startTime = null;
+        this.pauseTime = null;
+        this.totalPausedTime = 0;
+    }
+    
+    start() {
+        if (!this.isRunning) {
+            this.isRunning = true;
+            this.isPaused = false;
+            this.startTime = Date.now();
+        }
+    }
+    
+    pause() {
+        if (this.isRunning && !this.isPaused) {
+            this.isPaused = true;
+            this.pauseTime = Date.now();
+        }
+    }
+    
+    resume() {
+        if (this.isRunning && this.isPaused) {
+            this.isPaused = false;
+            this.totalPausedTime += Date.now() - this.pauseTime;
+        }
+    }
+    
+    reset() {
+        this.isRunning = false;
+        this.isPaused = false;
+        this.remaining = this.duration;
+        this.startTime = null;
+        this.pauseTime = null;
+        this.totalPausedTime = 0;
+    }
+    
+    getTimeLeft() {
+        if (!this.isRunning) return this.remaining;
+        
+        const currentTime = Date.now();
+        const pausedTime = this.isPaused ? currentTime - this.pauseTime : 0;
+        const elapsed = (currentTime - this.startTime - this.totalPausedTime - pausedTime) / 1000;
+        
+        return Math.max(0, this.duration - elapsed);
+    }
+    
+    getDuration() {
+        return this.duration;
+    }
+    
+    isComplete() {
+        return this.getTimeLeft() <= 0;
+    }
+}
+
+// Initialize the dental study manager when the page loads
+let dentalStudyManager;
+
 document.addEventListener("DOMContentLoaded", function() {
-    // Retrieve currentSTS from localStorage
-    currentSTS = parseInt(localStorage.getItem("STS")) || 0; // Default to 0 if STS is not set
-    checkForNewDay(); // Check for new day and reset stats if necessary
+    dentalStudyManager = new DentalStudyManager();
+    
+    // Service Worker Registration
+    if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.register('sw.js')
+            .then(registration => {
+                console.log('SW registered: ', registration);
+            })
+            .catch(registrationError => {
+                console.log('SW registration failed: ', registrationError);
+            });
+    }
 });
 
-function customRound(num) {
-    return (num - Math.floor(num)) > 0.4 ? Math.ceil(num) : Math.floor(num);
-  }
-  
-  let num1 = 2.4;
-  console.log(customRound(num1));  // Output: 3
-  
-  let num2 = 2.3;
-  console.log(customRound(num2));  // Output: 2
-  
-
-function shakeElement() {
-    const element = document.getElementById("complete");
-    let position = 0;
-    const interval = setInterval(() => {
-      position = (position + 1) % 4;
-      const offset = position % 2 === 0 ? -10 : 10;
-      element.style.transform = `translateX(${offset}px)`;
-
-      if (position === 0) {
-        clearInterval(interval);
-        element.style.transform = "translateX(0px)";
-      }
-    }, 100);
-  }
+// Global functions for backward compatibility
+function openPomodoro(task, checkboxId) {
+    if (dentalStudyManager) {
+        dentalStudyManager.openPomodoro(task, checkboxId);
+    }
+}
 
 function closePomodoro() {
-    document.getElementById('pomodoro-modal').style.display = 'none';
-    resetTimer(); // Reset timer when closing
+    if (dentalStudyManager) {
+        dentalStudyManager.closePomodoro();
+    }
 }
-
 
 function startTimer() {
-    if (!isRunning) {
-        isRunning = true;
-        startTime = Date.now(); // Record the start time
-        timer = setInterval(updateTimerDisplay, 1000); // Update display every second
+    if (dentalStudyManager) {
+        dentalStudyManager.startTimer();
     }
 }
-
-
-function updateTimerDisplay() {
-    const currentTime = Date.now(); // Get the current time
-    const elapsedTime = Math.floor((currentTime - startTime) / 1000); // Calculate elapsed time in seconds
-    const timeLeft = totalDuration - elapsedTime; // Calculate remaining time
-
-    if (timeLeft <= 0) {
-        clearInterval(timer);
-        isRunning = false;
-        document.getElementById(currentCheckboxId).checked = true; // Check the checkbox
-        currentSTS += 1;
-        
-        showNotification(); // Show the notification when time is up
-
-        // Update game data
-        
-        const savedData = JSON.parse(localStorage.getItem("gameData"));
-        savedData.exp += 2; // Award 1 XP
-        savedData.stackedAttributes["INT"] += 0.5;
-        let currentMP = parseInt(savedData.mp) - 2;
-        savedData.mp = currentMP;
-        let currentSTM = parseInt(savedData.stm) - 3;
-        savedData.stm = currentSTM;
-        let currentFAT = parseInt(savedData.fatigue) + 3;
-        savedData.fatigue = currentFAT;
-        localStorage.setItem("STS", currentSTS);
-        localStorage.setItem("gameData", JSON.stringify(savedData)); // Save the updated data
-        console.log('heyyuu');
-
-        // Check if x equals 3
-        if (currentSTS >= 3) {
-            setTimeout(function () {
-                console.log(x);
-                const savedData = JSON.parse(localStorage.getItem("gameData"));
-                localStorage.setItem("gameData", JSON.stringify(savedData)); // Save the updated data
-
-                const comp = document.getElementById("complete");
-                const section = document.getElementById("complete-section");
-                shakeElement();
-                comp.checked = true;
-                section.classList.add("animatedd");
-                comp.classList.add("animatedd"); // Add class to trigger animation
-            }, 1000);
-        }
-
-        closePomodoro(); // Close the modal when time is up
-    } else {
-        const minutes = Math.floor(timeLeft / 60);
-        const seconds = timeLeft % 60;
-        document.getElementById('timer-display').textContent = 
-            `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
-    }
-}
-
-// Call this function on page visibility change to update the timer
-document.addEventListener("visibilitychange", function() {
-    if (document.visibilityState === 'visible' && isRunning) {
-        // Update the timer display when the tab is visible again
-        updateTimerDisplay();
-    }
-});
 
 function resetTimer() {
-    clearInterval(timer);
-    isRunning = false;
-    document.getElementById('timer-display').textContent = '50:00'; // Reset to initial display
+    if (dentalStudyManager) {
+        dentalStudyManager.resetTimer();
+    }
 }
-
-
 
 function addNewSession() {
-    const goalSection = document.getElementById('goal-section');
-    const newSessionInput = document.getElementById('new-session-input');
-    const newSessionName = newSessionInput.value.trim();
-
-    if (newSessionName) {
-        const newGoalItem = document.createElement('div');
-        newGoalItem.className = 'goal-item';
-        newGoalItem.innerHTML = `
-            <span class="task-name">${newSessionName}</span>
-            <button class="start-button" onclick="openPomodoro('${newSessionName}', '${newSessionName.replace(/\s+/g, '-').toLowerCase()}-checkbox')"><i class="fa-solid fa-play"></i></button>
-            <input type="checkbox" id="${newSessionName.replace(/\s+/g, '-').toLowerCase()}-checkbox" class="task-checkbox" disabled />
-        `;
-        goalSection.appendChild(newGoalItem);
-        newSessionInput.value = ''; // Clear the input field after adding
-    } else {
-       
+    if (dentalStudyManager) {
+        dentalStudyManager.addNewSession();
     }
-}
-
-const savedData =JSON.parse(localStorage.getItem("gameData"));
-while (savedData.exp >= 100) {
-    savedData.exp = savedData.exp - 100; // Reset XP for new level
-    savedData.level = parseInt(savedData.level) + 1; // Increment level
-  
-    for (let key in savedData.stackedAttributes) {
-        if (savedData.Attributes[key] !== undefined) {
-            savedData.Attributes[key] += customRound(savedData.stackedAttributes[key]*0.25);
-        }
-    }
-    // Reset stackedAttributes  applying them to Attributes
-    for (let key in savedData.stackedAttributes) {
-        savedData.stackedAttributes[key] = 0;
-    }
-}
-
-document.addEventListener("DOMContentLoaded", function() {
-    if (currentSTS >= 3) {
-        setTimeout(function () {
-            console.log(x);
-            const savedData = JSON.parse(localStorage.getItem("gameData"));
-            localStorage.setItem("gameData", JSON.stringify(savedData)); // Save the updated data
-    
-            const comp = document.getElementById("complete");
-            const section = document.getElementById("complete-section");
-            shakeElement();
-            comp.checked = true;
-            section.classList.add("animatedd");
-            comp.classList.add("animatedd"); // Add class to trigger animation
-        }, 400);
-    }
-  });
-
-  document.addEventListener("DOMContentLoaded", function() {
-    if (currentSTS >= 3) {
-        setTimeout(function () {
-            console.log(x);
-            const savedData = JSON.parse(localStorage.getItem("gameData"));
-            localStorage.setItem("gameData", JSON.stringify(savedData)); // Save the updated data
-
-            // Select all checkboxes you want to check
-            const checkboxes = document.querySelectorAll('.task-checkbox'); // Adjust the selector based on your HTML structure
-            checkboxes.forEach(checkbox => {
-                checkbox.checked = true; // Check each checkbox
-            });
-
-         
-        }, 100);
-    }
-});
-document.addEventListener("DOMContentLoaded", function() {
-    if (currentSTS === 1) {
-        setTimeout(function () {
-            console.log(x);
-            const savedData = JSON.parse(localStorage.getItem("gameData"));
-            localStorage.setItem("gameData", JSON.stringify(savedData)); // Save the updated data
-
-            // Select all checkboxes you want to check
-            const anatomyCheckbox = document.getElementById("anatomy-checkbox"); // Select the specific checkbox
-            anatomyCheckbox.checked = true; // Check the anatomy checkbox
-
-         
-        }, 100);
-    }
-});
-
-document.addEventListener("DOMContentLoaded", function() {
-    if (currentSTS === 2) {
-        setTimeout(function () {
-            console.log(x);
-            const savedData = JSON.parse(localStorage.getItem("gameData"));
-            localStorage.setItem("gameData", JSON.stringify(savedData)); // Save the updated data
-
-            // Select all checkboxes you want to check
-            const anatomyCheckbox = document.getElementById("anatomy-checkbox"); // Select the specific checkbox
-            const hygieneCheckbox = document.getElementById("hygiene-checkbox"); // Select the specific checkbox
-            anatomyCheckbox.checked = true; // Check the anatomy checkbox
-            hygieneCheckbox.checked = true; // Check the hygiene checkbox
-
-         
-        }, 100);
-    }
-});
-
-
-document.addEventListener("DOMContentLoaded", function() {
-    checkForNewDay();
-});
-
-document.addEventListener("DOMContentLoaded", function() {
-  // Wait for user manager to load data
-  if (window.userManager) {
-    const userData = window.userManager.getData();
-    const localStorageData = userData.gameData || {};
-    loadData(localStorageData);
-  } else {
-    console.warn('User manager not available, using fallback');
-    loadData({});
-  }
-});
-
-// Use user manager for syncing
-async function syncToDatabase() {
-    if (window.userManager) {
-        try {
-            await window.userManager.saveUserData();
-            console.log('Sync successful via user manager');
-            return { success: true, message: 'Data synced successfully' };
-        } catch (error) {
-            console.error('Error syncing to database:', error);
-            throw error;
-        }
-    } else {
-        console.warn('User manager not available for syncing');
-        return { success: false, message: 'User manager not available' };
-    }
-}
-
-// Load Data Function
-function loadData(savedData) {
-  if (savedData) {
-    // Load saved data into UI
-    document.querySelector(".level-number").textContent = savedData.level || 1;
-    document.getElementById("hp-fill").style.width = (savedData.hp || 100) + "%";
-    document.getElementById("mp-fill").style.width = (savedData.mp || 100) + "%";
-    document.getElementById("stm-fill").style.width = (savedData.stm || 100) + "%";
-    document.getElementById("exp-fill").style.width = (savedData.exp || 0) + "%";
-    document.getElementById("Fatvalue").textContent = savedData.fatigue || 0;
-    document.getElementById("job-text").textContent = savedData.name || "Your Name";
-    document.getElementById("ping-text").textContent = savedData.ping || "60 ms";
-    document.getElementById("guild-text").textContent = savedData.guild || "Reaper";
-    document.getElementById("race-text").textContent = savedData.race || "Hunter";
-    document.getElementById("title-text").textContent = savedData.title || "None";
-    document.getElementById("region-text").textContent = savedData.region || "TN";
-    document.getElementById("location-text").textContent = savedData.location || "Hospital";
-    
-    // Load attributes if they exist
-    if (savedData.Attributes) {
-      document.getElementById("str").textContent = `STR: ${savedData.Attributes.STR}`;
-      document.getElementById("vit").textContent = `VIT: ${savedData.Attributes.VIT}`;
-      document.getElementById("agi").textContent = `AGI: ${savedData.Attributes.AGI}`;
-      document.getElementById("int").textContent = `INT: ${savedData.Attributes.INT}`;
-      document.getElementById("per").textContent = `PER: ${savedData.Attributes.PER}`;
-      document.getElementById("wis").textContent = `WIS: ${savedData.Attributes.WIS}`;
-    }
-  } else {
-    resetData();
-  }
-}
-
-// Reset Data Function
-function resetData() {
-  const defaultGameData = {
-    level: 1,
-    hp: 100,
-    mp: 100,
-    stm: 100,
-    exp: 0,
-    fatigue: 0,
-    name: "Your Name",
-    ping: "60",
-    guild: "Reaper",
-    race: "Hunter",
-    title: "None",
-    region: "TN",
-    location: "Hospital",
-    physicalQuests: "[0/4]",
-    mentalQuests: "[0/3]",
-    spiritualQuests: "[0/2]",
-    Attributes: {
-      STR: 10,
-      VIT: 10,
-      AGI: 10,
-      INT: 10,
-      PER: 10,
-      WIS: 10,
-    },
-    stackedAttributes: {
-      STR: 0,
-      VIT: 0,
-      AGI: 0,
-      INT: 0,
-      PER: 0,
-      WIS: 0,
-    },
-  };
-  
-  if (window.userManager) {
-    window.userManager.setData('gameData', defaultGameData);
-    syncToDatabase();
-  }
-  
-  location.reload();
-}
-
-// Save Data Function
-function saveData() {
-  // Get existing data from user manager
-  const userData = window.userManager ? window.userManager.getData() : {};
-  const existingData = userData.gameData || {};
-
-  // New data to update
-  const updatedData = {
-    level: document.querySelector(".level-number").textContent,
-    hp: parseFloat(document.getElementById("hp-fill").style.width),
-    mp: parseFloat(document.getElementById("mp-fill").style.width),
-    stm: parseFloat(document.getElementById("stm-fill").style.width),
-    exp: parseFloat(document.getElementById("exp-fill").style.width),
-    fatigue: document.getElementById("Fatvalue").textContent,
-    name: document.getElementById("job-text").textContent,
-    ping: document.getElementById("ping-text").textContent,
-    guild: document.getElementById("guild-text").textContent,
-    race: document.getElementById("race-text").textContent,
-    title: document.getElementById("title-text").textContent,
-    region: document.getElementById("region-text").textContent,
-    location: document.getElementById("location-text").textContent,
-  };
-
-  // Merge existing data with updated data, updating only specified keys
-  const newData = { ...existingData, ...updatedData };
-
-  // Save the merged data via user manager
-  if (window.userManager) {
-    window.userManager.setData('gameData', newData);
-    syncToDatabase();
-  }
-}
-
-// Check for New Day Function
-function checkForNewDay() {
-  const currentDate = new Date().toLocaleDateString(); // Get today's date
-  const userData = window.userManager ? window.userManager.getData() : {};
-  const lastResetDate = userData.lastResetDate; // Get the last reset date from user manager
-
-  console.log("Current Date:", currentDate);
-  console.log("Last Reset Date:", lastResetDate);
-
-  // If no date is saved or the day has changed, reset the stats
-  if (!lastResetDate || lastResetDate !== currentDate) {
-    console.log("Resetting daily stats...");
-    
-    if (window.userManager) {
-      window.userManager.setData('lastResetDate', currentDate);
-    }
-    
-    resetDailyStats(); // Reset daily stats
-    syncToDatabase();
-  } else {
-    console.log("No reset needed.");
-  }
-}
-
-// Reset Daily Stats Function
-function resetDailyStats() {
-  const userData = window.userManager ? window.userManager.getData() : {};
-  const savedData = userData.gameData;
-  
-  if (savedData) {
-    console.log("Resetting stats for:", savedData.name);
-    // Reset relevant stats
-    savedData.hp = 100;
-    savedData.stm = 100;
-    savedData.mp = 100;
-    savedData.fatigue = 0;
-    savedData.mentalQuests = "[0/3]";
-    savedData.physicalQuests = "[0/4]";
-    savedData.spiritualQuests = "[0/2]";
-
-    // Update the UI elements accordingly
-    document.getElementById("HPvalue").textContent = savedData.hp + "/100";
-    document.getElementById("hp-fill").style.width = savedData.hp + "%";
-    document.getElementById("MPvalue").textContent = savedData.mp + "/100";
-    document.getElementById("mp-fill").style.width = savedData.mp + "%";
-    document.getElementById("stm-fill").style.width = savedData.stm + "%";
-    document.getElementById("STMvalue").textContent = savedData.stm + "/100";
-    document.querySelector(".fatigue-value").textContent = savedData.fatigue;
-
-    // Save the updated data via user manager
-    if (window.userManager) {
-      window.userManager.setData('gameData', savedData);
-    }
-    console.log("Daily stats reset successfully.");
-  } else {
-    console.error("No saved data found for resetting stats.");
-  }
 }
 

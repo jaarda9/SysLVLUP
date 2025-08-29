@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Knowledge Quests</title>
+    <link rel="stylesheet" href="css/knowledge-quests.css" />
+    
+    <!-- Web App Manifest -->
+    <link rel="manifest" href="manifest.json">
+    
+    <!-- Theme Color -->
+    <meta name="theme-color" content="#4a90e2">
+    
+    <!-- iOS Safari -->
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="SysLVLUP">
+    
+    <!-- Microsoft -->
+    <meta name="msapplication-TileImage" content="icons/icon-144x144.png">
+    <meta name="msapplication-TileColor" content="#4a90e2">
+    <meta name="msapplication-tap-highlight" content="no">
+    
+    <!-- Icons -->
+    <link rel="apple-touch-icon" href="icons/icon-192x192.png">
+    <link rel="apple-touch-icon" sizes="152x152" href="icons/icon-152x152.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="icons/icon-192x192.png">
+    <link rel="apple-touch-icon" sizes="167x167" href="icons/icon-152x152.png">
+    <link rel="icon" type="image/png" href="icons/icon-192x192.png" sizes="192x192">
+  </head>
+  <body>
+    <div class="quest-box" id="quest-box">
+      <div class="quest-header">
+        <span>ⓘ Knowledge Quests</span>
+      </div>
+      <div class="quest-details">
+        <p>[Knowledge Quest: Learning has arrived.]</p>
+      </div>
+      <div class="goal-section">
+        <h2>GOAL</h2>
+        <div class="goal-item">
+          <span class="task-name">Academic Training</span>
+          <div class="task-right" id="taskRight">
+            <span id="academicQuests" onclick="window.location.href='dental-study.html'">[DENTAL STUDY]</span>
+          </div>
+          <div>
+            <input
+              type="checkbox"
+              id="academic-checkbox"
+              class="academic-checkbox"
+              disabled
+            />
+          </div>
+        </div>
+        <div class="goal-item">
+          <span class="task-name">Research Training</span>
+          <div class="task-right">
+            <span id="researchQuests">[COMING SOON]</span>
+          </div>
+          <div>
+            <input
+              type="checkbox"
+              id="research-checkbox"
+              class="research-checkbox"
+              disabled
+            />
+          </div>
+        </div>
+        <div class="goal-item">
+          <span class="task-name">Study Training</span>
+          <div class="task-right">
+            <span id="studyQuests">[COMING SOON]</span>
+          </div>
+          <div>
+            <input
+              type="checkbox"
+              id="study-checkbox"
+              class="study-checkbox"
+              disabled
+            />
+          </div>
+        </div>
+      </div>
+      <div class="warning-section">
+        <p>
+          WARNING: Failure to complete the knowledge quest will result in an
+          appropriate <span class="penalty">penalty</span>
+        </p>
+      </div>
+
+      <div class="complete-section" id="complete-section">
+        <input type="checkbox" id="complete" disabled />
+        <label for="complete"></label>
+      </div>
+    </div>
+
+    <!-- Load scripts in correct order -->
+    <script src="js/user-manager.js"></script>
+    <script src="js/knowledge-quests.js"></script>
+    
+    <!-- Service Worker Registration -->
+    <script>
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+          navigator.serviceWorker.register('sw.js')
+            .then(registration => {
+              console.log('SW registered: ', registration);
+            })
+            .catch(registrationError => {
+              console.log('SW registration failed: ', registrationError);
+            });
+        });
+      }
+    </script>
+  </body>
+</html>
