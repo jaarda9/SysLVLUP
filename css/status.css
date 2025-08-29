@@ -200,8 +200,11 @@ body {
 
 .progress-ring__circle {
   transition: stroke-dashoffset 0.5s ease;
- 
+  stroke-linecap: round; /* rounded arc ends for smoother look */
 }
+
+/* Ensure the specific circle also uses rounded caps */
+#fatringprogg { stroke-linecap: round; }
 
 .fatigue-label {
   position: absolute;
