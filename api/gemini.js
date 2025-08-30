@@ -1,6 +1,5 @@
-const fetch = require('node-fetch');
-
-module.exports = async (req, res) => {
+// Vercel serverless function for Gemini AI integration
+export default async function handler(req, res) {
   // Set CORS headers for Vercel
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
@@ -52,8 +51,6 @@ Make the topic interesting and educational. Keep the description concise but inf
       });
 
       const data = await response.json();
-      
-      console.log('Gemini API Response:', JSON.stringify(data, null, 2));
       
       if (data.candidates && data.candidates[0] && data.candidates[0].content) {
         const generatedText = data.candidates[0].content.parts[0].text;
@@ -184,4 +181,4 @@ Mix question types: multiple choice, true/false, and fill-in-the-blank. Make que
       details: error.message 
     });
   }
-};
+}
