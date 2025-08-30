@@ -144,7 +144,7 @@ class ResearchTrainingManager {
         try {
             // Call Gemini API directly (same approach as working implementation)
             const GEMINI_API_KEY = 'AIzaSyAtL-nZJQ_rBdK72qvn5ocgbf6bgUPlgNo';
-            const GEMINI_API_URL = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent';
+            const GEMINI_API_URL = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent';
             
             const categories = [
                 'Humanities (History, Literature, Philosophy, Art)',
@@ -261,7 +261,7 @@ Make the topic interesting and educational. Keep the description concise but inf
         try {
             // Call Gemini API directly for quiz generation
             const GEMINI_API_KEY = 'AIzaSyAtL-nZJQ_rBdK72qvn5ocgbf6bgUPlgNo';
-            const GEMINI_API_URL = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent';
+            const GEMINI_API_URL = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent';
             
             const prompt = `Create 5 engaging quiz questions about: ${this.researchData.currentTopic.title} - ${this.researchData.currentTopic.description}
 
