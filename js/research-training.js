@@ -1,12 +1,5 @@
-// Initialize user manager (same pattern as other pages)
-let userManager;
-if (typeof UserManager !== 'undefined') {
-    userManager = new UserManager();
-    window.userManager = userManager;
-    console.log('UserManager initialized for research training page');
-} else {
-    console.warn('UserManager class not available');
-}
+// Global variables
+let userManager = null;
 
 // Research Training Manager - AI-Powered Learning System
 class ResearchTrainingManager {
@@ -564,29 +557,27 @@ class ResearchTrainingManager {
 // Initialize the research training manager when the page loads
 let researchTrainingManager;
 
-document.addEventListener("DOMContentLoaded", async function() {
-    // Initialize user manager and load existing data (same pattern as other pages)
-    if (window.userManager) {
-        const existingPlayerName = localStorage.getItem('playerName');
-        if (existingPlayerName) {
-            console.log('Existing player found:', existingPlayerName);
-            try {
-                // Set the user ID and load data from database
-                const result = await window.userManager.setUserId(existingPlayerName);
-                console.log('User data loaded result:', result);
-            } catch (error) {
-                console.error('Error loading user data:', error);
-            }
-        } else {
-            console.log('No existing player name found');
-        }
+// Initialize when DOM is loaded
+document.addEventListener('DOMContentLoaded', async () => {
+    console.log('Research Training page loaded, initializing...');
+    
+    // Create user manager instance (same pattern as status.js)
+    userManager = new UserManager();
+    window.userManager = userManager;
+    
+    // Check if player already has a name set
+    const existingPlayerName = localStorage.getItem('playerName');
+    
+    if (existingPlayerName) {
+        console.log('Existing player found:', existingPlayerName);
+        // Player has a name, try to load their data
+        await loadExistingPlayerData(existingPlayerName);
+    } else {
+        console.log('No existing player name found');
+        // For now, just initialize with fallback data
+        researchTrainingManager = new ResearchTrainingManager();
+        await researchTrainingManager.initialize();
     }
-    
-    // Create research training manager instance
-    researchTrainingManager = new ResearchTrainingManager();
-    
-    // Initialize the manager after creation (same pattern as other pages)
-    await researchTrainingManager.initialize();
     
     // Service Worker Registration
     if ('serviceWorker' in navigator) {
@@ -599,6 +590,41 @@ document.addEventListener("DOMContentLoaded", async function() {
             });
     }
 });
+
+// Load existing player data (same pattern as status.js)
+async function loadExistingPlayerData(playerName) {
+    try {
+        // Set the user ID (player name) in user manager and check if data exists
+        const result = await userManager.setUserId(playerName);
+        
+        console.log('Result from setUserId:', result);
+        
+        if (result.dataFound) {
+            console.log('Loading existing player data for:', playerName);
+            // Player exists, load their data
+            const existingData = userManager.getData();
+            console.log('Existing data retrieved:', existingData);
+        } else {
+            console.log('Creating new player data for:', playerName);
+            // New player, create initial data
+            const initialData = userManager.createInitialData(playerName);
+            
+            // Save to MongoDB
+            await userManager.saveUserData();
+            console.log('Initial data saved for new player');
+        }
+        
+        // Initialize research training manager
+        researchTrainingManager = new ResearchTrainingManager();
+        await researchTrainingManager.initialize();
+        
+    } catch (error) {
+        console.error('Error loading existing player data:', error);
+        // Fallback: initialize with basic data
+        researchTrainingManager = new ResearchTrainingManager();
+        await researchTrainingManager.initialize();
+    }
+}
 
 // Global functions for backward compatibility
 function selectAnswer(answer) {
