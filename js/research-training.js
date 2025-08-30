@@ -142,18 +142,70 @@ class ResearchTrainingManager {
         `;
         
         try {
-            // Use Vercel API endpoint for Gemini
-            const response = await fetch('/api/gemini?action=generate-topic');
-            const data = await response.json();
+            // Call Gemini API directly (same approach as working implementation)
+            const GEMINI_API_KEY = 'AIzaSyAtL-nZJQ_rBdK72qvn5ocgbf6bgUPlgNo';
+            const GEMINI_API_URL = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent';
             
-            if (data.success && data.topic) {
-                this.researchData.currentTopic = data.topic;
-                this.researchData.lastTopicDate = new Date().toLocaleDateString();
-                this.displayTopic(data.topic);
-                await this.saveProgress();
-            } else {
-                throw new Error(data.error || 'Failed to generate topic');
-            }
+            const categories = [
+                'Humanities (History, Literature, Philosophy, Art)',
+                'Social Sciences (Geography, Political Science, Sociology, Economics)',
+                'Science and Technology (Physics, Biology, Computer Science, Engineering)',
+                'Current Events (Business, Politics, Technology News, Global Affairs)'
+            ];
+            
+            const randomCategory = categories[Math.floor(Math.random() * categories.length)];
+            
+            const prompt = `Generate a daily cultural learning topic from this category: ${randomCategory}
+
+Please provide a response in this exact JSON format:
+{
+  "category": "Category Name",
+  "title": "Topic Title",
+  "description": "A brief but engaging description of the topic that would interest someone learning about it",
+  "difficulty": "Beginner/Intermediate/Advanced"
+}
+
+Make the topic interesting and educational. Keep the description concise but informative.`;
+
+            const payload = {
+                contents: [{
+                    parts: [{
+                        text: prompt
+                    }]
+                }],
+                generationConfig: {
+                    responseMimeType: "application/json",
+                    responseSchema: {
+                        type: "OBJECT",
+                        properties: {
+                            "category": { "type": "STRING" },
+                            "title": { "type": "STRING" },
+                            "description": { "type": "STRING" },
+                            "difficulty": { "type": "STRING" }
+                        },
+                        "propertyOrdering": ["category", "title", "description", "difficulty"]
+                    }
+                }
+            };
+
+            const response = await fetch(`${GEMINI_API_URL}?key=${GEMINI_API_KEY}`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            });
+            
+            const result = await response.json();
+            
+            const jsonText = result?.candidates?.[0]?.content?.parts?.[0]?.text;
+            if (!jsonText) throw new Error('Invalid response structure from API');
+
+            const topicData = JSON.parse(jsonText);
+            
+            this.researchData.currentTopic = topicData;
+            this.researchData.lastTopicDate = new Date().toLocaleDateString();
+            this.displayTopic(topicData);
+            await this.saveProgress();
+            
         } catch (error) {
             console.error('Error generating topic:', error);
             const topicContent = document.getElementById('topic-content');
@@ -207,27 +259,84 @@ class ResearchTrainingManager {
         startQuizBtn.disabled = true;
         
         try {
-            // Use Vercel API endpoint for Gemini
-            const response = await fetch('/api/gemini', {
+            // Call Gemini API directly for quiz generation
+            const GEMINI_API_KEY = 'AIzaSyAtL-nZJQ_rBdK72qvn5ocgbf6bgUPlgNo';
+            const GEMINI_API_URL = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent';
+            
+            const prompt = `Create 5 engaging quiz questions about: ${this.researchData.currentTopic.title} - ${this.researchData.currentTopic.description}
+
+Please provide a response in this exact JSON format:
+{
+  "questions": [
+    {
+      "question": "Question text here?",
+      "type": "multiple_choice",
+      "options": ["Option A", "Option B", "Option C", "Option D"],
+      "correctAnswer": "Option A",
+      "explanation": "Brief explanation of why this is correct"
+    },
+    {
+      "question": "True or false question here?",
+      "type": "true_false",
+      "options": ["True", "False"],
+      "correctAnswer": "True",
+      "explanation": "Brief explanation"
+    }
+  ]
+}
+
+Mix question types: multiple choice, true/false, and fill-in-the-blank. Make questions engaging and educational. Keep explanations concise.`;
+
+            const payload = {
+                contents: [{
+                    parts: [{
+                        text: prompt
+                    }]
+                }],
+                generationConfig: {
+                    responseMimeType: "application/json",
+                    responseSchema: {
+                        type: "OBJECT",
+                        properties: {
+                            "questions": {
+                                "type": "ARRAY",
+                                "items": {
+                                    "type": "OBJECT",
+                                    "properties": {
+                                        "question": { "type": "STRING" },
+                                        "type": { "type": "STRING" },
+                                        "options": { "type": "ARRAY", "items": { "type": "STRING" } },
+                                        "correctAnswer": { "type": "STRING" },
+                                        "explanation": { "type": "STRING" }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            };
+
+            const response = await fetch(`${GEMINI_API_URL}?key=${GEMINI_API_KEY}`, {
                 method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    action: 'generate-quiz',
-                    topic: this.researchData.currentTopic
-                })
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
             });
             
-            const data = await response.json();
+            const result = await response.json();
             
-            if (data.success && data.quiz && data.quiz.length > 0) {
-                this.currentQuiz = data.quiz;
-                this.researchData.quizData = data.quiz;
+            const jsonText = result?.candidates?.[0]?.content?.parts?.[0]?.text;
+            if (!jsonText) throw new Error('Invalid response structure from API');
+
+            const quizData = JSON.parse(jsonText);
+            
+            if (quizData.questions && quizData.questions.length > 0) {
+                this.currentQuiz = quizData.questions;
+                this.researchData.quizData = quizData.questions;
                 await this.saveProgress();
             } else {
-                throw new Error(data.error || 'Failed to generate quiz');
+                throw new Error('No questions generated');
             }
+            
         } catch (error) {
             console.error('Error generating quiz:', error);
             const startQuizBtn = document.getElementById('start-quiz-btn');
