@@ -142,11 +142,8 @@ class ResearchTrainingManager {
         `;
         
         try {
-            // Try to use local server for Gemini API
-            const isLocalhost = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
-            const apiUrl = isLocalhost ? '/api/gemini?action=generate-topic' : 'http://localhost:3000/api/gemini?action=generate-topic';
-            
-            const response = await fetch(apiUrl);
+            // Use Vercel API endpoint for Gemini
+            const response = await fetch('/api/gemini?action=generate-topic');
             const data = await response.json();
             
             if (data.success && data.topic) {
@@ -159,44 +156,16 @@ class ResearchTrainingManager {
             }
         } catch (error) {
             console.error('Error generating topic:', error);
-            console.log('Using fallback topic system');
-            
-            // Enhanced fallback system with multiple topics
-            const fallbackTopics = [
-                {
-                    category: "Humanities",
-                    title: "Ancient Egyptian Architecture",
-                    description: "Explore the magnificent pyramids, temples, and monuments of ancient Egypt. Learn about the construction techniques, religious significance, and cultural impact of these architectural marvels.",
-                    difficulty: "Intermediate"
-                },
-                {
-                    category: "Science and Technology",
-                    title: "Quantum Computing Fundamentals",
-                    description: "Discover the principles behind quantum computing, including qubits, superposition, and quantum entanglement. Learn how this revolutionary technology could transform computing.",
-                    difficulty: "Advanced"
-                },
-                {
-                    category: "Social Sciences",
-                    title: "The Psychology of Decision Making",
-                    description: "Explore how humans make decisions, from cognitive biases to rational choice theory. Understand the psychological factors that influence our choices.",
-                    difficulty: "Intermediate"
-                },
-                {
-                    category: "Current Events",
-                    title: "Global Climate Change Solutions",
-                    description: "Examine innovative approaches to addressing climate change, from renewable energy technologies to sustainable urban planning and international cooperation.",
-                    difficulty: "Intermediate"
-                }
-            ];
-            
-            // Select a random fallback topic
-            const randomIndex = Math.floor(Math.random() * fallbackTopics.length);
-            const fallbackTopic = fallbackTopics[randomIndex];
-            
-            this.researchData.currentTopic = fallbackTopic;
-            this.researchData.lastTopicDate = new Date().toLocaleDateString();
-            this.displayTopic(fallbackTopic);
-            await this.saveProgress();
+            const topicContent = document.getElementById('topic-content');
+            topicContent.innerHTML = `
+                <div style="text-align: center; color: #ff6b6b;">
+                    <i class="fa-solid fa-exclamation-triangle" style="font-size: 2rem; margin-bottom: 10px;"></i>
+                    <p>AI topic generation failed. Please try again later.</p>
+                    <button onclick="location.reload()" style="margin-top: 10px; padding: 8px 16px; background: #00ffff; color: #0A1B2E; border: none; border-radius: 5px; cursor: pointer;">
+                        <i class="fa-solid fa-redo"></i> Retry
+                    </button>
+                </div>
+            `;
         }
     }
     
@@ -238,11 +207,8 @@ class ResearchTrainingManager {
         startQuizBtn.disabled = true;
         
         try {
-            // Try to use local server for Gemini API
-            const isLocalhost = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
-            const apiUrl = isLocalhost ? '/api/gemini' : 'http://localhost:3000/api/gemini';
-            
-            const response = await fetch(apiUrl, {
+            // Use Vercel API endpoint for Gemini
+            const response = await fetch('/api/gemini', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -264,88 +230,12 @@ class ResearchTrainingManager {
             }
         } catch (error) {
             console.error('Error generating quiz:', error);
-            console.log('Using fallback quiz system');
+            const startQuizBtn = document.getElementById('start-quiz-btn');
+            startQuizBtn.innerHTML = '<i class="fa-solid fa-exclamation-triangle"></i> AI Generation Failed';
+            startQuizBtn.style.background = 'linear-gradient(135deg, #ff6b6b, #ee5a52)';
+            startQuizBtn.onclick = () => location.reload();
             
-            // Enhanced fallback quiz system
-            const fallbackQuizzes = {
-                "Ancient Egyptian Architecture": [
-                    {
-                        question: "What is the most famous architectural structure of ancient Egypt?",
-                        type: "multiple_choice",
-                        options: ["The Great Pyramid of Giza", "The Sphinx", "The Temple of Karnak", "The Valley of the Kings"],
-                        correctAnswer: "The Great Pyramid of Giza",
-                        explanation: "The Great Pyramid of Giza is the most iconic and famous structure of ancient Egypt."
-                    },
-                    {
-                        question: "What material was primarily used to build the pyramids?",
-                        type: "multiple_choice",
-                        options: ["Limestone", "Granite", "Sandstone", "Marble"],
-                        correctAnswer: "Limestone",
-                        explanation: "Limestone was the primary building material used for the pyramids."
-                    },
-                    {
-                        question: "The pyramids were built as tombs for pharaohs.",
-                        type: "true_false",
-                        options: ["True", "False"],
-                        correctAnswer: "True",
-                        explanation: "The pyramids were indeed built as elaborate tombs for Egyptian pharaohs."
-                    }
-                ],
-                "Quantum Computing Fundamentals": [
-                    {
-                        question: "What is a qubit in quantum computing?",
-                        type: "multiple_choice",
-                        options: ["A quantum bit", "A classical bit", "A computer processor", "A memory unit"],
-                        correctAnswer: "A quantum bit",
-                        explanation: "A qubit is the quantum equivalent of a classical bit in computing."
-                    },
-                    {
-                        question: "Quantum computers can exist in multiple states simultaneously.",
-                        type: "true_false",
-                        options: ["True", "False"],
-                        correctAnswer: "True",
-                        explanation: "This is called superposition, a fundamental principle of quantum computing."
-                    }
-                ],
-                "The Psychology of Decision Making": [
-                    {
-                        question: "What is cognitive bias?",
-                        type: "multiple_choice",
-                        options: ["A systematic error in thinking", "A type of memory", "A learning technique", "A personality trait"],
-                        correctAnswer: "A systematic error in thinking",
-                        explanation: "Cognitive bias refers to systematic errors in thinking that affect decision making."
-                    },
-                    {
-                        question: "Humans always make rational decisions.",
-                        type: "true_false",
-                        options: ["True", "False"],
-                        correctAnswer: "False",
-                        explanation: "Humans often make decisions based on emotions and biases, not pure rationality."
-                    }
-                ],
-                "Global Climate Change Solutions": [
-                    {
-                        question: "Which renewable energy source is most widely used globally?",
-                        type: "multiple_choice",
-                        options: ["Solar power", "Wind power", "Hydropower", "Geothermal energy"],
-                        correctAnswer: "Hydropower",
-                        explanation: "Hydropower is currently the most widely used renewable energy source globally."
-                    },
-                    {
-                        question: "Individual actions cannot help combat climate change.",
-                        type: "true_false",
-                        options: ["True", "False"],
-                        correctAnswer: "False",
-                        explanation: "Individual actions, when combined, can have a significant impact on climate change."
-                    }
-                ]
-            };
-            
-            // Get fallback quiz based on topic title
-            const topicTitle = this.researchData.currentTopic.title;
-            const fallbackQuiz = fallbackQuizzes[topicTitle] || fallbackQuizzes["Ancient Egyptian Architecture"];
-            
-            this.currentQuiz = fallbackQuiz;
+            this.showNotification('AI quiz generation failed. Please try again.', 'error');
         }
         
         startQuizBtn.innerHTML = '<i class="fa-solid fa-play"></i> Start Quiz';

@@ -1,4 +1,7 @@
-module.exports = async function handler(req, res) {
+const fetch = require('node-fetch');
+
+module.exports = async (req, res) => {
+  // Set CORS headers for Vercel
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
@@ -50,6 +53,8 @@ Make the topic interesting and educational. Keep the description concise but inf
 
       const data = await response.json();
       
+      console.log('Gemini API Response:', JSON.stringify(data, null, 2));
+      
       if (data.candidates && data.candidates[0] && data.candidates[0].content) {
         const generatedText = data.candidates[0].content.parts[0].text;
         
@@ -80,6 +85,7 @@ Make the topic interesting and educational. Keep the description concise but inf
           generatedAt: new Date().toISOString()
         });
       } else {
+        console.error('Invalid Gemini response structure:', data);
         throw new Error('Invalid response from Gemini API');
       }
     }
