@@ -19,15 +19,19 @@ class ResearchTrainingManager {
         await this.loadUserData();
         this.setupEventListeners();
         this.updateProgressDisplay();
-        this.checkForNewDay();
         await this.loadDailyTopic();
+        this.checkForNewDay();
     }
     
     async loadUserData() {
         try {
             if (this.userManager && this.userManager.hasUserId()) {
                 const userData = this.userManager.getData();
+                console.log('🔍 Loading user data:', userData);
+                console.log('🔍 Existing research data:', userData?.researchTrainingData);
+                
                 this.researchData = userData?.researchTrainingData || this.getDefaultResearchData();
+                console.log('🔍 Final research data loaded:', this.researchData);
                 return userData;
             } else {
                 console.warn('User manager not available, using localStorage fallback');
@@ -61,12 +65,18 @@ class ResearchTrainingManager {
     
     async saveProgress() {
         try {
+            console.log('💾 Saving progress:', this.researchData);
+            
             if (this.userManager && this.userManager.hasUserId()) {
+                console.log('💾 Saving via user manager...');
                 await this.userManager.updateUserData({
                     researchTrainingData: this.researchData
                 });
+                console.log('💾 Progress saved via user manager');
             } else {
+                console.log('💾 Saving via localStorage...');
                 localStorage.setItem("researchTrainingData", JSON.stringify(this.researchData));
+                console.log('💾 Progress saved via localStorage');
             }
         } catch (error) {
             console.error('Error saving progress:', error);
@@ -116,22 +126,37 @@ class ResearchTrainingManager {
         const currentDate = new Date().toLocaleDateString();
         const lastTopicDate = this.researchData.lastTopicDate;
         
+        console.log('📅 Checking for new day...');
+        console.log('📅 Current date:', currentDate);
+        console.log('📅 Last topic date:', lastTopicDate);
+        console.log('📅 Current topic exists:', !!this.researchData.currentTopic);
+        
         if (!lastTopicDate || lastTopicDate !== currentDate) {
+            console.log('📅 New day detected, resetting topic and quiz');
             // New day - reset topic and quiz
             this.researchData.currentTopic = null;
             this.researchData.quizData = null;
             this.saveProgress();
+        } else {
+            console.log('📅 Same day, keeping existing topic');
         }
     }
     
     async loadDailyTopic() {
         const topicContent = document.getElementById('topic-content');
         
+        console.log('📚 Loading daily topic...');
+        console.log('📚 Current topic exists:', !!this.researchData.currentTopic);
+        console.log('📚 Current topic data:', this.researchData.currentTopic);
+        
         if (this.researchData.currentTopic) {
             // Topic already exists for today
+            console.log('📚 Displaying existing topic');
             this.displayTopic(this.researchData.currentTopic);
             return;
         }
+        
+        console.log('📚 No existing topic, generating new one...');
         
         // Show loading spinner
         topicContent.innerHTML = `
@@ -201,10 +226,17 @@ Make the topic interesting and educational. Keep the description concise but inf
 
             const topicData = JSON.parse(jsonText);
             
+            console.log('🎯 Generated topic data:', topicData);
+            
             this.researchData.currentTopic = topicData;
             this.researchData.lastTopicDate = new Date().toLocaleDateString();
+            
+            console.log('🎯 Updated research data:', this.researchData);
+            
             this.displayTopic(topicData);
             await this.saveProgress();
+            
+            console.log('🎯 Topic saved and displayed');
             
         } catch (error) {
             console.error('Error generating topic:', error);
