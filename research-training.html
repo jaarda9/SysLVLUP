@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Research Training - Enhanced</title>
+    <link rel="stylesheet" href="css/research-training.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    
+    <!-- Web App Manifest -->
+    <link rel="manifest" href="/manifest.json">
+    
+    <!-- Theme Color -->
+    <meta name="theme-color" content="#4a90e2">
+    
+    <!-- iOS Safari -->
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="SysLVLUP">
+    
+    <!-- Microsoft -->
+    <meta name="msapplication-TileImage" content="/icons/icon-144x144.png">
+    <meta name="msapplication-TileColor" content="#4a90e2">
+    <meta name="msapplication-tap-highlight" content="no">
+    
+    <!-- Icons -->
+    <link rel="apple-touch-icon" href="/icons/icon-192x192.png">
+    <link rel="apple-touch-icon" sizes="152x152" href="/icons/icon-152x152.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="/icons/icon-192x192.png">
+    <link rel="apple-touch-icon" sizes="167x167" href="/icons/icon-152x152.png">
+    <link rel="icon" type="image/png" href="/icons/icon-192x192.png" sizes="192x192">
+</head>
+<body>
+    <div class="navigation">
+        <a href="knowledge-quests.html" class="back-link">
+            <i class="fa-solid fa-arrow-left"></i> Back to Knowledge Quests
+        </a>
+    </div>
+    
+    <div class="quest-box" id="quest-box">
+        <div class="quest-header">
+           <span>🧠 Research Training</span>
+        </div>
+        
+        <div class="quest-details">
+            <p>[Daily Quest: Expand your knowledge and test your understanding.]</p>
+        </div>
+        
+        <!-- Daily Topic Section -->
+        <div class="topic-section" id="topic-section">
+            <h2>DAILY TOPIC</h2>
+            <div class="topic-content" id="topic-content">
+                <div class="loading-spinner">
+                    <i class="fa-solid fa-spinner fa-spin"></i>
+                    <p>Generating today's topic...</p>
+                </div>
+            </div>
+            <button class="start-quiz-btn" id="start-quiz-btn" style="display: none;">
+                <i class="fa-solid fa-play"></i> Start Quiz
+            </button>
+        </div>
+        
+        <!-- Quiz Interface -->
+        <div class="quiz-section" id="quiz-section" style="display: none;">
+            <h2>QUIZ</h2>
+            <div class="quiz-header">
+                <div class="quiz-progress">
+                    <span id="question-counter">Question 1/5</span>
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="progress-fill"></div>
+                    </div>
+                </div>
+                <div class="timer" id="timer">
+                    <i class="fa-regular fa-clock"></i>
+                    <span id="time-left">03:00</span>
+                </div>
+            </div>
+            
+            <div class="question-container" id="question-container">
+                <!-- Questions will be loaded here -->
+            </div>
+            
+            <div class="quiz-controls">
+                <button class="quiz-btn secondary" id="prev-btn" style="display: none;">
+                    <i class="fa-solid fa-arrow-left"></i> Previous
+                </button>
+                <button class="quiz-btn primary" id="next-btn">
+                    Next <i class="fa-solid fa-arrow-right"></i>
+                </button>
+                <button class="quiz-btn success" id="submit-btn" style="display: none;">
+                    <i class="fa-solid fa-check"></i> Submit Quiz
+                </button>
+            </div>
+        </div>
+        
+        <!-- Results Section -->
+        <div class="results-section" id="results-section" style="display: none;">
+            <h2>RESULTS</h2>
+            <div class="score-display" id="score-display">
+                <!-- Results will be shown here -->
+            </div>
+            <div class="answers-review" id="answers-review">
+                <!-- Answer review will be shown here -->
+            </div>
+            <button class="retry-btn" id="retry-btn">
+                <i class="fa-solid fa-redo"></i> Try Again Tomorrow
+            </button>
+        </div>
+        
+        <!-- Progress Tracking -->
+        <div class="progress-section">
+            <h2>PROGRESS</h2>
+            <div class="progress-stats">
+                <div class="stat-item">
+                    <span class="stat-label">Daily Streak</span>
+                    <span class="stat-value" id="streak-value">0</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-label">Total Score</span>
+                    <span class="stat-value" id="total-score">0</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-label">Quizzes Taken</span>
+                    <span class="stat-value" id="quizzes-taken">0</span>
+                </div>
+            </div>
+        </div>
+        
+        <div class="warning-section">
+            <p>
+                WARNING: Failure to complete the daily research quest will result in an
+                appropriate <span class="penalty">penalty</span>
+            </p>
+        </div>
+
+        <div class="complete-section" id="complete-section">
+            <input type="checkbox" id="complete" disabled />
+            <label for="complete"></label>
+        </div>
+    </div>
+
+    <!-- Notification -->
+    <div id="notification" class="notification hidden">
+        <p>Quiz completed! Great job on your research!</p>
+    </div>
+
+    <!-- Load scripts in correct order -->
+    <script src="js/user-manager.js"></script>
+    <script src="js/research-training.js"></script>
+    
+    <!-- Service Worker Registration -->
+    <script>
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+          navigator.serviceWorker.register('sw.js')
+            .then(registration => {
+              console.log('SW registered: ', registration);
+            })
+            .catch(registrationError => {
+              console.log('SW registration failed: ', registrationError);
+            });
+        });
+      }
+    </script>
+</body>
+</html>

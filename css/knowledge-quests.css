@@ -255,14 +255,32 @@ input[type="checkbox"]:checked + label {
     background-color: rgba(255, 255, 255, 0.3);
 }
 
-/* Coming Soon items should not be clickable */
-#researchQuests,
+/* Research Training is now clickable */
+#researchQuests {
+    cursor: pointer;
+    opacity: 1;
+}
+
+#researchQuests:hover {
+    background-color: rgba(0, 255, 255, 0.2);
+    border-color: rgba(0, 255, 255, 0.6);
+    transform: scale(1.05);
+    box-shadow: 0 0 10px rgba(0, 255, 255, 0.3);
+    color: #00ffff;
+    text-shadow: 0 0 8px rgba(0, 255, 255, 0.5);
+}
+
+#researchQuests:active {
+    transform: scale(0.95);
+    background-color: rgba(0, 255, 255, 0.3);
+}
+
+/* Study Training is still coming soon */
 #studyQuests {
     cursor: default;
     opacity: 0.6;
 }
 
-#researchQuests:hover,
 #studyQuests:hover {
     background-color: rgba(255, 255, 255, 0.1);
     border-color: rgba(255, 255, 255, 0.3);
