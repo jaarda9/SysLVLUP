@@ -220,7 +220,7 @@ class DentalStudyManager {
             startTime: new Date().toISOString()
         };
         
-        this.studyTimer = new StudyTimer(10); // Changed to 10 seconds for testing
+        this.studyTimer = new StudyTimer(50 * 60); // Changed to 10 seconds for testing
         this.resetTimer();
         this.updateTimerButtons();
     }
@@ -341,7 +341,7 @@ class DentalStudyManager {
     }
     
     calculateRewards(sessionDuration) {
-        const baseReward = 2 * (sessionDuration / (10)); // 10 seconds = base (changed from 10 minutes)
+        const baseReward = 2 * (sessionDuration / (50 * 60)); // 50 minutes = base
         const totalXP = Math.round(baseReward);
         
         return {
@@ -647,26 +647,7 @@ function addNewSession() {
     }
 }
 
-// Test function for debugging user manager
-function testUserManager() {
-    console.log('=== Testing User Manager ===');
-    console.log('Window userManager:', window.userManager);
-    console.log('Window UserManager class:', window.UserManager);
-    
-    if (window.userManager) {
-        console.log('UserManager instance available');
-        console.log('Has user ID:', window.userManager.hasUserId());
-        console.log('Current user ID:', window.userManager.getUserId());
-        console.log('User data:', window.userManager.getData());
-        
-        // Check current user data
-        console.log('Current user data:', window.userManager.getData());
-    } else {
-        console.log('UserManager instance not available on window');
-    }
-    
-    console.log('=== End Test ===');
-}
+
 
 // Sync to database function (same pattern as other pages)
 async function syncToDatabase() {

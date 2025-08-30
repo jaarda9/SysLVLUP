@@ -203,25 +203,35 @@ body {
     box-shadow: 0 0 8px rgba(255, 255, 255, 0.8);
     border-radius: 5px;
     position: relative;
-    cursor: pointer;
+    
     transition: all 0.3s ease;
 }
 
-.complete-section label:hover {
-    border-color: #00ffff;
-    box-shadow: 0 0 12px rgba(0, 255, 255, 0.8);
+/*Add this to your existing styles.css*/
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+.animate {
+    animation: shake 0.5s ease;
 }
 
 .complete-section input[type="checkbox"]:checked + label::after {
-    content: '✔';
-    font-size: 30px;
-    color: #00FF00;
+    content: '✔'; /*Green checkmark*/
+    font-size: 30px; /*Adjust size of the checkmark*/
+    color: #00FF00; /*Green color*/
     position: absolute;
     top: 50%;
     left: 50%;
-    transform: translate(-50%, -54%);
-    animation: fadeIn 0.5s ease;
+    transform: translate(-50%, -50%); /*Center the checkmark properly*/
+    animation: fadeIn 0.5s ease; /*Apply fade-in animation*/
 }
+
 
 /* Enhanced Modal */
 .modal {
@@ -262,6 +272,8 @@ body {
         transform: translateY(0) scale(1);
     }
 }
+
+
 
 .close {
     color: #d5eff8;
@@ -461,25 +473,17 @@ body {
 /* Animations */
 @keyframes shake {
     0%, 100% { transform: translate(0); }
-    25% { transform: translate(-3px, 0); }
-    50% { transform: translate(3px, 0); }
-    75% { transform: translate(-3px, 0); }
+    25% { transform: translate(-2px, 0); }
+    50% { transform: translate(2px, 0); }
+    75% { transform: translate(-2px, 0); }
 }
+
 
 .animatedd {
     animation: shake 1s ease;
 }
 
-@keyframes fadeIn {
-    from {
-        opacity: 0;
-        transform: scale(0.8);
-    }
-    to {
-        opacity: 1;
-        transform: scale(1);
-    }
-}
+
 
 /* Responsive Design */
 @media (max-width: 768px) {
