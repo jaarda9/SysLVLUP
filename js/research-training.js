@@ -19,8 +19,8 @@ class ResearchTrainingManager {
         await this.loadUserData();
         this.setupEventListeners();
         this.updateProgressDisplay();
-        await this.loadDailyTopic();
         this.checkForNewDay();
+        await this.loadDailyTopic();
     }
     
     async loadUserData() {
@@ -72,6 +72,8 @@ class ResearchTrainingManager {
                 await this.userManager.updateUserData({
                     researchTrainingData: this.researchData
                 });
+                // Force save to database (same pattern as dental study)
+                await this.userManager.saveUserData();
                 console.log('💾 Progress saved via user manager');
             } else {
                 console.log('💾 Saving via localStorage...');
@@ -136,7 +138,7 @@ class ResearchTrainingManager {
             // New day - reset topic and quiz
             this.researchData.currentTopic = null;
             this.researchData.quizData = null;
-            this.saveProgress();
+            // Don't save here - let the next operation save the data
         } else {
             console.log('📅 Same day, keeping existing topic');
         }
